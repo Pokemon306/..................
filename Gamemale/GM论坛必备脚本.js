@@ -7,7 +7,9 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.3
 // @description  泥潭！
-// @author       轶名&轶致&Chr_&1F&源子&Makima
+// @updateURL    https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM%E8%AE%BA%E5%9D%9B%E5%BF%85%E5%A4%87%E8%84%9A%E6%9C%AC.js
+// @downloadURL  https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM%E8%AE%BA%E5%9D%9B%E5%BF%85%E5%A4%87%E8%84%9A%E6%9C%AC.js
+// @author       轶名&轶致&Chr_&1F&源子&Makima$Samuel
 // @match        https://www.gamemale.com/wodexunzhang-showxunzhang.html*
 // @match        https://www.gamemale.com/plugin.php?id=wodexunzhang%3Ashowxunzhang&fid=*
 // @match        https://www.gamemale.com/plugin.php?id=viewui_draw&mod=list&ac=draw

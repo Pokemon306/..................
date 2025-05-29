@@ -12,12 +12,28 @@
 // @grant        GM_addStyle
 // @connect      *
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
+// @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Tools/datetime.js
+// @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Tools/tools.js
 // @namespace https://greasyfork.org/users/435385
 // @icon         https://www.gamemale.com/template/mwt2/extend/img/favicon.ico
 // @downloadURL https://update.greasyfork.org/scripts/460320/gm%E8%AE%BA%E5%9D%9B%E6%AF%8F%E6%97%A5.user.js
 // @updateURL https://update.greasyfork.org/scripts/460320/gm%E8%AE%BA%E5%9D%9B%E6%AF%8F%E6%97%A5.meta.js
 // ==/UserScript==
 this.$ = this.jQuery = jQuery.noConflict(true);
+
+// 按钮组 名称和方法名 倒序，下面的显示在页面上边
+const buttonGroup = {
+    "重置/中断执行": "btnClickReset",
+    "勋章赠送": "btnClickMedal",
+    "日志": "btnClickLog",
+    "查看回复奖励": "btnReplyAward",
+};
+
+// 按钮组到底部的距离
+const bottomPx = 200;
+
+const key_prefix = 'replyAward_';
+const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
 
 (function () {
     'use strict';
@@ -35,18 +51,16 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                 setTimeout(function () {
                     executeTodo();
                 }, 1500);
-            }
-            else {
+            } else {
                 console.log("【运行模式】待办为空");
             }
-        }
-        else if (getdata_gm("mode") == "stop") {
+        } else if (getdata_gm("mode") == "stop") {
             console.log("【关闭模式】不执行todo");
-        }
-        else {
+        } else {
         }
     }
 })();
+
 function executeTodo() {//一次只执行一个
     let todo = getdata_gm("functionTodo")
     if (todo == "signInTodo") {
@@ -54,13 +68,11 @@ function executeTodo() {//一次只执行一个
     }
     if (todo == "log") {
         log();
-    }
-    else if (todo == "findLog") {
+    } else if (todo == "findLog") {
         findLog();
     } else if (todo == "expressLog") {
         expressLog();
-    }
-    else if (todo == "getSearchVoteUrlBegin") {
+    } else if (todo == "getSearchVoteUrlBegin") {
         getSearchVoteUrlBegin();
     } else if (todo == "getSearchVoteUrlOnGoing") {
         getSearchVoteUrlOnGoing();
@@ -69,26 +81,16 @@ function executeTodo() {//一次只执行一个
     }
     if (todo == "vote") {
         vote();
-    }
-    else if (todo == "findVotePost") {
+    } else if (todo == "findVotePost") {
         findVotePost();
-    }
-    else if (todo == "executeVote") {
+    } else if (todo == "executeVote") {
         executeVote();
-    } else if (todo == "executeMedal") {
-        executeMedal();
-    } else if (todo == "endMedal") {
-        endMedal();
-    }
-    else if (todo == "executeVoteFinished") {
+    } else if (todo == "executeVoteFinished") {
         executeVoteFinished();
-    }
-    else {
+    } else {
         console.log("executeTodo error");
     }
 }
-
-
 
 //只在4个按钮点击的时候触发
 function dataInit() {
@@ -107,150 +109,148 @@ function dataInit() {
     // setdata_gm("Quickpass", "false");//只在点击的时候触发改变true/flase
 
 }
+
 function setdata_gm(key, value) {
     GM_setValue(key, value);
 }
+
 function getdata_gm(key) {
     return GM_getValue(key);
 }
 
-function btnClickReset() {
-    dataInit();
-    setdata_gm("Quickpass", "false");
-    alert("数据已初始化/停止执行");
-}
-
-function btnClickAll() {
-    dataInit()
-    setdata_gm("Quickpass", "true");
-    let numLogInput
-    let numVoteInput
-    let pageLog
-    let pageVote
-    let numLogbegin
-    let numVotebegin
-    let input = prompt("确认速通一键签到日志投票吗？\n默认从第1页第1个开始执行12次日志表态，\n从第1页第1个投票贴开始执行10次投票（遇到已投票的帖子不会执行），\n需要请修改数字", "日志表态：第1页第1个执行12次；投票：第1页第1个执行10次");
-    if (input == "") {
-        pageLog = "1"
-        pageVote = "1"
-        numLogbegin = "1"
-        numVotebegin = "1"
-        numLogInput = "12";
-        numVoteInput = "10"
-    } else {
-        //控制台监控无法查看数组，需要log
-        // var str = " mm -4193 1 with words"
-        // let s1=str.match(/\d+/g) // ["4193", "1"]
-        // let s2= str.match(/\d+/)
-        let re = /\d+/g//g：查询多次，而不是查询第一个符合
-        let numbers = input.match(re);
-        pageLog = numbers[0]
-        numLogbegin = numbers[1]
-        numLogInput = numbers[2]
-        pageVote = numbers[3]
-        numVotebegin = numbers[4]
-        numVoteInput = numbers[5]
-    }
-    setdata_gm("pageLog", pageLog);
-    setdata_gm("pageVote", pageVote);
-    setdata_gm("numLogInput", numLogInput);
-    setdata_gm("numLogCheckedPerPage", Number(numLogbegin) - 1);//当前已经检查日志个数=起始个数-1
-    setdata_gm("numVotePostCheckedPerPage", Number(numVotebegin) - 1);//当前已经检查投票贴个数
-    setdata_gm("numVoteInput", numVoteInput);
-
-    signIn();
-}
-
-
-
-function btnClickSign() {
-    dataInit();
-
-
-    if (confirm("确认一键签到吗？")) {
-        signIn();
-    }
-    else {
-        alert("已取消。");
-    }
-}
-
-function btnClickLog() {
-    if (getdata_gm("Quickpass") != "true") {
+// 按钮方法组
+const funcs = {
+    btnClickReset() {
         dataInit();
+        setdata_gm("Quickpass", "false");
+        alert("数据已初始化/停止执行");
+    },
+    btnClickAll() {
+        dataInit()
+        setdata_gm("Quickpass", "true");
         let numLogInput
+        let numVoteInput
         let pageLog
+        let pageVote
         let numLogbegin
-        let input = prompt("确认一键日志吗？\n默认从第1页的第1个日志开始执行12次日志表态，\n需要请修改数字",
-            "日志表态：第1页第1个执行12次");
+        let numVotebegin
+        let input = prompt("确认速通一键签到日志投票吗？\n默认从第1页第1个开始执行12次日志表态，\n从第1页第1个投票贴开始执行10次投票（遇到已投票的帖子不会执行），\n需要请修改数字", "日志表态：第1页第1个执行12次；投票：第1页第1个执行10次");
         if (input == "") {
             pageLog = "1"
+            pageVote = "1"
             numLogbegin = "1"
+            numVotebegin = "1"
             numLogInput = "12";
+            numVoteInput = "10"
         } else {
+            //控制台监控无法查看数组，需要log
+            // var str = " mm -4193 1 with words"
+            // let s1=str.match(/\d+/g) // ["4193", "1"]
+            // let s2= str.match(/\d+/)
             let re = /\d+/g//g：查询多次，而不是查询第一个符合
             let numbers = input.match(re);
             pageLog = numbers[0]
             numLogbegin = numbers[1]
             numLogInput = numbers[2]
+            pageVote = numbers[3]
+            numVotebegin = numbers[4]
+            numVoteInput = numbers[5]
         }
         setdata_gm("pageLog", pageLog);
+        setdata_gm("pageVote", pageVote);
         setdata_gm("numLogInput", numLogInput);
-        setdata_gm("numLogCheckedPerPage", Number(numLogbegin) - 1);//当前已经检查日志个数
-    }
+        setdata_gm("numLogCheckedPerPage", Number(numLogbegin) - 1);//当前已经检查日志个数=起始个数-1
+        setdata_gm("numVotePostCheckedPerPage", Number(numVotebegin) - 1);//当前已经检查投票贴个数
+        setdata_gm("numVoteInput", numVoteInput);
 
-    log();
-}
-
-function btnClickVote() {
-    if (getdata_gm("Quickpass") != "true") {
+        signIn();
+    },
+    btnClickSign() {
         dataInit();
-        let numVoteInput
-        let pageVote
-        let numVotebegin
-        let input = prompt("确认一键投票吗？默认从第1页的第1个投票贴开始执行10次投票（遇到已投票的帖子不会执行），需要请修改数字",
-            "投票：第1页第1个执行10次");
-        if (input == "") {
-            pageVote = "1"
-            numVotebegin = "1"
-            numVoteInput = "10"
+
+
+        if (confirm("确认一键签到吗？")) {
+            signIn();
         } else {
-            let re = /\d+/g//g：查询多次，而不是查询第一个符合
-            let numbers = input.match(re);
-            pageVote = numbers[0]
-            numVotebegin = numbers[1]
-            numVoteInput = numbers[2]
+            alert("已取消。");
+        }
+    },
+    btnClickLog() {
+        if (getdata_gm("Quickpass") != "true") {
+            dataInit();
+            let numLogInput
+            let pageLog
+            let numLogbegin
+            let input = prompt("确认一键日志吗？\n默认从第1页的第1个日志开始执行12次日志表态，\n需要请修改数字",
+                "日志表态：第1页第1个执行12次");
+            if (input == "") {
+                pageLog = "1"
+                numLogbegin = "1"
+                numLogInput = "12";
+            } else {
+                let re = /\d+/g//g：查询多次，而不是查询第一个符合
+                let numbers = input.match(re);
+                pageLog = numbers[0]
+                numLogbegin = numbers[1]
+                numLogInput = numbers[2]
+            }
+            setdata_gm("pageLog", pageLog);
+            setdata_gm("numLogInput", numLogInput);
+            setdata_gm("numLogCheckedPerPage", Number(numLogbegin) - 1);//当前已经检查日志个数
+        }
+
+        log();
+    },
+    btnClickVote() {
+        if (getdata_gm("Quickpass") != "true") {
+            dataInit();
+            let numVoteInput
+            let pageVote
+            let numVotebegin
+            let input = prompt("确认一键投票吗？默认从第1页的第1个投票贴开始执行10次投票（遇到已投票的帖子不会执行），需要请修改数字",
+                "投票：第1页第1个执行10次");
+            if (input == "") {
+                pageVote = "1"
+                numVotebegin = "1"
+                numVoteInput = "10"
+            } else {
+                let re = /\d+/g//g：查询多次，而不是查询第一个符合
+                let numbers = input.match(re);
+                pageVote = numbers[0]
+                numVotebegin = numbers[1]
+                numVoteInput = numbers[2]
+
+            }
+            setdata_gm("pageVote", pageVote);
+            setdata_gm("numVoteInput", numVoteInput);
+            setdata_gm("numVotePostCheckedPerPage", Number(numVotebegin) - 1);//当前已经检查投票贴个数
 
         }
-        setdata_gm("pageVote", pageVote);
-        setdata_gm("numVoteInput", numVoteInput);
-        setdata_gm("numVotePostCheckedPerPage", Number(numVotebegin) - 1);//当前已经检查投票贴个数
+        getSearchVoteUrlBegin()
+    },
+    btnClickMedal() {
+        if (getdata_gm("Quickpass") != "true") {
+            dataInit();
+        }
+        myWindow = window.open('');
+        myWindow.document.write(getHtmlText());
+        myWindow.focus();
+    },
+    btnReplyAward() {
+        let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+        if (!localStorage.getItem(key)) {
+            Toast("没有今天的回复记录！", 3000)
+            return;
+        }
+        Toast(localStorage.getItem(key))
+        let ra = JSON.parse(localStorage.getItem(key) || '[]');
 
+        myWindow = window.open('');
+        let html = raToHtml(ra);
+        myWindow.document.write(html);
+        myWindow.focus();
     }
-    getSearchVoteUrlBegin()
 }
-function btnClickMedal() {
-    if (getdata_gm("Quickpass") != "true") {
-        dataInit();
-    }
-    // setdata_gm("mode", "running");
-    // setdata_gm("functionTodo", 'executeMedal')
-    // window.location.href = "https://www.gamemale.com/forum.php?mod=viewthread&tid=100890&highlight=%E5%8B%8B%E7%AB%A0";
-    myWindow = window.open('');
-    myWindow.document.write(getHtmlText());
-    myWindow.focus();
-}
-function executeMedal() {
-    // setdata_gm("functionTodo", 'endMedal')
-    // document.querySelector("#postmessage_1260270 > input[type=button]:nth-child(30)").click()
-
-}
-
-function endMedal() {
-    // setdata_gm("functionTodo", 'null')
-}
-
-
 
 /**jq .click()模拟鼠标点击,触发html的onclick
  * $(function(){
@@ -267,7 +267,6 @@ function signIn() {
     console.log("signin任务开始执行");
     setdata_gm("functionTodo", "signInTodo")
 
-
     self.location.href = "https://www.gamemale.com/forum.php"
 }
 
@@ -281,10 +280,7 @@ function signInTodo() {
     }
 
     self.location.href = $("div#midaben_sign").children().children().attr("href");
-
 }
-
-
 
 function log() {
     let numLogInput = Number(getdata_gm("numLogInput"));
@@ -301,12 +297,9 @@ function log() {
         setdata_gm("functionTodo", "findLog");
         self.location.href = getdata_gm("gm_log") + getdata_gm("pageLog");
     }
-
 }
 
-
 function findLog() {
-    //
     console.log("findlog开始");
     //可以直接在元素上悬浮查看筛选器
     // $("p.intro") 选取所有 class="intro" 的 <p> 元素。
@@ -324,8 +317,6 @@ function findLog() {
     console.log("【findLog】findlog结束，即将开始expresslog");
     self.location.href = urlToVisit;
 }
-
-
 
 /**
  * 转换成字符串：
@@ -368,8 +359,6 @@ function expressLog() {
         setdata_gm("functionTodo", "findLog");
         self.location.href = getdata_gm("gm_log") + String(pageLog);
     }
-    // console.log("expressLog结束，待办清空");
-    // setdata_gm("functionTodo", "null");
 }
 
 //获取每日的搜索url
@@ -379,6 +368,7 @@ function getSearchVoteUrlBegin() {
     self.location.href = GM_getValue("gm_search");
     //页面跳转
 }
+
 function getSearchVoteUrlOnGoing() {
     //设置搜索条件
     document.querySelector("#ct > div > div > div.bm_c > form > table > tbody > tr:nth-child(4) > td > label:nth-child(1) > input").checked = true;
@@ -401,6 +391,7 @@ function getSearchVoteUrl() {
     //两个操作整合
     vote();
 }
+
 /**
  * @description: 初始化数据，然后跳转到搜索投票贴页面，
  * @return {*}
@@ -424,8 +415,6 @@ function vote() {
     }
 }
 
-
-
 /**
  * @description: 在搜索结果页面寻找投票贴
  * @return {*}
@@ -446,6 +435,7 @@ function findVotePost() {
     self.location.href = urlToVisit;
     // window.open(urlToVisit);
 }
+
 /**
  * @description: 在查询页使用，获取搜索结果的个数
  * @return {*}
@@ -477,7 +467,7 @@ function executeVote() {
          */
         SumVotePostChecked = SumVotePostChecked + 1;
         setdata_gm("SumVotePostChecked", String(SumVotePostChecked));
-        setdata_gm("functionTodo","executeVoteFinished");
+        setdata_gm("functionTodo", "executeVoteFinished");
         $("input#option_1.pr").click();
         $('form#poll').submit();
 
@@ -490,7 +480,7 @@ function executeVote() {
     // setdata_gm("functionTodo", "null");
 }
 
-function executeVoteFinished(){
+function executeVoteFinished() {
     let pageVote = Number(getdata_gm("pageVote"));
     let SumVotePostToCheck = Number(getdata_gm("SumVotePostToCheck"));
     let numVotePostToCheckPerPage = Number(getdata_gm("numVotePostToCheckPerPage"));
@@ -539,7 +529,6 @@ function executeVoteFinished(){
         }, 2000);
     }
 }
-
 
 /**
  * @description: 关闭标签页
@@ -603,48 +592,6 @@ function checkReply() {
     }
 }
 
-function btnClickVP(){
-    //初始化相关数据
-
-    //弹窗询问次数
-
-    //执行visitPromotion
-}
-
-
-/**
- * @description: 访问推广任务：在个人空间点击，获取uid，跳转到代理网站
- * @return {*}
- */
-
-
-
-function visitPromotion() {
-    let uid = getUidInSpace();
-    setdata_gm("uid", uid);
-
-
-
-    setdata_gm("functionTodo","executeVisit")
-    window.location.href = "https://www.croxyproxy.com/_zh"
-}
-
-/**
- * @description: 执行访问推广：复制链接https://www.gamemale.com/?fromuid=678481，点击访问，循环10次
- * @return {*}
- */
-function executeVisit(uid) {
-    let url="https://www.gamemale.com/?fromuid="+getdata_gm("uid")
-    //如果访问满次数：弹窗结束
-    //设置待办：goBackProxyWeb
-    //点击go按钮跳转
-}
-
-function goBackProxyWeb(uid) {
-    //设置待办：executeVisit
-    //点击home返回代理网站
-}
-
 //DOM.style.cssText = 'aaa: xxx;'
 /**
  * @description: 生成7个按钮
@@ -654,70 +601,37 @@ function button() {
     let body = document.querySelector('body');
     let div = document.createElement('div');
     let stylebutton = 'z-index:999;fontsize:14px;position: fixed;cursor: pointer;right:10px;margin:10px;bottom:'
-    let right = 160;
-    div.style.cssText = stylebutton + right + 'px';
-    for (i = 1; i <= 7; i++) {
+    let bottom = bottomPx;
+    div.style.cssText = stylebutton + bottom + 'px';
+
+    let i = 1
+    for (let buttonName in buttonGroup) {
+        if(buttonName === "查看回复奖励") {
+            // 需要有数据才显示按钮
+            let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+            if (!localStorage.getItem(key)) {
+                continue
+            }
+        }
         let btn = document.createElement('button');
         btn.className = 'my_button'
-        btn.style.cssText = stylebutton + (right + (i - 1) * 50) + 'px';
-        switch (i) {
-            case 1:
-                btn.textContent = '重置/中断执行';
-                btn.addEventListener('click', () => {
-                    btnClickReset()
-                });
-                break;
+        btn.style.cssText = stylebutton + (bottom + (i - 1) * 50) + 'px';
 
-            case 2:
-                // btn.textContent = '延时回复';
-                // btn.addEventListener('click', () => {
-                //     replyPost()
-                // });
-                break;
+        btn.textContent = buttonName;
+        btn.addEventListener('click', () => {
+            funcs[buttonGroup[buttonName]]();
+        });
 
-            case 3:
-                btn.textContent = '勋章赠送';
-                btn.addEventListener('click', () => {
-                    btnClickMedal()
-                });
-                break;
-
-            case 4:
-//                btn.textContent = '投票';
-//                btn.addEventListener('click', () => {
-//                    btnClickVote()
-//                });
-                break;
-            case 5:
-                btn.textContent = '日志';
-                btn.addEventListener('click', () => {
-                    btnClickLog()
-                });
-                break;
-            case 6:
-//                btn.textContent = '签到';
-//                btn.addEventListener('click', () => {
-//                    btnClickSign()
-//                });
-                break;
-            case 7:
-//                btn.textContent = '速通';
-//                btn.addEventListener('click', () => {
-//                    btnClickAll()
-//                });
-                break;
-            default:
-                console.log("error");
-                break;
-        }
-        if(!btn.textContent) {
+        if (!btn.textContent) {
             continue
         }
         div.appendChild(btn);
+        i += 1
     }
+
     body.appendChild(div);
-    // console.log(getHtmlText());
 }
+
 /**
  * @description: 从当前url获取uid，若没有返回空
  * @return {*}
@@ -733,9 +647,6 @@ function getUidInSpace() {
             return res[0];
         }
     }
-
-    // document.getElementById("zs_uid").value=uid;
-
 }
 
 //注意！html文本里的脚本不能有双斜杠注释，否则转为文本后会把后面全注释掉
@@ -893,6 +804,84 @@ function getHtmlText() {
         '</body>',
         '</html>'].join("");
     return texts;
+}
+
+function raToHtml(_ras) {
+    let ras = _ras.reverse();
+
+    let html = []
+    html.push('<html>')
+    html.push(`
+  <head><style>
+    table {
+      border-collapse: collapse;
+      width: auto;
+      /*max-width: 800px;*/
+      margin: 20px auto;
+    }
+    th, td {
+      /*width: auto;*/
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th:not(:first-child) {
+      border-left: 1px solid #73b6e1;
+    }
+    td:not(:first-child)  {
+      border-left: 1px solid #eee;
+    }
+    th {
+      background-color: #589eca;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    caption {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .inner-text{
+        text-align: center;
+    }
+    .ellipsis-column {
+        max-width: 200px;         /* 设置最大宽度 */
+        white-space: nowrap;      /* 禁止换行 */
+        overflow: hidden;         /* 超出内容隐藏 */
+        text-overflow: ellipsis;  /* 超出部分显示省略号 */
+    }
+    .t-text{
+        display: none
+    }
+  </style></head>`)
+    html.push(`<body><table><caption>${formatDate(new Date(), 'YYYY年MM月DD日')}</caption>
+<caption>共计回复 <span style="color: #9f0404">${ras.length}</span> 次</caption><tbody>`)
+
+    // 表头
+    html.push('<tr><th>回复时间</th>')
+    for(let _th of awardGroup) {
+        html.push(`<th>${_th}</th>`)
+    }
+    html.push('<th class="ellipsis-column t-text">文本</th></tr>')
+    // awardGroup
+    for (let ra of ras) {
+        if(ra.text.indexOf('发表回复') === -1) {
+            continue
+        }
+        html.push('<tr>')
+        html.push(`<td>${formatDate(new Date(ra.date), 'HH:mm:SS')}</td>`)
+        for(let _th of awardGroup) {
+            html.push(`<td class="inner-text">${ra[_th]?ra[_th]:''}</td>`)
+        }
+        html.push(`<td class="t-text">${ra.text}</td>`)
+        html.push('</tr>')
+    }
+
+    html.push('</tbody></table></body></html>')
+
+    return html.join('');
 }
 
 GM_addStyle(`

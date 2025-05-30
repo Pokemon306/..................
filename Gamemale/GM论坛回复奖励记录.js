@@ -21,6 +21,7 @@ const buttonGroup = {
 
 // 按钮组到底部的距离
 const topPx = 100;
+const trHeight = 30;
 
 const key_prefix = 'replyAward_';
 const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
@@ -92,6 +93,7 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
         localStorage.setItem(sum_key, JSON.stringify(ra_sum));
     }
 
+    // 初始化按钮
     function init() {
         let body = document.querySelector('body');
         let div = document.createElement('div');
@@ -158,7 +160,7 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
         html.push(`
   <head><style>${tableCSS}
   tr {
-    height: ${tableCSS}px;
+    height: ${trHeight}px;
   }
   </style></head>`)
         html.push(`<body><table><caption>${formatDate(new Date(), 'YYYY年MM月DD日')}</caption>
@@ -178,16 +180,16 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
                 return
             }
 
-            let className = "inner-text";
+            let className = "tr ";
             if(last) {
                 if((new Date(ra.date)).getHours() != (new Date(last.date)).getHours()) {
-                    className += " separator"
+                    className += "separator"
                 }
             }
-            html.push('<tr>')
+            html.push(`<tr class="${className}">`)
             html.push(`<td>${formatDate(new Date(ra.date), 'HH:mm:SS')}</td>`)
             for(let _th of awardGroup) {
-                html.push(`<td class="${className}">${ra[_th]?ra[_th]:''}</td>`)
+                html.push(`<td class="inner-text">${ra[_th]?ra[_th]:''}</td>`)
                 if(ra[_th]) {
                     let value = sum[_th]?sum[_th]:0;
                     value+=Number(ra[_th])

@@ -20,8 +20,8 @@ td:not(:first-child) {
     border-left: 1px solid #eee;
 }
 
-td.separator {
-    border-top: 1px solid #888;
+tr.separator {
+    border-top: 2px solid #bbb;
 }
 
 th {

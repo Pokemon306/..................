@@ -1,0 +1,77 @@
+.my_button {
+    border-radius: 10em;
+    color: #ecf0f1;
+    font-weight: 1000;
+    font-size: 18px;
+    font-color: #ecf0f1;
+    font-family: "微软雅黑";
+    text-decoration: none;
+    text-align: center;
+    line-height: 40px;
+    height: 40px;
+    padding: 0 40px;
+    margin: 0;
+    display: inline-block;
+    appearance: none;
+    cursor: pointer;
+    border: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-duration: .3s;
+    transition-duration: .3s;
+}
+.my_button.green {
+    background: linear-gradient(to right,#16a085,#2ecc71);
+}
+.my_button.red {
+    background: linear-gradient(to right,#700f46,#d61361,#f41445,#fc1e39,#ff4f28,#ffb11e);
+}
+
+.my_button::after {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 10em;
+    /* -webkit-transition:-webkit-box-shadow .4s ease-in-out; */
+    transition: -webkit-box-shadow .4s ease-in-out;
+    transition: box-shadow .4s ease-in-out;
+    transition: box-shadow .4s ease-in-out,-webkit-box-shadow .4s ease-in-out;
+}
+
+.my_button:hover::after {
+    -webkit-box-shadow: 0 0 16px #16a085;
+    box-shadow: 0 0 16px #16a085
+}
+.my_button.green:hover::after {
+    -webkit-box-shadow: 0 0 16px #16a085;
+    box-shadow: 0 0 16px #16a085
+}
+.my_button.red:hover::after {
+    -webkit-box-shadow: 0 0 16px #ff0068;
+    box-shadow: 0 0 16px #ff0068
+}
+
+.my_button:active {
+    color: black;
+    background: linear-gradient(to right,#3498db,#2980b9);
+}
+.my_button:hover:active {
+    color: black;
+    background: linear-gradient(to right,#3498db,#2980b9);
+}
+
+.my_button.red:active {
+    color: black;
+    background: linear-gradient(to right,#ffb11e, #ff9e1e);
+}
+.my_button.red:hover:active {
+    color: yellow;
+    background: linear-gradient(to right,#ffb11e, #ff9e1e);
+}
+

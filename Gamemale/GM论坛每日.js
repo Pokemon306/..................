@@ -26,7 +26,6 @@ const buttonGroup = {
     "重置/中断执行": "btnClickReset",
     "勋章赠送": "btnClickMedal",
     "日志": "btnClickLog",
-    "查看回复奖励": "btnReplyAward",
 };
 
 // 按钮组到底部的距离
@@ -236,20 +235,6 @@ const funcs = {
         myWindow.document.write(getHtmlText());
         myWindow.focus();
     },
-    btnReplyAward() {
-        let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
-        if (!localStorage.getItem(key)) {
-            Toast("没有今天的回复记录！", 3000)
-            return;
-        }
-        Toast(localStorage.getItem(key))
-        let ra = JSON.parse(localStorage.getItem(key) || '[]');
-
-        myWindow = window.open('');
-        let html = raToHtml(ra);
-        myWindow.document.write(html);
-        myWindow.focus();
-    }
 }
 
 /**jq .click()模拟鼠标点击,触发html的onclick
@@ -804,84 +789,6 @@ function getHtmlText() {
         '</body>',
         '</html>'].join("");
     return texts;
-}
-
-function raToHtml(_ras) {
-    let ras = _ras.reverse();
-
-    let html = []
-    html.push('<html>')
-    html.push(`
-  <head><style>
-    table {
-      border-collapse: collapse;
-      width: auto;
-      /*max-width: 800px;*/
-      margin: 20px auto;
-    }
-    th, td {
-      /*width: auto;*/
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    th:not(:first-child) {
-      border-left: 1px solid #73b6e1;
-    }
-    td:not(:first-child)  {
-      border-left: 1px solid #eee;
-    }
-    th {
-      background-color: #589eca;
-      color: white;
-    }
-    tr:hover {
-      background-color: #f5f5f5;
-    }
-    caption {
-      font-size: 1.2em;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-    .inner-text{
-        text-align: center;
-    }
-    .ellipsis-column {
-        max-width: 200px;         /* 设置最大宽度 */
-        white-space: nowrap;      /* 禁止换行 */
-        overflow: hidden;         /* 超出内容隐藏 */
-        text-overflow: ellipsis;  /* 超出部分显示省略号 */
-    }
-    .t-text{
-        display: none
-    }
-  </style></head>`)
-    html.push(`<body><table><caption>${formatDate(new Date(), 'YYYY年MM月DD日')}</caption>
-<caption>共计回复 <span style="color: #9f0404">${ras.length}</span> 次</caption><tbody>`)
-
-    // 表头
-    html.push('<tr><th>回复时间</th>')
-    for(let _th of awardGroup) {
-        html.push(`<th>${_th}</th>`)
-    }
-    html.push('<th class="ellipsis-column t-text">文本</th></tr>')
-    // awardGroup
-    for (let ra of ras) {
-        if(ra.text.indexOf('发表回复') === -1) {
-            continue
-        }
-        html.push('<tr>')
-        html.push(`<td>${formatDate(new Date(ra.date), 'HH:mm:SS')}</td>`)
-        for(let _th of awardGroup) {
-            html.push(`<td class="inner-text">${ra[_th]?ra[_th]:''}</td>`)
-        }
-        html.push(`<td class="t-text">${ra.text}</td>`)
-        html.push('</tr>')
-    }
-
-    html.push('</tbody></table></body></html>')
-
-    return html.join('');
 }
 
 GM_addStyle(`

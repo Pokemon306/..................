@@ -168,15 +168,24 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
             html.push(`<th>${_th}</th>`)
         }
         html.push('<th class="ellipsis-column t-text">文本</th></tr>')
+
         // awardGroup
-        for (let ra of ras) {
+        let last = undefined
+        ras.forEach((ra, index) => {
             if(ra.text.indexOf('发表回复') === -1) {
-                continue
+                return
+            }
+
+            let className = "inner-text";
+            if(last) {
+                if((new Date(ra.date)).getHours() != (new Date(last.date)).getHours()) {
+                    className += " separator"
+                }
             }
             html.push('<tr>')
             html.push(`<td>${formatDate(new Date(ra.date), 'HH:mm:SS')}</td>`)
             for(let _th of awardGroup) {
-                html.push(`<td class="inner-text">${ra[_th]?ra[_th]:''}</td>`)
+                html.push(`<td class="${className}">${ra[_th]?ra[_th]:''}</td>`)
                 if(ra[_th]) {
                     let value = sum[_th]?sum[_th]:0;
                     value+=Number(ra[_th])
@@ -185,7 +194,8 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
             }
             html.push(`<td class="t-text">${ra.text}</td>`)
             html.push('</tr>')
-        }
+            last = ra
+        })
         console.log(sum)
         html.push('</tbody>')
 

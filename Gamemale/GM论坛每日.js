@@ -3,6 +3,9 @@
 // @description  右下角有小菜单栏速通签到日志投票，一键批量送勋章，延时回帖
 // @version      0.4.1
 // @license      GNU General Public License v3.0
+// @icon         https://www.gamemale.com/template/mwt2/extend/img/favicon.ico
+// @downloadURL https://update.greasyfork.org/scripts/460320/gm%E8%AE%BA%E5%9D%9B%E6%AF%8F%E6%97%A5.user.js
+// @updateURL https://update.greasyfork.org/scripts/460320/gm%E8%AE%BA%E5%9D%9B%E6%AF%8F%E6%97%A5.meta.js
 // @match        https://www.gamemale.com/*
 // @grant        GM_log
 // @run-at       document-end
@@ -10,14 +13,11 @@
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
+// @grant        GM_getResourceText
 // @connect      *
-// @require      https://code.jquery.com/jquery-2.1.4.min.js
-// @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Tools/datetime.js
-// @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Tools/tools.js
-// @namespace https://greasyfork.org/users/435385
-// @icon         https://www.gamemale.com/template/mwt2/extend/img/favicon.ico
-// @downloadURL https://update.greasyfork.org/scripts/460320/gm%E8%AE%BA%E5%9D%9B%E6%AF%8F%E6%97%A5.user.js
-// @updateURL https://update.greasyfork.org/scripts/460320/gm%E8%AE%BA%E5%9D%9B%E6%AF%8F%E6%97%A5.meta.js
+// @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/datetime.js
+// @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
+// @resource buttonCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/button.css
 // ==/UserScript==
 this.$ = this.jQuery = jQuery.noConflict(true);
 
@@ -791,57 +791,5 @@ function getHtmlText() {
     return texts;
 }
 
-GM_addStyle(`
-.my_button {
-  border-radius: 10em;
-  color: #ecf0f1;
-  background: linear-gradient(to right,#16a085,#2ecc71);
-  font-weight: 1000;
-  font-size: 18px;
-  font-color: #ecf0f1;
-  font-family: "微软雅黑";
-  text-decoration: none;
-  text-align: center;
-  line-height: 40px;
-  height: 40px;
-  padding: 0 40px;
-  margin: 0;
-  display: inline-block;
-  appearance: none;
-  cursor: pointer;
-  border: none;
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
-  -webkit-transition-property: all;
-          transition-property: all;
-  -webkit-transition-duration: .3s;
-          transition-duration: .3s;
-}
-
-.my_button::after {
-    content: " ";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 10em;
-    /* -webkit-transition:-webkit-box-shadow .4s ease-in-out; */
-    transition: -webkit-box-shadow .4s ease-in-out;
-    transition: box-shadow .4s ease-in-out;
-    transition: box-shadow .4s ease-in-out,-webkit-box-shadow .4s ease-in-out;
-}
-.my_button:hover::after {
-    -webkit-box-shadow: 0 0 16px #16a085;
-    box-shadow: 0 0 16px #16a085
-}
-.my_button::active {
-  color: black;
-  background: linear-gradient(to right,#3498db,#2980b9);
-}
-.my_button:hover::active {
-  color: black;
-  background: linear-gradient(to right,#3498db,#2980b9);
-}
-`)
+const css = GM_getResourceText("buttonCSS");
+GM_addStyle(css);

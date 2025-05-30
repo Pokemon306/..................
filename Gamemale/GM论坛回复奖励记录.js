@@ -11,6 +11,7 @@
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/datetime.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
 // @resource buttonCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/button.css
+// @resource tableCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/table.css
 // ==/UserScript==
 const buttonGroup = {
     "查看回复奖励": "btnReplyAward",
@@ -138,50 +139,13 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
 
         let html = []
         html.push('<html>')
+
+        const tableCSS = GM_getResourceText("tableCSS");
         html.push(`
-  <head><style>
-    table {
-      border-collapse: collapse;
-      width: auto;
-      /*max-width: 800px;*/
-      margin: 20px auto;
-    }
-    th, td {
-      /*width: auto;*/
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    th:not(:first-child) {
-      border-left: 1px solid #73b6e1;
-    }
-    td:not(:first-child)  {
-      border-left: 1px solid #eee;
-    }
-    th {
-      background-color: #589eca;
-      color: white;
-    }
-    tr:hover {
-      background-color: #f5f5f5;
-    }
-    caption {
-      font-size: 1.2em;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-    .inner-text{
-        text-align: center;
-    }
-    .ellipsis-column {
-        max-width: 200px;         /* 设置最大宽度 */
-        white-space: nowrap;      /* 禁止换行 */
-        overflow: hidden;         /* 超出内容隐藏 */
-        text-overflow: ellipsis;  /* 超出部分显示省略号 */
-    }
-    .t-text{
-        display: none
-    }
+  <head><style>${tableCSS}
+  tr {
+    height: ${tableCSS}px;
+  }
   </style></head>`)
         html.push(`<body><table><caption>${formatDate(new Date(), 'YYYY年MM月DD日')}</caption>
 <caption>共计回复 <span style="color: #9f0404">${ras.length}</span> 次</caption><tbody>`)

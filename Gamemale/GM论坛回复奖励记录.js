@@ -55,16 +55,19 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
 
     // 保存到本地缓存空间
     function save(node) {
+        let today_str = formatDate(new Date(), 'YYYYMMdd');
 
         let text = node.innerText.trim();
         if(text.indexOf('发表回复') === -1) {
             return
         }
-        let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+        let key = `${key_prefix}${today_str}`
         let sum_key = `${key}_sum`
+        let keys_key = `${key_prefix}keys`
 
         let ra = JSON.parse(localStorage.getItem(key) || '[]');
         let ra_sum = JSON.parse(localStorage.getItem(sum_key) || '{}');
+        let ra_keys = JSON.parse(localStorage.getItem(keys_key) || '{}');
 
         let map = {}
         map.text = text
@@ -79,7 +82,8 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
 
                     map[name] = value
 
-                    if(!value) {
+                    // 合计
+                    if(value) {
                         let _value = (ra_sum[name] ? ra_sum[name] : 0)
                         _value += Number(value)
                         ra_sum[name] = _value
@@ -91,6 +95,12 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
         ra.push(map);
         localStorage.setItem(key, JSON.stringify(ra));
         localStorage.setItem(sum_key, JSON.stringify(ra_sum));
+
+        // 如果没有当天的记录，就新增一条，方便后面遍历删除
+        if(!ra_keys[today_str]) {
+            ra_keys[today_str] = new Date();
+            localStorage.setItem(keys_key, JSON.stringify(ra_keys));
+        }
     }
 
     // 初始化按钮

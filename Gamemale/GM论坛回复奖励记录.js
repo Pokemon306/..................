@@ -54,10 +54,14 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
     function save(node) {
 
         let text = node.innerText.trim();
-
+        if(text.indexOf('发表回复') === -1) {
+            return
+        }
         let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+        let sum_key = `${key}_sum`
 
         let ra = JSON.parse(localStorage.getItem(key) || '[]');
+        let ra_sum = JSON.parse(localStorage.getItem(sum_key) || '{}');
 
         let map = {}
         map.text = text
@@ -71,12 +75,19 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
                     let value = span.childNodes[1].textContent
 
                     map[name] = value
+
+                    if(!value) {
+                        let _value = (ra_sum[name] ? ra_sum[name] : 0)
+                        _value += Number(value)
+                        ra_sum[name] = _value
+                    }
                 }
             }
         }
 
         ra.push(map);
         localStorage.setItem(key, JSON.stringify(ra));
+        localStorage.setItem(sum_key, JSON.stringify(ra_sum));
     }
 
     function init() {
@@ -136,6 +147,7 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
 
     function raToHtml(_ras) {
         let ras = _ras.reverse();
+        let sum = {}
 
         let html = []
         html.push('<html>')
@@ -165,12 +177,26 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
             html.push(`<td>${formatDate(new Date(ra.date), 'HH:mm:SS')}</td>`)
             for(let _th of awardGroup) {
                 html.push(`<td class="inner-text">${ra[_th]?ra[_th]:''}</td>`)
+                if(ra[_th]) {
+                    let value = sum[_th]?sum[_th]:0;
+                    value+=Number(ra[_th])
+                    sum[_th]=value
+                }
             }
             html.push(`<td class="t-text">${ra.text}</td>`)
             html.push('</tr>')
         }
+        console.log(sum)
+        html.push('</tbody>')
 
-        html.push('</tbody></table></body></html>')
+        let foot = '<tr><td>合计</td>'
+        for(let name of awardGroup) {
+            foot += `<td class="inner-text">${sum[name]?sum[name]:'0'}</td>`
+        }
+        foot += '</tr>'
+        html.push(`<tfoot>${foot}</tfoot>`)
+
+        html.push('</table></body></html>')
 
         return html.join('');
     }

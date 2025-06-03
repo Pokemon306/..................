@@ -1,8 +1,8 @@
 // 记录页面加载时间
-let _startTime = new Date();
+var _startTime = new Date();
 
 // 获取DOM元素
-let timerElement = document.getElementById('timer');
+var timerElement = document.getElementById('timer');
 console.log(timerElement);
 
 // 格式化时间显示
@@ -17,25 +17,29 @@ function formatTime(milliseconds) {
 
 // 更新计时器显示
 function updateTimer(date) {
-    if(!date) {
+    console.log(date);
+    if (!date) {
         date = _startTime;
     }
     let now = new Date();
     let elapsedMilliseconds = now - date;
+    console.log(elapsedMilliseconds);
     timerElement.textContent = formatTime(elapsedMilliseconds);
 }
 
-// 每秒更新一次
-setInterval(updateTimer, 1000);
-
 // 初始化显示
-let passTime = document.getElementById('passTime');
-let lastReplyTime = document.getElementById('lastReplyTime');
-if(lastReplyTime && lastReplyTime) {
-    console.log(`lastReplyTime.value : ${lastReplyTime.value}`)
+var lastReplyTime = document.getElementById('lastReplyTime');
+if (lastReplyTime) {
     let date = new Date(lastReplyTime.value);
-
     updateTimer(date);
 
-    passTime.style.display = 'block';
+    // 每秒更新一次
+    var timer = setInterval(function (date) {
+            if(document.body.style.display === 'none') {
+                clearInterval(timer)
+            }
+            updateTimer(date);
+        }, 1000,
+        date
+    );
 }

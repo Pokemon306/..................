@@ -193,7 +193,7 @@ const awardGroup = {
 <input style="display: none;" id="lastReplyTime" value="${lastReplyTime}"/>
 <table><caption>${formatDate(new Date(), 'YYYY年MM月DD日')}</caption>
 <caption>共计回复 <span style="color: #9f0404">${ras.length}</span> 次</caption>
-<caption id="passTime" stye="display:none;">距离上次回复已过去： <div id="timer">00:00:00</div> </caption>
+<caption id="passTime">距离上次回复已过去： <span id="timer" style="color: red">00:00:00</span> </caption>
 <tbody>`)
 
         // 表头
@@ -288,15 +288,13 @@ const awardGroup = {
             Toast("没有今天的回复记录！", 3000)
             return;
         }
-        // Toast(localStorage.getItem(key))
         let ra = JSON.parse(localStorage.getItem(key) || '[]');
         let html = raToHtml(ra);
 
         let iframe = document.getElementById('pop_iframe');
         var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
         iframeDoc.body.innerHTML = html;
-
-        let table = iframeDoc.body.querySelector("table");
+        iframeDoc.body.style.display = 'block';
 
         // 显示弹窗
         popup.style.display = 'block';
@@ -308,7 +306,7 @@ const awardGroup = {
         const timerJS = GM_getResourceText("timerJS");
         let scriptElement = iframeDoc.createElement("script");
         scriptElement.append(timerJS);
-        iframeDoc.documentElement.appendChild(scriptElement);
+        iframeDoc.body.appendChild(scriptElement);
 
         // 阻止事件冒泡
         e.stopPropagation();
@@ -317,6 +315,9 @@ const awardGroup = {
     // 点击页面其他地方关闭弹窗
     document.addEventListener('click', function() {
         document.getElementById('popup').style.display = 'none';
+        let iframe = document.getElementById('pop_iframe');
+        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        // iframeDoc.body.style.display = 'none';
     });
 
     // 防止弹窗内部点击关闭弹窗

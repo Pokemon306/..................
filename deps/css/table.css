@@ -55,7 +55,12 @@ caption {
     display: none
 }
 
+.emphasis {
+    color: #9f0404
+}
+
 tfoot {
     background-color: #c75353;
     color: #ffddac;
+    font-weight: bold;
 }

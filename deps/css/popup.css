@@ -1,0 +1,11 @@
+.my_popup {
+    display: none;
+    width: auto;
+    position: fixed;
+    border: none;
+    border-radius: 1em;
+    background: white;
+    -webkit-box-shadow: 0 0 16px #816a6a;
+    box-shadow: 0 0 16px #816a6a;
+    z-index: 1000;
+}

@@ -14,6 +14,7 @@
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
 // @resource buttonCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/button.css
 // @resource tableCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/table.css
+// @resource popupCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/popup.css
 // @resource timerJS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/test/updateTimer.js
 // ==/UserScript==
 const buttonGroup = {
@@ -191,9 +192,8 @@ const awardGroup = {
         html.push(
             `<body>
 <input style="display: none;" id="lastReplyTime" value="${lastReplyTime}"/>
-<table><caption>${formatDate(new Date(), 'YYYY年MM月DD日')}</caption>
-<caption>共计回复 <span style="color: #9f0404">${ras.length}</span> 次</caption>
-<caption id="passTime">距离上次回复已过去： <span id="timer" style="color: red">00:00:00</span> </caption>
+<table><caption>${formatDate(new Date(), 'YYYY年MM月DD日')} 共计回复 <span class="emphasis">${ras.length}</span> 次</caption>
+<caption id="passTime">距离上次回复已过去： <span id="timer" class="emphasis">00:00:00</span> </caption>
 <tbody>`)
 
         // 表头
@@ -245,22 +245,16 @@ const awardGroup = {
         return html.join('');
     }
 
-    const css = GM_getResourceText("buttonCSS");
-    GM_addStyle(css);
-    GM_addStyle(`
-            #popup {
-            display: none;
-            width: auto;
-            position: fixed;
-            border: 1px solid #ccc;
-            background: white;
-            z-index: 1000;
-        }`);
+    const buttonCSS = GM_getResourceText("buttonCSS");
+    GM_addStyle(buttonCSS);
+    const popupCSS = GM_getResourceText("popupCSS");
+    GM_addStyle(popupCSS);
 
     // 添加弹窗
     let htmlDivElement = document.createElement("div");
+    htmlDivElement.style.borderRadius = "10em;"
     htmlDivElement.id = "popup";
-    htmlDivElement.className = "popup";
+    htmlDivElement.className = "my_popup";
     htmlDivElement.innerHTML = `
     <div class="popup-arrow" style="">
         <iframe id="pop_iframe" frameborder="no" scrolling="auto"  style="overflow-y：auto"></iframe>
@@ -280,6 +274,7 @@ const awardGroup = {
 
         // 计算弹窗位置（左下角）
         const rect = btn.getBoundingClientRect();
+        popup.style.borderRadius = "10em;"
         popup.style.left = (rect.left - tableWidth) + 'px';
         popup.style.top = (rect.bottom + 20) + 'px';
 

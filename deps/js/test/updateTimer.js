@@ -1,16 +1,16 @@
 // 记录页面加载时间
-const startTime = new Date();
+let _startTime = new Date();
 
 // 获取DOM元素
-const timerElement = document.getElementById('timer');
+let timerElement = document.getElementById('timer');
 console.log(timerElement);
 
 // 格式化时间显示
 function formatTime(milliseconds) {
-    const totalSeconds = Math.floor(milliseconds / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
+    let totalSeconds = Math.floor(milliseconds / 1000);
+    let hours = Math.floor(totalSeconds / 3600);
+    let minutes = Math.floor((totalSeconds % 3600) / 60);
+    let seconds = totalSeconds % 60;
 
     return hours.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0');
 }
@@ -18,10 +18,10 @@ function formatTime(milliseconds) {
 // 更新计时器显示
 function updateTimer(date) {
     if(!date) {
-        date = startTime;
+        date = _startTime;
     }
-    const now = new Date();
-    const elapsedMilliseconds = now - date;
+    let now = new Date();
+    let elapsedMilliseconds = now - date;
     timerElement.textContent = formatTime(elapsedMilliseconds);
 }
 

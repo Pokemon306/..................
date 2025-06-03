@@ -14,6 +14,7 @@
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
 // @resource buttonCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/button.css
 // @resource tableCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/table.css
+// @resource timerJS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/test/updateTimer.js
 // ==/UserScript==
 const buttonGroup = {
     "查看回复奖励": "btnReplyAward",
@@ -172,6 +173,10 @@ const awardGroup = {
     function raToHtml(_ras) {
         let ras = _ras.reverse();
         let sum = {}
+        let lastReplyTime = Date.now();
+        if(ras[0]) {
+            lastReplyTime = new Date(ras[0].date);
+        }
 
         let html = []
         html.push('<html>')
@@ -185,10 +190,10 @@ const awardGroup = {
   </style></head>`)
         html.push(
             `<body>
-<script url="https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/test/updateTimer.js"></script>
+<input style="display: none;" id="lastReplyTime" value="${lastReplyTime}"/>
 <table><caption>${formatDate(new Date(), 'YYYY年MM月DD日')}</caption>
 <caption>共计回复 <span style="color: #9f0404">${ras.length}</span> 次</caption>
-<caption>距离上次回复已过去： <div id="timer">00:00:00</div> </caption>
+<caption id="passTime" stye="display:none;">距离上次回复已过去： <div id="timer">00:00:00</div> </caption>
 <tbody>`)
 
         // 表头
@@ -299,6 +304,11 @@ const awardGroup = {
         popup.style.minHeight = tableHeight - 10 + 'px';
         iframe.style.width = tableWidth + 'px';
         iframe.style.minHeight = tableHeight + 'px';
+
+        const timerJS = GM_getResourceText("timerJS");
+        let scriptElement = iframeDoc.createElement("script");
+        scriptElement.append(timerJS);
+        iframeDoc.documentElement.appendChild(scriptElement);
 
         // 阻止事件冒泡
         e.stopPropagation();

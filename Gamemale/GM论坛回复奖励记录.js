@@ -22,7 +22,10 @@ const buttonGroup = {
 };
 
 // 按钮组到底部的距离
-const topPx = 100;
+const btnTopPx = 100;
+const btnRightPx = 10;
+
+// 表位置
 const trHeight = 30;
 const tableWidth = 600;
 const tableHeight = 800;
@@ -118,8 +121,9 @@ const awardGroup = {
     function init() {
         let body = document.querySelector('body');
         let div = document.createElement('div');
-        let stylebutton = 'z-index:999;fontsize:14px;position: fixed;cursor: pointer;right:10px;margin:10px;top:'
-        let top = topPx;
+        let stylebutton = `z-index:999;fontsize:14px;position: fixed;cursor: pointer;right:${btnRightPx}px;margin:10px;top:`
+
+        let top = btnTopPx;
         div.style.cssText = stylebutton + top + 'px';
 
         let i = 1
@@ -230,7 +234,7 @@ const awardGroup = {
             html.push('</tr>')
             last = ra
         })
-        console.log(sum)
+        // console.log(sum)
         html.push('</tbody>')
 
         let foot = '<tr><td>合计</td>'
@@ -249,10 +253,14 @@ const awardGroup = {
     GM_addStyle(buttonCSS);
     const popupCSS = GM_getResourceText("popupCSS");
     GM_addStyle(popupCSS);
+    GM_addStyle(`
+    .my_popup {
+    position: fixed;
+    }
+    `);
 
     // 添加弹窗
     let htmlDivElement = document.createElement("div");
-    htmlDivElement.style.borderRadius = "10em;"
     htmlDivElement.id = "popup";
     htmlDivElement.className = "my_popup";
     htmlDivElement.innerHTML = `
@@ -262,20 +270,23 @@ const awardGroup = {
     targetNode.appendChild(htmlDivElement);
 
     const popupBtn = document.getElementById('btn_btnReplyAward');
-    const popup = document.getElementById('popup');
-    const closePopup = document.getElementById('closePopup');
 
     // 显示弹出窗口
     popupBtn.addEventListener('click', function(e) {
         console.log("click")
+
+        if(document.getElementById('popup').style.display != 'none') {
+            closePopup();
+            return;
+        }
 
         const popup = document.getElementById('popup');
         const btn = e.target;
 
         // 计算弹窗位置（左下角）
         const rect = btn.getBoundingClientRect();
-        popup.style.borderRadius = "10em;"
-        popup.style.left = (rect.left - tableWidth) + 'px';
+        // popup.style.left = (rect.left - tableWidth) + 'px';
+        popup.style.right = (btnRightPx + 20) + 'px';
         popup.style.top = (rect.bottom + 20) + 'px';
 
         let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
@@ -309,11 +320,15 @@ const awardGroup = {
 
     // 点击页面其他地方关闭弹窗
     document.addEventListener('click', function() {
+        closePopup()
+    });
+
+    function closePopup() {
         document.getElementById('popup').style.display = 'none';
         let iframe = document.getElementById('pop_iframe');
         var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
         iframeDoc.body.style.display = 'none';
-    });
+    }
 
     // 防止弹窗内部点击关闭弹窗
     document.getElementById('popup').addEventListener('click', function(e) {

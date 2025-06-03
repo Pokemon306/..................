@@ -16,9 +16,12 @@ function formatTime(milliseconds) {
 }
 
 // 更新计时器显示
-function updateTimer() {
+function updateTimer(date) {
+    if(!date) {
+        date = startTime;
+    }
     const now = new Date();
-    const elapsedMilliseconds = now - startTime;
+    const elapsedMilliseconds = now - date;
     timerElement.textContent = formatTime(elapsedMilliseconds);
 }
 
@@ -26,4 +29,12 @@ function updateTimer() {
 setInterval(updateTimer, 1000);
 
 // 初始化显示
-updateTimer();
+let passTime = document.getElementById('passTime');
+let lastReplyTime = document.getElementById('lastReplyTime');
+if(lastReplyTime && lastReplyTime) {
+    let date = new Date(lastReplyTime.value);
+
+    updateTimer(date);
+
+    passTime.style.display = 'block';
+}

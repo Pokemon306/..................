@@ -32,6 +32,7 @@ setInterval(updateTimer, 1000);
 let passTime = document.getElementById('passTime');
 let lastReplyTime = document.getElementById('lastReplyTime');
 if(lastReplyTime && lastReplyTime) {
+    console.log(`lastReplyTime.value : ${lastReplyTime.value}`)
     let date = new Date(lastReplyTime.value);
 
     updateTimer(date);

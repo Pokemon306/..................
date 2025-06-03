@@ -13,7 +13,7 @@ th, td {
 }
 
 th:not(:first-child) {
-    border-left: 1px solid #73b6e1;
+    border-left: 1px solid #cae4f5;
 }
 
 td:not(:first-child) {
@@ -56,6 +56,6 @@ caption {
 }
 
 tfoot {
-    background-color: #ffddac;
-    color: white;
+    background-color: #c75353;
+    color: #ffddac;
 }

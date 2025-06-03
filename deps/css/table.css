@@ -54,3 +54,8 @@ caption {
 .t-text {
     display: none
 }
+
+tfoot {
+    background-color: #ffddac;
+    color: white;
+}

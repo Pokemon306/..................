@@ -21,7 +21,7 @@ td:not(:first-child) {
 }
 
 tr.separator {
-    border-top: 2px solid #bbb;
+    border-top: 3px solid #bbb;
 }
 
 th {

@@ -317,7 +317,7 @@ const awardGroup = {
         document.getElementById('popup').style.display = 'none';
         let iframe = document.getElementById('pop_iframe');
         var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        // iframeDoc.body.style.display = 'none';
+        iframeDoc.body.style.display = 'none';
     });
 
     // 防止弹窗内部点击关闭弹窗

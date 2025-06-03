@@ -17,13 +17,11 @@ function formatTime(milliseconds) {
 
 // 更新计时器显示
 function updateTimer(date) {
-    console.log(date);
     if (!date) {
         date = _startTime;
     }
     let now = new Date();
     let elapsedMilliseconds = now - date;
-    console.log(elapsedMilliseconds);
     timerElement.textContent = formatTime(elapsedMilliseconds);
 }
 
@@ -34,9 +32,11 @@ if (lastReplyTime) {
     updateTimer(date);
 
     // 每秒更新一次
-    var timer = setInterval(function (date) {
-            if(document.body.style.display === 'none') {
+    let timer = setInterval(function (date) {
+            if(document.body.style.display == 'none') {
+                console.log("停止更新计时器")
                 clearInterval(timer)
+                return;
             }
             updateTimer(date);
         }, 1000,

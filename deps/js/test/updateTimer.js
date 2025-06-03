@@ -3,6 +3,7 @@ const startTime = new Date();
 
 // 获取DOM元素
 const timerElement = document.getElementById('timer');
+console.log(timerElement);
 
 // 格式化时间显示
 function formatTime(milliseconds) {

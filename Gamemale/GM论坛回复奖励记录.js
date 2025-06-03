@@ -22,9 +22,18 @@ const buttonGroup = {
 // 按钮组到底部的距离
 const topPx = 100;
 const trHeight = 30;
+const tableWidth = 600;
+const tableHeight = 800;
 
 const key_prefix = 'replyAward_';
-const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
+const awardGroup = {
+    '金币': {color: '#ffd700', emoji: '🪙'},
+    '血液': {color: '#ff0000', emoji: '🩸'},
+    '旅程': {color: '#008000', emoji: '🌍'},
+    '咒术': {color: '#a279f4', emoji: '🔮'},
+    '知识': {color: '#0000ff', emoji: '📖'},
+    '堕落': {color: '#000000', emoji: '🖤'},
+};
 
 (function () {
     const targetNode = document.body;
@@ -121,6 +130,7 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
                 }
             }
             let btn = document.createElement('button');
+            btn.id = "btn_" + buttonGroup[buttonName];
             btn.className = 'my_button red'
             btn.style.cssText = stylebutton + (top + (i - 1) * 50) + 'px';
 
@@ -148,14 +158,14 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
                 Toast("没有今天的回复记录！", 3000)
                 return;
             }
-            Toast(localStorage.getItem(key))
+            // Toast(localStorage.getItem(key))
             let ra = JSON.parse(localStorage.getItem(key) || '[]');
 
-            myWindow = window.open('', '_blank');
-            let html = raToHtml(ra);
-            myWindow.document.write(html);
-            myWindow.document.close()
-            myWindow.focus();
+            // myWindow = window.open('', '_blank');
+            // let html = raToHtml(ra);
+            // myWindow.document.write(html);
+            // myWindow.document.close()
+            // myWindow.focus();
         }
     }
 
@@ -173,13 +183,18 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
     height: ${trHeight}px;
   }
   </style></head>`)
-        html.push(`<body><table><caption>${formatDate(new Date(), 'YYYY年MM月DD日')}</caption>
-<caption>共计回复 <span style="color: #9f0404">${ras.length}</span> 次</caption><tbody>`)
+        html.push(
+            `<body>
+<script url="https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/test/updateTimer.js"></script>
+<table><caption>${formatDate(new Date(), 'YYYY年MM月DD日')}</caption>
+<caption>共计回复 <span style="color: #9f0404">${ras.length}</span> 次</caption>
+<caption>距离上次回复已过去： <div id="timer">00:00:00</div> </caption>
+<tbody>`)
 
         // 表头
         html.push('<tr><th>回复时间</th>')
-        for(let _th of awardGroup) {
-            html.push(`<th>${_th}</th>`)
+        for(let _th in awardGroup) {
+            html.push(`<th style="color:${awardGroup[_th]["color"]};">${_th}${awardGroup[_th]["emoji"]}</th>`)
         }
         html.push('<th class="ellipsis-column t-text">文本</th></tr>')
 
@@ -198,7 +213,7 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
             }
             html.push(`<tr class="${className}">`)
             html.push(`<td>${formatDate(new Date(ra.date), 'HH:mm:SS')}</td>`)
-            for(let _th of awardGroup) {
+            for(let _th in awardGroup) {
                 html.push(`<td class="inner-text">${ra[_th]?ra[_th]:''}</td>`)
                 if(ra[_th]) {
                     let value = sum[_th]?sum[_th]:0;
@@ -214,7 +229,7 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
         html.push('</tbody>')
 
         let foot = '<tr><td>合计</td>'
-        for(let name of awardGroup) {
+        for(let name in awardGroup) {
             foot += `<td class="inner-text">${sum[name]?sum[name]:'0'}</td>`
         }
         foot += '</tr>'
@@ -227,5 +242,76 @@ const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
 
     const css = GM_getResourceText("buttonCSS");
     GM_addStyle(css);
+    GM_addStyle(`
+            #popup {
+            display: none;
+            width: auto;
+            position: fixed;
+            border: 1px solid #ccc;
+            background: white;
+            z-index: 1000;
+        }`);
+
+    // 添加弹窗
+    let htmlDivElement = document.createElement("div");
+    htmlDivElement.id = "popup";
+    htmlDivElement.className = "popup";
+    htmlDivElement.innerHTML = `
+    <div class="popup-arrow" style="">
+        <iframe id="pop_iframe" frameborder="no" scrolling="auto"  style="overflow-y：auto"></iframe>
+    </div>`
+    targetNode.appendChild(htmlDivElement);
+
+    const popupBtn = document.getElementById('btn_btnReplyAward');
+    const popup = document.getElementById('popup');
+    const closePopup = document.getElementById('closePopup');
+
+    // 显示弹出窗口
+    popupBtn.addEventListener('click', function(e) {
+        console.log("click")
+
+        const popup = document.getElementById('popup');
+        const btn = e.target;
+
+        // 计算弹窗位置（左下角）
+        const rect = btn.getBoundingClientRect();
+        popup.style.left = (rect.left - tableWidth) + 'px';
+        popup.style.top = (rect.bottom + 20) + 'px';
+
+        let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+        if (!localStorage.getItem(key)) {
+            Toast("没有今天的回复记录！", 3000)
+            return;
+        }
+        // Toast(localStorage.getItem(key))
+        let ra = JSON.parse(localStorage.getItem(key) || '[]');
+        let html = raToHtml(ra);
+
+        let iframe = document.getElementById('pop_iframe');
+        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.body.innerHTML = html;
+
+        let table = iframeDoc.body.querySelector("table");
+
+        // 显示弹窗
+        popup.style.display = 'block';
+        popup.style.width = tableWidth + 'px';
+        popup.style.minHeight = tableHeight - 10 + 'px';
+        iframe.style.width = tableWidth + 'px';
+        iframe.style.minHeight = tableHeight + 'px';
+
+        // 阻止事件冒泡
+        e.stopPropagation();
+    });
+
+    // 点击页面其他地方关闭弹窗
+    document.addEventListener('click', function() {
+        document.getElementById('popup').style.display = 'none';
+    });
+
+    // 防止弹窗内部点击关闭弹窗
+    document.getElementById('popup').addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
 })();
 

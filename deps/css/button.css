@@ -27,13 +27,13 @@
     background: linear-gradient(to right,#16a085,#2ecc71);
 }
 .my_button.blue {
-    background: linear-gradient(to right, #589eca, #91b5d1);
+    background: linear-gradient(to right, #2e6183, #589eca, #6bc0ff);
 }
 .my_button.red {
     background: linear-gradient(to right,#700f46,#d61361,#f41445,#fc1e39,#ff4f28,#ffb11e);
 }
 .my_button.gray {
-    background: linear-gradient(to right, rgba(62, 62, 62, 0.9), #878787);
+    background: linear-gradient(to right, #3e3e3e, #878787);
 }
 
 .my_button::after {

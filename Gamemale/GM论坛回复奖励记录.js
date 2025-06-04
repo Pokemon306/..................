@@ -350,36 +350,7 @@ const ReplyPlate_limit = {
         html.push('<html>')
 
         const tableCSS = GM_getResourceText("tableCSS");
-        html.push(`<head><style>${tableCSS}
-        .t_button {
-    border-radius: 1em;
-    color: #ecf0f1;
-    font-color: #ecf0f1;
-    font-family: "微软雅黑";
-    text-decoration: none;
-    text-align: center;
-    margin: 0;
-    display: inline-block;
-    appearance: none;
-    cursor: pointer;
-    border: none;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-transition-property: all;
-    transition-property: all;
-    -webkit-transition-duration: .3s;
-    transition-duration: .3s;
-    background: linear-gradient(to right, #3e3e3e, #878787);
-}
-.important-text {
-    font-size: 18px;
-    font-weight: bold;
-    padding: 0px 10px;
-    margin: 10px;
-    text-align: center;
-}
-</style></head><body>`)
+        html.push(`<head><style>${tableCSS}</style></head><body>`)
 
         console.log(_rps)
         for (let rpn in _rps) {
@@ -544,13 +515,13 @@ const ReplyPlate_limit = {
     GM_addStyle(buttonCSS);
     const popupCSS = GM_getResourceText("popupCSS");
     GM_addStyle(popupCSS);
-    GM_addStyle(`.my_button.gray {
+/*    GM_addStyle(`.my_button.gray {
     background: linear-gradient(to right, rgba(62, 62, 62, 0.9), #878787);
     }
     .my_button.blue {
     background: linear-gradient(to right, #2e6183, #589eca, #6bc0ff);
     }
-    `);
+    `);*/
 
 })();
 

@@ -392,7 +392,7 @@ const ReplyPlate_limit = {
                 )
                 html.push('<tr><th>回复时间</th><th>标题</th><th>跳转</th></tr>')
                 for (const rp of _rps[rpn]) {
-                    html.push(`<tr><td>${formatDate(new Date(rp.date), 'DD日HH:mm:SS')}</td><td class="title ellipsis-column">${rp.subject}</td><td><button class="t_button" onclick="window.open('https://www.gamemale.com/thread-${rp.tid}-1-1.html', '_blank')">查看</button></td></tr>`)
+                    html.push(`<tr><td>${formatDate(new Date(rp.date), 'DD日 HH:mm:SS')}</td><td class="title ellipsis-column">${rp.subject}</td><td><button class="t_button" onclick="window.open('https://www.gamemale.com/thread-${rp.tid}-1-1.html', '_blank')">查看</button></td></tr>`)
                 }
                 html.push('</tbody></table></div></div>')
             }

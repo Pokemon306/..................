@@ -64,3 +64,33 @@ tfoot {
     color: #ffddac;
     font-weight: bold;
 }
+
+.t_button {
+    border-radius: 1em;
+    color: #ecf0f1;
+    font-color: #ecf0f1;
+    font-family: "微软雅黑";
+    text-decoration: none;
+    text-align: center;
+    margin: 0;
+    display: inline-block;
+    appearance: none;
+    cursor: pointer;
+    border: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-duration: .3s;
+    transition-duration: .3s;
+    background: linear-gradient(to right, #3e3e3e, #878787);
+}
+
+.important-text {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 0px 10px;
+    margin: 10px;
+    text-align: center;
+}

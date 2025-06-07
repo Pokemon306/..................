@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         GM论坛回复奖励记录
+// @name         GM论坛回复记录
 // @namespace    http://tampermonkey.net/
 // @version      V1.0
 // @description
@@ -23,7 +23,7 @@ const buttonGroup = {
     "查看回复板块": {"name": "ReplyPlate", "func": "btnReplyPlate"},
     "看看系统奖励": {"name": "SystemAward", "func": "btnSystemAward", "color": "blue"},
     // "测试": {"name": "test", "func": "test", "color": "green"},
-    // "测试2": {"name": "test2", "func": "test2", "color": "gray"}
+    "测试2": {"name": "test2", "func": "test2", "color": "gray"}
 };
 
 // 按钮组到底部的距离
@@ -50,6 +50,7 @@ const ReplyPlate_limit = {
     "五花八门": {"limit_type": "24H", "times": 10},
     "C O D E": {"limit_type": "24H", "times": 10},
     "男色图影": {"limit_type": "24H", "times": 15},
+    "ALL": {"limit_type": "1H", "times": 99},
 };
 
 (function () {
@@ -196,6 +197,7 @@ const ReplyPlate_limit = {
             if(ReplyPlate_limit[plateName]) {
                 let ReplyPlateObj = JSON.parse(localStorage.getItem(ReplyPlate_key) || '{}');
                 let plateReplies = ReplyPlateObj[plateName] || []
+                let allReplies = ReplyPlateObj['ALL'] || [];
 
                 let reply = {
                     "plateName": plateName,
@@ -205,12 +207,45 @@ const ReplyPlate_limit = {
                 }
 
                 plateReplies.push(reply)
+                plateReplies = clearExpiredData(ReplyPlate_limit[plateName].limit_type, ReplyPlate_limit[plateName].times, plateReplies);
+
+                allReplies.push(reply)
+                allReplies = clearExpiredData(ReplyPlate_limit['ALL'].limit_type, ReplyPlate_limit['ALL'].times, allReplies);
+
                 ReplyPlateObj[plateName] = plateReplies;
+                ReplyPlateObj['ALL'] = allReplies;
 
                 localStorage.setItem(ReplyPlate_key, JSON.stringify(ReplyPlateObj))
                 console.log(ReplyPlateObj)
             }
         }
+    }
+
+    function clearExpiredData(limit_type, limit_times, list) {
+        // 如果限制次数是24H的话，那就清除24H前的数据
+        if(limit_type == '24H') {
+            // 时间戳
+            const ts = Date.now();
+            const onedayms = 24*60*60*1000;
+            const y_ts = ts - onedayms;
+
+            const newList = list.filter(item => {
+                return (new Date(item.date)).getTime() > y_ts
+            });
+            return newList;
+        } else if (limit_type == '1H') {
+            // 时间戳
+            const ts = Date.now();
+            const onedayms = 1*60*60*1000;
+            const y_ts = ts - onedayms;
+
+            const newList = list.filter(item => {
+                return (new Date(item.date)).getTime() > y_ts
+            });
+            return newList;
+        }
+
+        return list
     }
 
     function test() {
@@ -219,7 +254,13 @@ const ReplyPlate_limit = {
 
     function test2() {
         const rp = JSON.parse(localStorage.getItem(ReplyPlate_key) || '{}');
-        console.log(rpToHtml(rp))
+        for (let name in ReplyPlate_limit) {
+            if(rp[name]) {
+                let data = clearExpiredData(ReplyPlate_limit[name].limit_type, ReplyPlate_limit[name].times, rp[name]);
+                console.log("清除前：", rp[name].length,"清除后：", data.length)
+                console.log(data)
+            }
+        }
     }
 
     // 初始化按钮
@@ -352,20 +393,29 @@ const ReplyPlate_limit = {
         const tableCSS = GM_getResourceText("tableCSS");
         html.push(`<head><style>${tableCSS}</style></head><body>`)
 
-        console.log(_rps)
-        for (let rpn in _rps) {
-            console.log(rpn)
-            if(_rps[rpn]) {
+        for (let name in ReplyPlate_limit) {
+            if(_rps[name]) {
                 html.push(
-                    `<div><div class="important-text">${rpn} 板块下 共计回复 <span class="emphasis">${_rps[rpn].length}</span> 次` +
-                    `<button id="toggleBtn" class="toggle-btn t_button" onclick="let table = document.getElementById(\'table_${rpn}\');table.style.display == 'none'?table.style.display = 'block':table.style.display = 'none'">显示表格</button></div>` +
-                    `<div id="table_${rpn}" style="display: none;"><table><caption>${rpn} 板块</caption><tbody>`
+                    `<div style="margin: 20px;text-align: center;">` +
+                        `<div class="important-text">${name} 板块下 共计回复 <span class="emphasis">${_rps[name].length}</span> 次` +
+                            `<button id="toggleBtn" class="toggle-btn t_button" onclick="let table = document.getElementById(\'table_${name}\');table.style.display == 'none'?table.style.display = 'block':table.style.display = 'none'">显隐表格</button>` +
+                        `</div>` +
+                        `<div class="">该板块下 限制 <span class="emphasis">${ReplyPlate_limit[name].limit_type}</span> 期间 回复 <span class="emphasis">${ReplyPlate_limit[name].times}</span> 次</div>` +
+                    `<div id="table_${name}" style="display: none;"><table><caption>${name} 板块</caption><tbody>`
                 )
                 html.push('<tr><th>回复时间</th><th>标题</th><th>跳转</th></tr>')
-                for (const rp of _rps[rpn]) {
+                for (const rp of _rps[name]) {
                     html.push(`<tr><td>${formatDate(new Date(rp.date), 'DD日 HH:mm:SS')}</td><td class="title ellipsis-column">${rp.subject}</td><td><button class="t_button" onclick="window.open('https://www.gamemale.com/thread-${rp.tid}-1-1.html', '_blank')">查看</button></td></tr>`)
                 }
-                html.push('</tbody></table></div></div>')
+                html.push('</tbody></table></div></div><hr/>')
+            } else {
+                html.push(
+                    `<div style="margin: 20px;text-align: center;">` +
+                        `<div class="important-text">${name} 板块下 共计回复 <span class="emphasis">0</span> 次` +
+                        `</div>` +
+                        (name == 'ALL'?'':`<div class="">该板块下 限制 <span class="emphasis">${ReplyPlate_limit[name].limit_type}</span> 期间 回复 <span class="emphasis">${ReplyPlate_limit[name].times}</span> 次</div>`) +
+                    '</div><hr/>'
+                );
             }
         }
 
@@ -499,9 +549,9 @@ const ReplyPlate_limit = {
             popup.style.display = 'block';
             popup.style.width = tableWidth + 'px';
             popup.style.height = 'auto';
-            // popup.style.minHeight = tableHeight - 10 + 'px';
+            popup.style.minHeight = '600px';
             iframe.style.width = tableWidth + 'px';
-            // iframe.style.minHeight = tableHeight + 'px';
+            iframe.style.minHeight = '600px';
             iframe.style.height = 'auto';
 
             // 阻止事件冒泡

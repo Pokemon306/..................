@@ -56,6 +56,7 @@ tr:hover {
 }
 
 .emphasis {
+    font-weight: bold;
     color: #9f0404
 }
 

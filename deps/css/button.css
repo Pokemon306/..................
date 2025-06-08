@@ -33,9 +33,11 @@
     background: linear-gradient(to right,#700f46,#d61361,#f41445,#fc1e39,#ff4f28,#ffb11e);
 }
 .my_button.gray {
-    background: linear-gradient(to right, #3e3e3e, #878787);
+    background: linear-gradient(to right, #5e5e5e, #878787);
 }
-
+.my_button.black {
+    background: linear-gradient(to right, #000000,  #2e2e2e, #3e3e3e, #4e4e4e);
+}
 .my_button::after {
     content: " ";
     position: absolute;

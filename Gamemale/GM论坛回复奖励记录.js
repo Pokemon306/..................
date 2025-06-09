@@ -23,7 +23,8 @@ const buttonGroup = {
     "查看回复板块": {"name": "ReplyPlate", "func": "btnReplyPlate"},
     "看看系统奖励": {"name": "SystemAward", "func": "btnSystemAward", "color": "blue"},
     // "测试": {"name": "test", "func": "test", "color": "green"},
-    "测试2": {"name": "test2", "func": "test2", "color": "gray"}
+    "测试2": {"name": "test2", "func": "test2", "color": "gray"},
+    "设置": {"name": "config", "func": "test2", "color": "black"}
 };
 
 // 按钮组到底部的距离
@@ -194,30 +195,31 @@ const ReplyPlate_limit = {
             // 主题
             const subject = targetNode.querySelector('#thread_subject');
 
-            if(ReplyPlate_limit[plateName]) {
-                let ReplyPlateObj = JSON.parse(localStorage.getItem(ReplyPlate_key) || '{}');
-                let plateReplies = ReplyPlateObj[plateName] || []
-                let allReplies = ReplyPlateObj['ALL'] || [];
+            let ReplyPlateObj = JSON.parse(localStorage.getItem(ReplyPlate_key) || '{}');
+            let reply = {
+                "plateName": plateName,
+                "tid": tid,
+                "subject": subject.innerText,
+                "date": date
+            }
 
-                let reply = {
-                    "plateName": plateName,
-                    "tid": tid,
-                    "subject": subject.innerText,
-                    "date": date
-                }
+            // 如果有限制，就加入相应的列表中
+            if(ReplyPlate_limit[plateName]) {
+                let plateReplies = ReplyPlateObj[plateName] || []
 
                 plateReplies.push(reply)
                 plateReplies = clearExpiredData(ReplyPlate_limit[plateName].limit_type, ReplyPlate_limit[plateName].times, plateReplies);
 
-                allReplies.push(reply)
-                allReplies = clearExpiredData(ReplyPlate_limit['ALL'].limit_type, ReplyPlate_limit['ALL'].times, allReplies);
-
                 ReplyPlateObj[plateName] = plateReplies;
-                ReplyPlateObj['ALL'] = allReplies;
-
-                localStorage.setItem(ReplyPlate_key, JSON.stringify(ReplyPlateObj))
-                console.log(ReplyPlateObj)
             }
+
+            // 加入全部回复列表
+            let allReplies = ReplyPlateObj['ALL'] || [];
+            allReplies.push(reply)
+            allReplies = clearExpiredData(ReplyPlate_limit['ALL'].limit_type, ReplyPlate_limit['ALL'].times, allReplies);
+            ReplyPlateObj['ALL'] = allReplies;
+            localStorage.setItem(ReplyPlate_key, JSON.stringify(ReplyPlateObj))
+            console.log(ReplyPlateObj)
         }
     }
 

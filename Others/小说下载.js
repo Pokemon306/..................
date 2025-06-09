@@ -2,7 +2,7 @@
 // @name         小说下载
 // @namespace    http://tampermonkey.net/
 // @version      V1.0
-// @description
+// @description  目前支持jiqinw
 // @updateURL
 // @downloadURL
 // @author       Sam

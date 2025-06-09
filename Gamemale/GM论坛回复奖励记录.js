@@ -9,6 +9,9 @@
 // @match        https://www.gamemale.com/**
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUfHh7////5+fkzMjJEQ0PX19esq6vs7Ozm5uZubW0rKio8OzsmJSW4uLdfXl7y8vLg39+Yl5fOzs3DwsKHhoZLSkqhoKBXV1d7e3rIyMiRkZCMjIt2dXVSUlHrlbybAAABAUlEQVQ4y92S2a7DIAxEGTBbCISsbbb//80bS6iKEqXvt/MC0hyNwbb4Wam0tr569mmWgJweidCDZV9P+RFNHIxJ94T6Ne1CGVh/3FVQ9dVvG5hqkNAjbUa7bOhCrECXvIR0VoLVq09dH/h1OcdJzWBJlw/SF3/TcuXzHRs7jr212njiz7QFmADNEd4Ck6iIOHrUwFKA8TAGIZID4EgIIkqtO7fCAFrtGQDHemedZPb9ef+rQTNoSN0BOSxg5YVOLYgyatm91c7FyB3oEMRZKXYwqhQL7YFeB3AYfVWK+UrdpkBbaUttIk/pBtTVXCLU0xrwDNLXNetcG8Q3jST+r/4AvW8KgFIEhZIAAAAASUVORK5CYII=
 // @grant        GM_addStyle
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_registerMenuCommand
 // @grant        GM_getResourceText
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/datetime.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
@@ -17,19 +20,27 @@
 // @resource popupCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/popup.css
 // @resource timerJS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/test/updateTimer.js
 // ==/UserScript==
+const btnSwitchName = "btnSwitch"
+
 const buttonGroup = {
-    "查看回复奖励": {"name": "ReplyAward", "func": "btnReplyAward"},
-    "今天还未回复过": {"name": "NotReplied", "func": "btnNotReplied", "color": "gray"},
-    "查看回复板块": {"name": "ReplyPlate", "func": "btnReplyPlate"},
-    "看看系统奖励": {"name": "SystemAward", "func": "btnSystemAward", "color": "blue"},
+    "查看回复奖励": {"name": "ReplyAward", "func": "ReplyAward"},
+    "今天还未回复过": {"name": "NotReplied", "func": "NotReplied", "color": "gray"},
+    "查看回复板块": {"name": "ReplyPlate", "func": "ReplyPlate"},
+    "看看系统奖励": {"name": "SystemAward", "func": "SystemAward", "color": "blue"},
     // "测试": {"name": "test", "func": "test", "color": "green"},
     "测试2": {"name": "test2", "func": "test2", "color": "gray"},
-    "设置": {"name": "config", "func": "test2", "color": "black"}
+    // "清除": {"name": "clean", "func": "clean", "color": "gray"},
+    "设置": {"name": "config", "func": "config", "color": "black"}
 };
+
+const configButGroup = {
+    "显示位置": {"name": "showPosition", "func": "showPosition"},
+}
 
 // 按钮组到底部的距离
 const btnTopPx = 100;
-const btnRightPx = 10;
+const btnBottomPx = 100;
+const btnLRPx = 10;
 
 // 表位置
 const trHeight = 30;
@@ -84,7 +95,7 @@ const ReplyPlate_limit = {
 
     // 方法组
     const funcs = {
-        btnReplyAward() {
+        ReplyAward() {
             let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
             if (!localStorage.getItem(key)) {
                 Toast("没有今天的回复记录！", 3000)
@@ -99,12 +110,12 @@ const ReplyPlate_limit = {
             // myWindow.document.close()
             // myWindow.focus();
         },
-        btnNotReplied() {
+        NotReplied() {
             Toast("别点了，快去回复吧~", 1000)
         },
-        btnReplyPlate() {
+        ReplyPlate() {
         },
-        btnSystemAward() {
+        SystemAward() {
             myWindow = window.open('/home.php?mod=spacecp&ac=credit&op=log&suboperation=creditrulelog');
         },
         test() {
@@ -112,6 +123,13 @@ const ReplyPlate_limit = {
         },
         test2() {
             test2()
+        },
+        clean() {
+            clean()
+        },
+        config(event) {
+            // 生成一套按钮组
+            console.log(`点击的位置是 X=${event.clientX},Y=${event.clientY}`)
         }
     }
 
@@ -267,15 +285,31 @@ const ReplyPlate_limit = {
 
     // 初始化按钮
     function init() {
+        // left or right
+        const lr = GM_getValue("lr") || "r"
+        // up or down
+        const ud = GM_getValue("ud") || "u"
+
         let body = document.querySelector('body');
         let div = document.createElement('div');
-        let stylebutton = `z-index:999;fontsize:14px;position: fixed;cursor: pointer;right:${btnRightPx}px;margin:10px;top:`
+        let btnStyle = `z-index:999;position:sticky;margin:5px;`
+        div.id = "my_buttonGroup"
 
         let top = btnTopPx;
-        div.style.cssText = stylebutton + top + 'px';
+        div.style.cssText = `z-index:999;position:fixed;margin:10px;` +
+            `${lr=="l"?"left":"right"}:${btnLRPx}px;top:${btnTopPx}px;` +
+            `text-align:${lr=="l"?"left":"right"}`
+
+        const btnSwitch = GM_getValue(btnSwitchName);
+        // 不显示
+        if(!btnSwitch) {
+            div.style.display = "none";
+        }
 
         let i = 1
         for (let buttonName in buttonGroup) {
+            let _div = document.createElement('div');
+
             let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
             if (buttonName === "查看回复奖励") {
                 // 需要有数据才显示按钮
@@ -293,23 +327,79 @@ const ReplyPlate_limit = {
             btn.id = "btn_" + buttonGroup[buttonName].func;
             btn.className = 'my_button ' + (buttonGroup[buttonName].color || 'red')
 
-            btn.style.cssText = stylebutton + (top + (i - 1) * 50) + 'px';
+            btn.style.cssText = btnStyle;
 
             btn.textContent = buttonName;
-            btn.addEventListener('click', () => {
-                funcs[buttonGroup[buttonName].func]();
+            btn.addEventListener('click', (event) => {
+                funcs[buttonGroup[buttonName].func](event);
             });
 
             if (!btn.textContent) {
                 continue
             }
+            _div.appendChild(btn);
             div.appendChild(btn);
+            div.appendChild(document.createElement('br'));
             i += 1
         }
 
         body.appendChild(div);
+
+        // 设置按钮组
+        let configDiv = document.createElement('configDiv');
+        let configDivStyle = `z-index:1000;position:fixed;margin:10px;`
+        let configBtnstyle = `z-index:1000;position:sticky;margin:5px;`
+
+        configDiv.id = "my_configBtnGroup";
+        configDiv.style.cssText = configDivStyle;
+
+        for (let buttonName in configButGroup) {
+            let btn = document.createElement('button');
+            btn.id = "btn_" + configButGroup[buttonName].func;
+            btn.className = 'my_button ' + (configButGroup[buttonName].color || 'red')
+
+            btn.style.cssText = configBtnstyle;
+
+            btn.textContent = buttonName;
+            btn.addEventListener('click', (event) => {
+                funcs[configButGroup[buttonName].func](event);
+            });
+
+            if (!btn.textContent) {
+                continue
+            }
+            configDiv.appendChild(btn);
+            i += 1
+        }
     }
 
+    GM_registerMenuCommand("左右切换", ()=> {
+        const lrSwitch = GM_getValue("lr");
+        console.log(lrSwitch);
+        GM_setValue("lr", lrSwitch!="l"?"l":"r")
+
+        if(lrSwitch == 'l') {
+            console.log("换到右边")
+            document.querySelector('#my_buttonGroup').style.textAlign = 'right';
+            document.querySelector('#my_buttonGroup').style.left = null
+            document.querySelector('#my_buttonGroup').style.right = btnLRPx + 'px'
+        } else {
+            console.log("换到左边")
+            document.querySelector('#my_buttonGroup').style.textAlign = 'left';
+            document.querySelector('#my_buttonGroup').style.left = btnLRPx + 'px';
+            document.querySelector('#my_buttonGroup').style.right = null
+        }
+    }, "l");
+    GM_registerMenuCommand("显隐切换", ()=> {
+        const btnSwitch = GM_getValue(btnSwitchName);
+        GM_setValue(btnSwitchName, !btnSwitch)
+
+        if(btnSwitch) {
+            document.querySelector('#my_buttonGroup').style.display = 'none';
+        } else {
+            document.querySelector('#my_buttonGroup').style.display = 'block';
+        }
+    }, "h");
     init();
 
     // 把收益json 转换成 html table
@@ -426,6 +516,7 @@ const ReplyPlate_limit = {
         return html.join('');
     }
 
+    // 创建弹窗
     function createIFrame(id) {
         // 添加弹窗
         let htmlDivElement = document.createElement("div");
@@ -439,12 +530,15 @@ const ReplyPlate_limit = {
         targetNode.appendChild(htmlDivElement);
     }
 
+    // 关闭弹窗
     function closePopup(id) {
         document.getElementById(id).style.display = 'none';
         let iframe = document.getElementById(`pop_iframe_${id}`);
         var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
         iframeDoc.body.style.display = 'none';
     }
+
+    // 设置关闭事件
     function setCloseEvent(id) {
         // 点击页面其他地方关闭弹窗
         document.addEventListener('click', function () {
@@ -457,111 +551,105 @@ const ReplyPlate_limit = {
         });
     }
 
-    // 如果弹窗按钮存在
-    const popup_btnReplyAward_btn = document.getElementById('btn_btnReplyAward');
-    const popup_btnReplyAward_id = "popup_ReplyAward"
-    if (popup_btnReplyAward_btn) {
-        createIFrame(popup_btnReplyAward_id)
+    function popupEvent(buttonId, popupId, callback) {
+        // 如果弹窗按钮存在
+        const button = document.getElementById(buttonId);
+        if (button) {
+            createIFrame(popupId)
 
-        // 增加点击监听 显示弹出窗口
-        popup_btnReplyAward_btn.addEventListener('click', function (e) {
-            console.log("click")
+            // 增加点击监听 显示弹出窗口
+            button.addEventListener('click', function (e) {
+                // 如果弹窗已显示，则进行关闭
+                if (document.getElementById(popupId).style.display != 'none') {
+                    closePopup(popupId);
+                    return;
+                }
 
-            // 如果弹窗已显示，则进行关闭
-            if (document.getElementById(popup_btnReplyAward_id).style.display != 'none') {
-                closePopup(popup_btnReplyAward_id);
-                return;
-            }
+                callback(e, popupId);
 
-            const popup = document.getElementById(popup_btnReplyAward_id);
-            const btn = e.target;
+                // 阻止事件冒泡
+                e.stopPropagation();
+            });
 
-            // 计算弹窗位置（左下角）
-            const rect = btn.getBoundingClientRect();
-            // popup.style.left = (rect.left - tableWidth) + 'px';
-            popup.style.right = (btnRightPx + 20) + 'px';
-            popup.style.top = (rect.bottom + 20) + 'px';
-
-            let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
-            if (!localStorage.getItem(key)) {
-                Toast("没有今天的回复记录！", 3000)
-                return;
-            }
-            let ra = JSON.parse(localStorage.getItem(key) || '[]');
-            let html = raToHtml(ra);
-
-            let iframe = document.getElementById(`pop_iframe_${popup_btnReplyAward_id}`);
-            var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            iframeDoc.body.innerHTML = html;
-            iframeDoc.body.style.display = 'block';
-
-            // 显示弹窗
-            popup.style.display = 'block';
-            popup.style.width = tableWidth + 'px';
-            popup.style.minHeight = tableHeight - 10 + 'px';
-            iframe.style.width = tableWidth + 'px';
-            iframe.style.minHeight = tableHeight + 'px';
-
-            const timerJS = GM_getResourceText("timerJS");
-            let scriptElement = iframeDoc.createElement("script");
-            scriptElement.append(timerJS);
-            iframeDoc.body.appendChild(scriptElement);
-
-            // 阻止事件冒泡
-            e.stopPropagation();
-        });
-
-        setCloseEvent(popup_btnReplyAward_id);
+            setCloseEvent(popupId);
+        }
     }
 
-    const popup_btnReplyPlate_btn = document.getElementById('btn_btnReplyPlate');
-    console.log(popup_btnReplyPlate_btn)
-    const popup_btnReplyPlate_id = "popup_ReplyPlate"
-    if (popup_btnReplyPlate_btn) {
-        createIFrame(popup_btnReplyPlate_id)
+    // 回复奖励的弹窗
+    popupEvent("btn_ReplyAward", "popup_ReplyAward", function (e, popupId) {
+        const popup = document.getElementById(popupId);
+        const btn = e.target;
 
-        // 增加点击监听 显示弹出窗口
-        popup_btnReplyPlate_btn.addEventListener('click', function (e) {
-            console.log("click")
+        // 计算弹窗位置（左下角）
+        const rect = btn.getBoundingClientRect();
+        // popup.style.left = (rect.left - tableWidth) + 'px';
+        // left or right
+        const lr = GM_getValue("lr") || "r"
+        if(lr == 'l') {
+            popup.style.left = (btnLRPx + 20) + 'px';
+        } else {
+            popup.style.right = (btnLRPx + 20) + 'px';
+        }
+        popup.style.top = (rect.bottom + 20) + 'px';
 
-            // 如果弹窗已显示，则进行关闭
-            if (document.getElementById(popup_btnReplyPlate_id).style.display != 'none') {
-                closePopup(popup_btnReplyPlate_id);
-                return;
-            }
+        let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+        if (!localStorage.getItem(key)) {
+            Toast("没有今天的回复记录！", 3000)
+            return;
+        }
+        let ra = JSON.parse(localStorage.getItem(key) || '[]');
+        let html = raToHtml(ra);
 
-            const popup = document.getElementById(popup_btnReplyPlate_id);
-            const btn = e.target;
+        let iframe = document.getElementById(`pop_iframe_${popupId}`);
+        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.body.innerHTML = html;
+        iframeDoc.body.style.display = 'block';
 
-            // 计算弹窗位置（左下角）
-            const rect = btn.getBoundingClientRect();
-            // popup.style.left = (rect.left - tableWidth) + 'px';
-            popup.style.right = (btnRightPx + 20) + 'px';
-            popup.style.top = (rect.bottom + 20) + 'px';
+        // 显示弹窗
+        popup.style.display = 'block';
+        popup.style.width = tableWidth + 'px';
+        popup.style.minHeight = tableHeight - 10 + 'px';
+        iframe.style.width = tableWidth + 'px';
+        iframe.style.minHeight = tableHeight + 'px';
 
-            let rp = JSON.parse(localStorage.getItem(ReplyPlate_key) || '[]');
-            let html = rpToHtml(rp);
+        const timerJS = GM_getResourceText("timerJS");
+        let scriptElement = iframeDoc.createElement("script");
+        scriptElement.append(timerJS);
+        iframeDoc.body.appendChild(scriptElement);
+    });
 
-            let iframe = document.getElementById(`pop_iframe_${popup_btnReplyPlate_id}`);
-            var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            iframeDoc.body.innerHTML = html;
-            iframeDoc.body.style.display = 'block';
+    // 回复板块的弹窗
+    popupEvent("btn_ReplyPlate", "popup_ReplyPlate", function (e, popupId) {
+        const popup = document.getElementById(popupId);
+        const btn = e.target;
 
-            // 显示弹窗
-            popup.style.display = 'block';
-            popup.style.width = tableWidth + 'px';
-            popup.style.height = 'auto';
-            popup.style.minHeight = '600px';
-            iframe.style.width = tableWidth + 'px';
-            iframe.style.minHeight = '600px';
-            iframe.style.height = 'auto';
+        // 计算弹窗位置（左下角）
+        const rect = btn.getBoundingClientRect();
+        const lr = GM_getValue("lr") || "r"
+        if(lr == 'l') {
+            popup.style.left = (btnLRPx + 20) + 'px';
+        } else {
+            popup.style.right = (btnLRPx + 20) + 'px';
+        }
+        popup.style.top = (rect.bottom + 20) + 'px';
 
-            // 阻止事件冒泡
-            e.stopPropagation();
-        });
+        let rp = JSON.parse(localStorage.getItem(ReplyPlate_key) || '[]');
+        let html = rpToHtml(rp);
 
-        setCloseEvent(popup_btnReplyPlate_id);
-    }
+        let iframe = document.getElementById(`pop_iframe_${popupId}`);
+        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.body.innerHTML = html;
+        iframeDoc.body.style.display = 'block';
+
+        // 显示弹窗
+        popup.style.display = 'block';
+        popup.style.width = tableWidth + 'px';
+        popup.style.height = 'auto';
+        popup.style.minHeight = '600px';
+        iframe.style.width = tableWidth + 'px';
+        iframe.style.minHeight = '600px';
+        iframe.style.height = 'auto';
+    });
 
     const buttonCSS = GM_getResourceText("buttonCSS");
     GM_addStyle(buttonCSS);

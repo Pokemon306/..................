@@ -23,6 +23,18 @@
     -webkit-transition-duration: .3s;
     transition-duration: .3s;
 }
+.my_button.large {
+    font-size: 18px;
+    line-height: 40px;
+    height: 40px;
+    padding: 0 40px;
+}
+.my_button.small {
+    font-size: 16px;
+    line-height: 30px;
+    height: 30px;
+    padding: 0 20px;
+}
 .my_button.green {
     background: linear-gradient(to right,#16a085,#2ecc71);
 }
@@ -38,9 +50,9 @@
 .my_button.black {
     background: linear-gradient(to right, #000000,  #2e2e2e, #3e3e3e, #4e4e4e);
 }
-.my_button::after {
+.my_button:hover::after {
     content: " ";
-    position: static;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -52,6 +64,7 @@
     transition: box-shadow .4s ease-in-out,-webkit-box-shadow .4s ease-in-out;
 }
 
+/* 悬停效果 */
 .my_button:hover::after {
     -webkit-box-shadow: 0 0 16px #16a085;
     box-shadow: 0 0 16px #16a085
@@ -60,11 +73,24 @@
     -webkit-box-shadow: 0 0 16px #16a085;
     box-shadow: 0 0 16px #16a085
 }
+.my_button.blue:hover::after {
+    -webkit-box-shadow: 0 0 16px #589eca;
+    box-shadow: 0 0 16px #589eca
+}
 .my_button.red:hover::after {
     -webkit-box-shadow: 0 0 16px #ff0068;
     box-shadow: 0 0 16px #ff0068
 }
+.my_button.gray:hover::after {
+    -webkit-box-shadow: 0 0 16px #5e5e5e;
+    box-shadow: 0 0 16px #5e5e5e
+}
+.my_button.black:hover::after {
+    -webkit-box-shadow: 0 0 16px #000000;
+    box-shadow: 0 0 16px #000000
+}
 
+/* 按下后的效果 */
 .my_button:active {
     color: black;
     background: linear-gradient(to right,#3498db,#2980b9);
@@ -73,7 +99,6 @@
     color: black;
     background: linear-gradient(to right,#3498db,#2980b9);
 }
-
 .my_button.red:active {
     color: black;
     background: linear-gradient(to right,#ffb11e, #ff9e1e);
@@ -82,4 +107,3 @@
     color: yellow;
     background: linear-gradient(to right,#ffb11e, #ff9e1e);
 }
-

@@ -7,6 +7,8 @@
 // @downloadURL  https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM_forum_daily.js
 // @updateURL    https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM_forum_daily.js
 // @match        https://www.gamemale.com/*
+// @match        https://www.gamemale.com/forum.php*
+// @match        https://www.gamemale.com/space-*.html
 // @grant        GM_log
 // @run-at       document-end
 // @grant        GM_setValue
@@ -15,6 +17,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @connect      *
+// @require      https://code.jquery.com/jquery-2.1.4.min.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/datetime.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
 // @resource buttonCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/button.css
@@ -599,7 +602,7 @@ function button() {
             }
         }
         let btn = document.createElement('button');
-        btn.className = 'my_button'
+        btn.className = 'my_button green'
         btn.style.cssText = stylebutton + (bottom + (i - 1) * 50) + 'px';
 
         btn.textContent = buttonName;

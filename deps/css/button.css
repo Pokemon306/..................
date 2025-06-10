@@ -50,6 +50,8 @@
 .my_button.black {
     background: linear-gradient(to right, #000000, #2e2e2e, #3e3e3e, #4e4e4e);
 }
+
+/* 悬停效果 */
 .my_button:hover::after {
     content: " ";
     position: absolute;
@@ -63,8 +65,6 @@
     transition: box-shadow .4s ease-in-out;
     transition: box-shadow .4s ease-in-out,-webkit-box-shadow .4s ease-in-out;
 }
-
-/* 悬停效果 */
 .my_button:hover::after {
     -webkit-box-shadow: 0 0 16px #16a085;
     box-shadow: 0 0 16px #16a085
@@ -115,3 +115,42 @@
     color: darkgray;
     background: linear-gradient(to right,#2e2e2e, #3e3e3e);
 }
+
+.my_position_container {
+    z-index: 1001;
+    position: sticky;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 1em;
+    background-color: rgba(128, 128, 128, 0.5);
+    display: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    width: fit-content;
+}
+.my_position_square {
+    width: 50px;
+    height: 50px;
+    background-color: #9a9a9a;
+    border-radius: 5px;
+    margin: 1px;
+}
+.my_position_square.active {
+    background-color: #3498db;
+}
+/*
+.my_position_square:hover::after {
+    content: " ";
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 1em;
+    !* -webkit-transition:-webkit-box-shadow .4s ease-in-out; *!
+    transition: -webkit-box-shadow .4s ease-in-out;
+    transition: box-shadow .4s ease-in-out;
+    transition: box-shadow .4s ease-in-out,-webkit-box-shadow .4s ease-in-out;
+    -webkit-box-shadow: 0 0 8px #5e5e5e;
+    box-shadow: 0 0 8px #5e5e5e
+}*/

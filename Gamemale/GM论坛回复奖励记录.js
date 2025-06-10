@@ -7,6 +7,8 @@
 // @downloadURL  https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM%E8%AE%BA%E5%9D%9B%E5%9B%9E%E5%A4%8D%E5%A5%96%E5%8A%B1%E8%AE%B0%E5%BD%95.js
 // @author       Sam
 // @match        https://www.gamemale.com/**
+// @exclude      https://www.gamemale.com/search.php*
+// @exclude      https://www.gamemale.com/home.php?mod=editor*
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUfHh7////5+fkzMjJEQ0PX19esq6vs7Ozm5uZubW0rKio8OzsmJSW4uLdfXl7y8vLg39+Yl5fOzs3DwsKHhoZLSkqhoKBXV1d7e3rIyMiRkZCMjIt2dXVSUlHrlbybAAABAUlEQVQ4y92S2a7DIAxEGTBbCISsbbb//80bS6iKEqXvt/MC0hyNwbb4Wam0tr569mmWgJweidCDZV9P+RFNHIxJ94T6Ne1CGVh/3FVQ9dVvG5hqkNAjbUa7bOhCrECXvIR0VoLVq09dH/h1OcdJzWBJlw/SF3/TcuXzHRs7jr212njiz7QFmADNEd4Ck6iIOHrUwFKA8TAGIZID4EgIIkqtO7fCAFrtGQDHemedZPb9ef+rQTNoSN0BOSxg5YVOLYgyatm91c7FyB3oEMRZKXYwqhQL7YFeB3AYfVWK+UrdpkBbaUttIk/pBtTVXCLU0xrwDNLXNetcG8Q3jST+r/4AvW8KgFIEhZIAAAAASUVORK5CYII=
 // @grant        GM_addStyle
 // @grant        GM_setValue
@@ -21,6 +23,7 @@
 // @resource timerJS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/test/updateTimer.js
 // ==/UserScript==
 const btnSwitchName = "btnSwitch"
+const btnSizeName = "btnSize"
 
 const buttonGroup = {
     "查看回复奖励": {"name": "ReplyAward", "func": "ReplyAward"},
@@ -30,11 +33,12 @@ const buttonGroup = {
     // "测试": {"name": "test", "func": "test", "color": "green"},
     "测试2": {"name": "test2", "func": "test2", "color": "gray"},
     // "清除": {"name": "clean", "func": "clean", "color": "gray"},
-    "设置": {"name": "config", "func": "config", "color": "black"}
+    "设置": {"name": "config", "func": "config", "color": "black"},
+    "显示位置": {"name": "showPosition", "func": "showPosition"},
 };
 
 const configButGroup = {
-    "显示位置": {"name": "showPosition", "func": "showPosition"},
+    // "显示位置": {"name": "showPosition", "func": "showPosition"},
     "按钮大小": {"name": "changeSize", "func": "changeSize"},
 }
 const configBtnGroupId = 'my_configBtnGroup'
@@ -129,15 +133,119 @@ const ReplyPlate_limit = {
             }
         },
         showPosition(event) {
+            let positionDiv = document.getElementById('my_positionDiv');
+
+            // 如果没有这个div 就生成一个
+            if(!positionDiv) {
+                positionDiv = document.createElement('div');
+                positionDiv.id = 'my_positionDiv'
+                let divStyle = `z-index:1001;position:fixed;margin:5px;padding:10px;border-radius:1em;` +
+                    `background-color: rgba(128, 128, 128, 0.5);` + `display:none;`
+                positionDiv.style.cssText = divStyle;
+                positionDiv.style.display = 'none';
+                positionDiv.className = 'my_position_container'
+                positionDiv.innerHTML = `
+<div class="my_position_square ul">↖</div>
+<div class="my_position_square ur">↗</div>
+<div class="my_position_square dl">↙</div>
+<div class="my_position_square dr">↘</div>
+`
+                // 添加样式
+                GM_addStyle(`
+.my_position_container {
+    z-index: 1001;
+    position: sticky;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 1em;
+    background-color: rgba(128, 128, 128, 0.5);
+    display: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    width: fit-content;
+}
+.my_position_square {
+    width: 50px;
+    height: 50px;
+    background-color: #9a9a9a;
+    border-radius: 5px;
+    margin: 1px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    
+}
+.my_position_square.active {
+    background-color: #3498db;
+}
+.my_position_square:hover::after {
+    content: " ";
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 1em;
+    /* -webkit-transition:-webkit-box-shadow .4s ease-in-out; */
+    transition: -webkit-box-shadow .4s ease-in-out;
+    transition: box-shadow .4s ease-in-out;
+    transition: box-shadow .4s ease-in-out,-webkit-box-shadow .4s ease-in-out;
+    -webkit-box-shadow: 0 0 8px #5e5e5e;
+    box-shadow: 0 0 8px #5e5e5e
+}
+`)
+
+                // 加到页面上
+                document.body.appendChild(positionDiv)
+
+                // 添加关闭事件
+                setCloseEvent("my_positionDiv", "btn_showPosition")
+
+                // 添加点击事件
+                document.body.querySelectorAll('.my_position_square').forEach((item) => {
+                    item.addEventListener('click', (event) => {
+                        console.log(item.className)
+                        document.body.querySelectorAll('.my_position_square').forEach((item) => {
+                            item.classList.remove('active');
+                        })
+
+                        item.classList.add('active');
+
+                        // 切换位置
+                        // changePosition('', '');
+                    });
+                });
+            }
+
+            positionDiv.style.display = 'grid'; // 临时显示以应用网格
+            if(positionDiv) {
+                // 在指定位置显示
+                showDiv(positionDiv, event.clientX, event.clientY)
+
+                // left or right
+                const lr = GM_getValue("lr") || "r"
+                // up or down
+                const ud = GM_getValue("ud") || "u"
+
+                let name = `.my_position_square.${ud}${lr}`
+                console.log(name)
+                // 指定的亮起来
+                document.body.querySelector(name).classList.add("active")
+            }
+
         },
-        changeSize(event) {
-            document.querySelectorAll('my_button').forEach(el => {
+        changeSize() {
+            document.querySelectorAll('.my_button').forEach(el => {
                 if(el.classList.contains('small')) {
                     el.classList.remove('small')
                     el.classList.add('large')
+                    GM_setValue(btnSizeName, 'large')
+                    localStorage.setItem(btnSizeName, 'large')
                 } else {
                     el.classList.remove('large')
                     el.classList.add('small')
+                    GM_setValue(btnSizeName, 'small')
+                    localStorage.setItem(btnSizeName, 'small')
                 }
             })
         }
@@ -153,7 +261,7 @@ const ReplyPlate_limit = {
         const ud = GM_getValue("ud") || "u"
 
         // 如果弹窗已显示，则进行关闭
-        if (div.style.display != 'none') {
+        if (div.style.display != 'none' && div.style.display != 'grid') {
             div.style.display = 'none';
             return;
         }
@@ -167,6 +275,7 @@ const ReplyPlate_limit = {
             div.style.left = x + 'px';
             div.style.right = null
         }
+
         // 整体在上面，就向下面显示
         if(ud == 'u') {
             div.style.top = y + 'px';
@@ -177,7 +286,9 @@ const ReplyPlate_limit = {
         }
 
         // 显示配置按钮组
-        div.style.display = 'block';
+        if(div.style.display != 'grid') {
+            div.style.display = 'block';
+        }
     }
 
     // 保存奖励收益到本地缓存空间
@@ -336,27 +447,26 @@ const ReplyPlate_limit = {
         const lr = GM_getValue("lr") || "r"
         // up or down
         const ud = GM_getValue("ud") || "u"
+        // large or small
+        const size = GM_getValue(btnSizeName) || "large"
 
-        let body = document.querySelector('body');
+        let body = document.body;
         let div = document.createElement('div');
-        let btnStyle = `z-index:999;position:sticky;margin:5px;`
         div.id = "my_buttonGroup"
-
-        let top = btnTBPx;
         div.style.cssText = `z-index:999;position:fixed;margin:10px;` +
             `${lr=="l"?"left":"right"}:${btnLRPx}px;${ud=="d"?"bottom":"top"}:${btnTBPx}px;` +
             `text-align:${lr=="l"?"left":"right"}`
 
-        const btnSwitch = GM_getValue(btnSwitchName);
         // 不显示
+        const btnSwitch = GM_getValue(btnSwitchName);
         if(!btnSwitch) {
             div.style.display = "none";
         }
 
+        let btnStyle = `z-index:999;position:sticky;margin:5px;`
+
         let i = 1
         for (let buttonName in buttonGroup) {
-            let _div = document.createElement('div');
-
             let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
             if (buttonName === "查看回复奖励") {
                 // 需要有数据才显示按钮
@@ -372,7 +482,7 @@ const ReplyPlate_limit = {
             }
             let btn = document.createElement('button');
             btn.id = "btn_" + buttonGroup[buttonName].func;
-            btn.className = 'my_button ' + (buttonGroup[buttonName].color || 'red')
+            btn.className = `my_button ${(buttonGroup[buttonName].color || 'red')} ${(size=="small"?"small":"large")}`
 
             btn.style.cssText = btnStyle;
 
@@ -384,7 +494,7 @@ const ReplyPlate_limit = {
             if (!btn.textContent) {
                 continue
             }
-            _div.appendChild(btn);
+
             div.appendChild(btn);
             div.appendChild(document.createElement('br'));
             i += 1
@@ -393,7 +503,7 @@ const ReplyPlate_limit = {
         body.appendChild(div);
 
         // 设置按钮组
-        let configDiv = document.createElement('configDiv');
+        let configDiv = document.createElement('div');
         let configDivStyle = `z-index:1000;position:fixed;margin:5px;padding:10px;border-radius:1em;` +
             `background-color: rgba(128, 128, 128, 0.5);` + `display:none;`
         let configBtnstyle = `z-index:1000;position:sticky;margin:5px;`
@@ -403,7 +513,7 @@ const ReplyPlate_limit = {
         for (let buttonName in configButGroup) {
             let btn = document.createElement('button');
             btn.id = "btn_" + configButGroup[buttonName].func;
-            btn.className = 'my_button ' + (configButGroup[buttonName].color || 'red')
+            btn.className = `my_button ${(configButGroup[buttonName].color || 'red')} ${(size=="small"?"small":"large")}`
 
             btn.style.cssText = configBtnstyle;
 
@@ -415,7 +525,10 @@ const ReplyPlate_limit = {
             if (!btn.textContent) {
                 continue
             }
+
             configDiv.appendChild(btn);
+            configDiv.appendChild(document.createElement('br'));
+
             i += 1
         }
 
@@ -737,6 +850,10 @@ const ReplyPlate_limit = {
     background: linear-gradient(to right, #2e6183, #589eca, #6bc0ff);
     }
     `);*/
+
+    function changePosition(ud, lr) {
+
+    }
 
 })();
 

@@ -9,6 +9,7 @@
 // @match        https://www.gamemale.com/*
 // @match        https://www.gamemale.com/forum.php*
 // @match        https://www.gamemale.com/space-*.html
+// @exclude      https://www.gamemale.com/home.php?mod=editor*
 // @grant        GM_log
 // @run-at       document-end
 // @grant        GM_setValue
@@ -26,9 +27,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 // 按钮组 名称和方法名 倒序，下面的显示在页面上边
 const buttonGroup = {
-    "重置/中断执行": "btnClickReset",
-    "勋章赠送": "btnClickMedal",
     "日志": "btnClickLog",
+    "勋章赠送": "btnClickMedal",
+    "查看个人资料": "btnLookProfile",
+    "重置/中断执行": "btnClickReset",
 };
 
 // 按钮组到底部的距离
@@ -109,7 +111,6 @@ function dataInit() {
     setdata_gm("mode", "stop")
     setdata_gm("functionTodo", "null");
     // setdata_gm("Quickpass", "false");//只在点击的时候触发改变true/flase
-
 }
 
 function setdata_gm(key, value) {
@@ -170,7 +171,6 @@ const funcs = {
     btnClickSign() {
         dataInit();
 
-
         if (confirm("确认一键签到吗？")) {
             signIn();
         } else {
@@ -200,7 +200,6 @@ const funcs = {
             setdata_gm("numLogInput", numLogInput);
             setdata_gm("numLogCheckedPerPage", Number(numLogbegin) - 1);//当前已经检查日志个数
         }
-
         log();
     },
     btnClickVote() {
@@ -221,7 +220,6 @@ const funcs = {
                 pageVote = numbers[0]
                 numVotebegin = numbers[1]
                 numVoteInput = numbers[2]
-
             }
             setdata_gm("pageVote", pageVote);
             setdata_gm("numVoteInput", numVoteInput);
@@ -238,6 +236,10 @@ const funcs = {
         myWindow.document.write(getHtmlText());
         myWindow.focus();
     },
+    btnLookProfile() {
+        const uid = getUidInSpace();
+        window.location.href = `https://www.gamemale.com/home.php?mod=space&uid=${uid}&do=profile`
+    }
 }
 
 /**jq .click()模拟鼠标点击,触发html的onclick
@@ -586,11 +588,15 @@ function checkReply() {
  * @return {*}
  */
 function button() {
+    // large or small
+    const size = localStorage.getItem("btnSize") || "large";
+
     let body = document.querySelector('body');
     let div = document.createElement('div');
-    let stylebutton = 'z-index:999;fontsize:14px;position: fixed;cursor: pointer;right:10px;margin:10px;bottom:'
-    let bottom = bottomPx;
-    div.style.cssText = stylebutton + bottom + 'px';
+    div.id = "my_daily_buttonGroup";
+    div.style.cssText = `z-index:999;position:fixed;text-align:right;margin:10px;right:10px;bottom:${bottomPx}px`;
+
+    let stylebutton = 'z-index:999;position:sticky;margin:5px;'
 
     let i = 1
     for (let buttonName in buttonGroup) {
@@ -601,9 +607,11 @@ function button() {
                 continue
             }
         }
+
         let btn = document.createElement('button');
-        btn.className = 'my_button green'
-        btn.style.cssText = stylebutton + (bottom + (i - 1) * 50) + 'px';
+        btn.className = `my_button green ${(size=="small"?"small":"large")}`
+
+        btn.style.cssText = stylebutton;
 
         btn.textContent = buttonName;
         btn.addEventListener('click', () => {
@@ -614,6 +622,8 @@ function button() {
             continue
         }
         div.appendChild(btn);
+        div.appendChild(document.createElement('br'));
+
         i += 1
     }
 

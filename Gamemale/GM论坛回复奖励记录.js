@@ -2,7 +2,7 @@
 // @name         GM论坛回复记录
 // @namespace    http://tampermonkey.net/
 // @version      V1.0
-// @description
+// @description  GM_forum_Reply_Record
 // @updateURL    https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM%E8%AE%BA%E5%9D%9B%E5%9B%9E%E5%A4%8D%E5%A5%96%E5%8A%B1%E8%AE%B0%E5%BD%95.js
 // @downloadURL  https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM%E8%AE%BA%E5%9D%9B%E5%9B%9E%E5%A4%8D%E5%A5%96%E5%8A%B1%E8%AE%B0%E5%BD%95.js
 // @author       Sam
@@ -38,8 +38,7 @@ const configButGroup = {
 }
 
 // 按钮组到底部的距离
-const btnTopPx = 100;
-const btnBottomPx = 100;
+const btnTBPx = 100;
 const btnLRPx = 10;
 
 // 表位置
@@ -101,14 +100,6 @@ const ReplyPlate_limit = {
                 Toast("没有今天的回复记录！", 3000)
                 return;
             }
-            // Toast(localStorage.getItem(key))
-            // let ra = JSON.parse(localStorage.getItem(key) || '[]');
-
-            // myWindow = window.open('', '_blank');
-            // let html = raToHtml(ra);
-            // myWindow.document.write(html);
-            // myWindow.document.close()
-            // myWindow.focus();
         },
         NotReplied() {
             Toast("别点了，快去回复吧~", 1000)
@@ -295,9 +286,9 @@ const ReplyPlate_limit = {
         let btnStyle = `z-index:999;position:sticky;margin:5px;`
         div.id = "my_buttonGroup"
 
-        let top = btnTopPx;
+        let top = btnTBPx;
         div.style.cssText = `z-index:999;position:fixed;margin:10px;` +
-            `${lr=="l"?"left":"right"}:${btnLRPx}px;top:${btnTopPx}px;` +
+            `${lr=="l"?"left":"right"}:${btnLRPx}px;${ud=="d"?"bottom":"top"}:${btnTBPx}px;` +
             `text-align:${lr=="l"?"left":"right"}`
 
         const btnSwitch = GM_getValue(btnSwitchName);
@@ -390,6 +381,21 @@ const ReplyPlate_limit = {
             document.querySelector('#my_buttonGroup').style.right = null
         }
     }, "l");
+    GM_registerMenuCommand("上下切换", ()=> {
+        const udSwitch = GM_getValue("ud");
+        console.log(udSwitch);
+        GM_setValue("ud", udSwitch!="u"?"d":"u")
+
+        if(udSwitch != 'u') {
+            console.log("换到下边")
+            document.querySelector('#my_buttonGroup').style.top = null
+            document.querySelector('#my_buttonGroup').style.bottom = btnTBPx + 'px'
+        } else {
+            console.log("换到上边")
+            document.querySelector('#my_buttonGroup').style.top = btnTBPx + 'px';
+            document.querySelector('#my_buttonGroup').style.bottom = null
+        }
+    }, "u");
     GM_registerMenuCommand("显隐切换", ()=> {
         const btnSwitch = GM_getValue(btnSwitchName);
         GM_setValue(btnSwitchName, !btnSwitch)

@@ -4,8 +4,8 @@
 // @version      0.4.1
 // @license      GNU General Public License v3.0
 // @icon         https://www.gamemale.com/template/mwt2/extend/img/favicon.ico
-// @downloadURL https://update.greasyfork.org/scripts/460320/gm%E8%AE%BA%E5%9D%9B%E6%AF%8F%E6%97%A5.user.js
-// @updateURL https://update.greasyfork.org/scripts/460320/gm%E8%AE%BA%E5%9D%9B%E6%AF%8F%E6%97%A5.meta.js
+// @downloadURL  https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM_forum_daily.js
+// @updateURL    https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM_forum_daily.js
 // @match        https://www.gamemale.com/*
 // @grant        GM_log
 // @run-at       document-end
@@ -723,6 +723,10 @@ function getHtmlText() {
         '            onclick="setChekedValue(this)">变骚喷雾</span>',
         '    </span><br>',
         '    <span>',
+        '        <input type="checkbox" class="coin" name="Checkbox[]" value="456" /><span',
+        '            onclick="setChekedValue(this)">茉莉啤酒</span>',
+        '    </span><br>',
+        '    <span>',
         '        <input type="checkbox" class="coin" name="Checkbox[]" value="195" /><span',
         '            onclick="setChekedValue(this)">没有梦想的咸鱼</span>',
         '    </span><br>',
@@ -765,10 +769,6 @@ function getHtmlText() {
         '    <span>',
         '        <input type="checkbox" class="magic" name="Checkbox[]" value="455" /><span',
         '            onclick="setChekedValue(this)">闪光糖果盒</span>',
-        '    </span><br>',
-        '    <span>',
-        '        <input type="checkbox" class="magic" name="Checkbox[]" value="456" /><span',
-        '            onclick="setChekedValue(this)">茉莉啤酒</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="magic" name="Checkbox[]" value="457" /><span',

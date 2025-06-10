@@ -35,7 +35,9 @@ const buttonGroup = {
 
 const configButGroup = {
     "显示位置": {"name": "showPosition", "func": "showPosition"},
+    "按钮大小": {"name": "changeSize", "func": "changeSize"},
 }
+const configBtnGroupId = 'my_configBtnGroup'
 
 // 按钮组到底部的距离
 const btnTBPx = 100;
@@ -121,7 +123,61 @@ const ReplyPlate_limit = {
         config(event) {
             // 生成一套按钮组
             console.log(`点击的位置是 X=${event.clientX},Y=${event.clientY}`)
+            const configBtnGroup = document.getElementById(configBtnGroupId);
+            if(configBtnGroup) {
+                showDiv(configBtnGroup, event.clientX, event.clientY)
+            }
+        },
+        showPosition(event) {
+        },
+        changeSize(event) {
+            document.querySelectorAll('my_button').forEach(el => {
+                if(el.classList.contains('small')) {
+                    el.classList.remove('small')
+                    el.classList.add('large')
+                } else {
+                    el.classList.remove('large')
+                    el.classList.add('small')
+                }
+            })
         }
+    }
+
+    // 显示DIV
+    function showDiv(div, x, y) {
+        console.log('显示 ', div.id)
+
+        // left or right
+        const lr = GM_getValue("lr") || "r"
+        // up or down
+        const ud = GM_getValue("ud") || "u"
+
+        // 如果弹窗已显示，则进行关闭
+        if (div.style.display != 'none') {
+            div.style.display = 'none';
+            return;
+        }
+
+        // 整体在右边，就向左边显示
+        if(lr == 'r') {
+
+            div.style.left = null
+            div.style.right = window.innerWidth - x + 'px';
+        } else {
+            div.style.left = x + 'px';
+            div.style.right = null
+        }
+        // 整体在上面，就向下面显示
+        if(ud == 'u') {
+            div.style.top = y + 'px';
+            div.style.bottom = null
+        } else {
+            div.style.top = null
+            div.style.bottom = window.innerHeight - y + 'px';
+        }
+
+        // 显示配置按钮组
+        div.style.display = 'block';
     }
 
     // 保存奖励收益到本地缓存空间
@@ -338,12 +394,12 @@ const ReplyPlate_limit = {
 
         // 设置按钮组
         let configDiv = document.createElement('configDiv');
-        let configDivStyle = `z-index:1000;position:fixed;margin:10px;`
+        let configDivStyle = `z-index:1000;position:fixed;margin:5px;padding:10px;border-radius:1em;` +
+            `background-color: rgba(128, 128, 128, 0.5);` + `display:none;`
         let configBtnstyle = `z-index:1000;position:sticky;margin:5px;`
 
-        configDiv.id = "my_configBtnGroup";
+        configDiv.id = configBtnGroupId;
         configDiv.style.cssText = configDivStyle;
-
         for (let buttonName in configButGroup) {
             let btn = document.createElement('button');
             btn.id = "btn_" + configButGroup[buttonName].func;
@@ -362,6 +418,9 @@ const ReplyPlate_limit = {
             configDiv.appendChild(btn);
             i += 1
         }
+
+        body.appendChild(configDiv);
+        setCloseEvent(configBtnGroupId, "btn_config")
     }
 
     GM_registerMenuCommand("左右切换", ()=> {
@@ -538,14 +597,17 @@ const ReplyPlate_limit = {
 
     // 关闭弹窗
     function closePopup(id) {
+        console.log('关闭 ', id)
         document.getElementById(id).style.display = 'none';
         let iframe = document.getElementById(`pop_iframe_${id}`);
-        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        iframeDoc.body.style.display = 'none';
+        if(iframe) {
+            var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            iframeDoc.body.style.display = 'none';
+        }
     }
 
     // 设置关闭事件
-    function setCloseEvent(id) {
+    function setCloseEvent(id, parentId) {
         // 点击页面其他地方关闭弹窗
         document.addEventListener('click', function () {
             closePopup(id)
@@ -555,6 +617,13 @@ const ReplyPlate_limit = {
         document.getElementById(id).addEventListener('click', function (e) {
             e.stopPropagation();
         });
+
+        if(parentId) {
+            // 防止点击父级按钮时关闭弹窗
+            document.getElementById(parentId).addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+        }
     }
 
     function popupEvent(buttonId, popupId, callback) {

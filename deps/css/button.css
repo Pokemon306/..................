@@ -48,7 +48,7 @@
     background: linear-gradient(to right, #5e5e5e, #878787);
 }
 .my_button.black {
-    background: linear-gradient(to right, #000000,  #2e2e2e, #3e3e3e, #4e4e4e);
+    background: linear-gradient(to right, #000000, #2e2e2e, #3e3e3e, #4e4e4e);
 }
 .my_button:hover::after {
     content: " ";
@@ -106,4 +106,12 @@
 .my_button.red:hover:active {
     color: yellow;
     background: linear-gradient(to right,#ffb11e, #ff9e1e);
+}
+.my_button.black:hover:active {
+    color: black;
+    background: linear-gradient(to right,#878787, #aaaaaa);
+}
+.my_button.gray:hover:active {
+    color: darkgray;
+    background: linear-gradient(to right,#2e2e2e, #3e3e3e);
 }

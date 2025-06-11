@@ -137,7 +137,6 @@
     cursor: pointer;
     text-align: center;
     line-height: 50px;
-
 }
 .my_position_square.active {
     background-color: #3498db;

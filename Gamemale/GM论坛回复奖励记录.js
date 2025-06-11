@@ -30,8 +30,8 @@ const buttonGroup = {
     "今天还未回复过": {"name": "NotReplied", "func": "NotReplied", "color": "gray"},
     "查看回复板块": {"name": "ReplyPlate", "func": "ReplyPlate"},
     "看看系统奖励": {"name": "SystemAward", "func": "SystemAward", "color": "blue"},
-    // "测试": {"name": "test", "func": "test", "color": "green"},
-    "测试2": {"name": "test2", "func": "test2", "color": "gray"},
+    // "测试": {"name": "test", "func": "test", "color": "gray"},
+    // "测试2": {"name": "test2", "func": "test2", "color": "gray"},
     // "清除": {"name": "clean", "func": "clean", "color": "gray"},
     "设置": {"name": "config", "func": "config", "color": "black"},
     // "显示位置": {"name": "showPosition", "func": "showPosition"},
@@ -145,10 +145,10 @@ const ReplyPlate_limit = {
                 positionDiv.style.display = 'none';
                 positionDiv.className = 'my_position_container'
                 positionDiv.innerHTML = `
-<div class="my_position_square ul">↖</div>
-<div class="my_position_square ur">↗</div>
-<div class="my_position_square dl">↙</div>
-<div class="my_position_square dr">↘</div>
+<div class="my_position_square my_position_ul">↖</div>
+<div class="my_position_square my_position_ur">↗</div>
+<div class="my_position_square my_position_dl">↙</div>
+<div class="my_position_square my_position_dr">↘</div>
 `
 
                 // 添加样式
@@ -206,7 +206,7 @@ const ReplyPlate_limit = {
                 document.body.querySelectorAll('.my_position_square').forEach((item) => {
                     item.addEventListener('click', (event) => {
                         const classList = item.className.split(' ');
-                        const udlr = classList[1]
+                        const udlr = classList[1].replace('my_position_', '')
 
                         console.log(udlr, udlr.substring(0, 1), udlr.substring(1))
                         document.body.querySelectorAll('.my_position_square').forEach((item) => {
@@ -231,7 +231,7 @@ const ReplyPlate_limit = {
                 // up or down
                 const ud = GM_getValue("ud") || "u"
 
-                let name = `.my_position_square.${ud}${lr}`
+                let name = `.my_position_square.my_position_${ud}${lr}`
                 console.log(name)
                 // 指定的亮起来
                 document.body.querySelector(name).classList.add("active")
@@ -640,7 +640,9 @@ const ReplyPlate_limit = {
     }
 
     // 把回复json 转换成 html table
-    function rpToHtml(_rps) {
+    function rpToHtml() {
+        let _rps = JSON.parse(localStorage.getItem(ReplyPlate_key) || '[]');
+
         let html = []
         html.push('<html>')
 
@@ -648,7 +650,12 @@ const ReplyPlate_limit = {
         html.push(`<head><style>${tableCSS}</style></head><body>`)
 
         for (let name in ReplyPlate_limit) {
-            if (_rps[name]) {
+            let plateReplies = _rps[name] || []
+            if (plateReplies) {
+                // 生成前清理一下
+                plateReplies = clearExpiredData(ReplyPlate_limit[name].limit_type, ReplyPlate_limit[name].times, plateReplies);
+                _rps[name] = plateReplies;
+
                 html.push(
                     `<div style="margin: 20px;text-align: center;">` +
                     `<div class="important-text">${name} 板块下 共计回复 <span class="emphasis">${_rps[name].length}</span> 次` +
@@ -747,15 +754,12 @@ const ReplyPlate_limit = {
         }
     }
 
-    // 回复奖励的弹窗
-    popupEvent("btn_ReplyAward", "popup_ReplyAward", function (e, popupId) {
+    function createPopup(e, popupId, HTMLFunc, iframeFunc, endFunc) {
         const popup = document.getElementById(popupId);
         const btn = e.target;
 
         // 计算弹窗位置（左下角）
         const rect = btn.getBoundingClientRect();
-        // popup.style.left = (rect.left - tableWidth) + 'px';
-        // left or right
         const lr = GM_getValue("lr") || "r"
         if (lr == 'l') {
             popup.style.left = (btnLRPx + 20) + 'px';
@@ -764,13 +768,7 @@ const ReplyPlate_limit = {
         }
         popup.style.top = (rect.bottom + 20) + 'px';
 
-        let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
-        if (!localStorage.getItem(key)) {
-            Toast("没有今天的回复记录！", 3000)
-            return;
-        }
-        let ra = JSON.parse(localStorage.getItem(key) || '[]');
-        let html = raToHtml(ra);
+        let html = HTMLFunc()
 
         let iframe = document.getElementById(`pop_iframe_${popupId}`);
         var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
@@ -784,43 +782,39 @@ const ReplyPlate_limit = {
         iframe.style.width = tableWidth + 'px';
         iframe.style.minHeight = tableHeight + 'px';
 
-        const timerJS = GM_getResourceText("timerJS");
-        let scriptElement = iframeDoc.createElement("script");
-        scriptElement.append(timerJS);
-        iframeDoc.body.appendChild(scriptElement);
+        // 对iFram做特殊处理
+        if(iframeFunc) {
+            iframeFunc(iframe)
+        }
+    }
+
+    // 回复奖励的弹窗
+    popupEvent("btn_ReplyAward", "popup_ReplyAward", function (e, popupId) {
+        createPopup(e, popupId, ()=> {
+            let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+            if (!localStorage.getItem(key)) {
+                Toast("没有今天的回复记录！", 3000)
+                return;
+            }
+            let ra = JSON.parse(localStorage.getItem(key) || '[]');
+            let html = raToHtml(ra);
+
+            return html;
+        }, (iframe) => {
+            var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+            const timerJS = GM_getResourceText("timerJS");
+            let scriptElement = iframeDoc.createElement("script");
+            scriptElement.append(timerJS);
+            iframeDoc.body.appendChild(scriptElement);
+        });
     });
 
     // 回复板块的弹窗
     popupEvent("btn_ReplyPlate", "popup_ReplyPlate", function (e, popupId) {
-        const popup = document.getElementById(popupId);
-        const btn = e.target;
-
-        // 计算弹窗位置（左下角）
-        const rect = btn.getBoundingClientRect();
-        const lr = GM_getValue("lr") || "r"
-        if (lr == 'l') {
-            popup.style.left = (btnLRPx + 20) + 'px';
-        } else {
-            popup.style.right = (btnLRPx + 20) + 'px';
-        }
-        popup.style.top = (rect.bottom + 20) + 'px';
-
-        let rp = JSON.parse(localStorage.getItem(ReplyPlate_key) || '[]');
-        let html = rpToHtml(rp);
-
-        let iframe = document.getElementById(`pop_iframe_${popupId}`);
-        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        iframeDoc.body.innerHTML = html;
-        iframeDoc.body.style.display = 'block';
-
-        // 显示弹窗
-        popup.style.display = 'block';
-        popup.style.width = tableWidth + 'px';
-        popup.style.height = 'auto';
-        popup.style.minHeight = '600px';
-        iframe.style.width = tableWidth + 'px';
-        iframe.style.minHeight = '600px';
-        iframe.style.height = 'auto';
+        createPopup(e, popupId, ()=> {
+            return rpToHtml();
+        });
     });
 
     const buttonCSS = GM_getResourceText("buttonCSS");

@@ -34,11 +34,11 @@ const buttonGroup = {
     "测试2": {"name": "test2", "func": "test2", "color": "gray"},
     // "清除": {"name": "clean", "func": "clean", "color": "gray"},
     "设置": {"name": "config", "func": "config", "color": "black"},
-    "显示位置": {"name": "showPosition", "func": "showPosition"},
+    // "显示位置": {"name": "showPosition", "func": "showPosition"},
 };
 
 const configButGroup = {
-    // "显示位置": {"name": "showPosition", "func": "showPosition"},
+    "显示位置": {"name": "showPosition", "func": "showPosition"},
     "按钮大小": {"name": "changeSize", "func": "changeSize"},
 }
 const configBtnGroupId = 'my_configBtnGroup'
@@ -128,7 +128,7 @@ const ReplyPlate_limit = {
             // 生成一套按钮组
             console.log(`点击的位置是 X=${event.clientX},Y=${event.clientY}`)
             const configBtnGroup = document.getElementById(configBtnGroupId);
-            if(configBtnGroup) {
+            if (configBtnGroup) {
                 showDiv(configBtnGroup, event.clientX, event.clientY)
             }
         },
@@ -136,7 +136,7 @@ const ReplyPlate_limit = {
             let positionDiv = document.getElementById('my_positionDiv');
 
             // 如果没有这个div 就生成一个
-            if(!positionDiv) {
+            if (!positionDiv) {
                 positionDiv = document.createElement('div');
                 positionDiv.id = 'my_positionDiv'
                 let divStyle = `z-index:1001;position:fixed;margin:5px;padding:10px;border-radius:1em;` +
@@ -150,6 +150,7 @@ const ReplyPlate_limit = {
 <div class="my_position_square dl">↙</div>
 <div class="my_position_square dr">↘</div>
 `
+
                 // 添加样式
                 GM_addStyle(`
 .my_position_container {
@@ -204,7 +205,10 @@ const ReplyPlate_limit = {
                 // 添加点击事件
                 document.body.querySelectorAll('.my_position_square').forEach((item) => {
                     item.addEventListener('click', (event) => {
-                        console.log(item.className)
+                        const classList = item.className.split(' ');
+                        const udlr = classList[1]
+
+                        console.log(udlr, udlr.substring(0, 1), udlr.substring(1))
                         document.body.querySelectorAll('.my_position_square').forEach((item) => {
                             item.classList.remove('active');
                         })
@@ -212,13 +216,13 @@ const ReplyPlate_limit = {
                         item.classList.add('active');
 
                         // 切换位置
-                        // changePosition('', '');
+                        changePosition(udlr.substring(0, 1), udlr.substring(1));
                     });
                 });
             }
 
             positionDiv.style.display = 'grid'; // 临时显示以应用网格
-            if(positionDiv) {
+            if (positionDiv) {
                 // 在指定位置显示
                 showDiv(positionDiv, event.clientX, event.clientY)
 
@@ -236,7 +240,7 @@ const ReplyPlate_limit = {
         },
         changeSize() {
             document.querySelectorAll('.my_button').forEach(el => {
-                if(el.classList.contains('small')) {
+                if (el.classList.contains('small')) {
                     el.classList.remove('small')
                     el.classList.add('large')
                     GM_setValue(btnSizeName, 'large')
@@ -267,7 +271,7 @@ const ReplyPlate_limit = {
         }
 
         // 整体在右边，就向左边显示
-        if(lr == 'r') {
+        if (lr == 'r') {
 
             div.style.left = null
             div.style.right = window.innerWidth - x + 'px';
@@ -277,7 +281,7 @@ const ReplyPlate_limit = {
         }
 
         // 整体在上面，就向下面显示
-        if(ud == 'u') {
+        if (ud == 'u') {
             div.style.top = y + 'px';
             div.style.bottom = null
         } else {
@@ -286,7 +290,7 @@ const ReplyPlate_limit = {
         }
 
         // 显示配置按钮组
-        if(div.style.display != 'grid') {
+        if (div.style.display != 'grid') {
             div.style.display = 'block';
         }
     }
@@ -351,8 +355,8 @@ const ReplyPlate_limit = {
 
     // 保存回复的板块积累数量
     function saveReplyPlate(date) {
-        if(!date) {
-           date = new Date();
+        if (!date) {
+            date = new Date();
         }
         const keywords = document.querySelector('meta[name="keywords"]')
         const contentValue = keywords?.content; // 使用可选链避免空值报错
@@ -380,7 +384,7 @@ const ReplyPlate_limit = {
             }
 
             // 如果有限制，就加入相应的列表中
-            if(ReplyPlate_limit[plateName]) {
+            if (ReplyPlate_limit[plateName]) {
                 let plateReplies = ReplyPlateObj[plateName] || []
 
                 plateReplies.push(reply)
@@ -401,10 +405,10 @@ const ReplyPlate_limit = {
 
     function clearExpiredData(limit_type, limit_times, list) {
         // 如果限制次数是24H的话，那就清除24H前的数据
-        if(limit_type == '24H') {
+        if (limit_type == '24H') {
             // 时间戳
             const ts = Date.now();
-            const onedayms = 24*60*60*1000;
+            const onedayms = 24 * 60 * 60 * 1000;
             const y_ts = ts - onedayms;
 
             const newList = list.filter(item => {
@@ -414,7 +418,7 @@ const ReplyPlate_limit = {
         } else if (limit_type == '1H') {
             // 时间戳
             const ts = Date.now();
-            const onedayms = 1*60*60*1000;
+            const onedayms = 1 * 60 * 60 * 1000;
             const y_ts = ts - onedayms;
 
             const newList = list.filter(item => {
@@ -433,9 +437,9 @@ const ReplyPlate_limit = {
     function test2() {
         const rp = JSON.parse(localStorage.getItem(ReplyPlate_key) || '{}');
         for (let name in ReplyPlate_limit) {
-            if(rp[name]) {
+            if (rp[name]) {
                 let data = clearExpiredData(ReplyPlate_limit[name].limit_type, ReplyPlate_limit[name].times, rp[name]);
-                console.log("清除前：", rp[name].length,"清除后：", data.length)
+                console.log("清除前：", rp[name].length, "清除后：", data.length)
                 console.log(data)
             }
         }
@@ -454,12 +458,12 @@ const ReplyPlate_limit = {
         let div = document.createElement('div');
         div.id = "my_buttonGroup"
         div.style.cssText = `z-index:999;position:fixed;margin:10px;` +
-            `${lr=="l"?"left":"right"}:${btnLRPx}px;${ud=="d"?"bottom":"top"}:${btnTBPx}px;` +
-            `text-align:${lr=="l"?"left":"right"}`
+            `${lr == "l" ? "left" : "right"}:${btnLRPx}px;${ud == "d" ? "bottom" : "top"}:${btnTBPx}px;` +
+            `text-align:${lr == "l" ? "left" : "right"}`
 
         // 不显示
         const btnSwitch = GM_getValue(btnSwitchName);
-        if(!btnSwitch) {
+        if (!btnSwitch) {
             div.style.display = "none";
         }
 
@@ -482,7 +486,7 @@ const ReplyPlate_limit = {
             }
             let btn = document.createElement('button');
             btn.id = "btn_" + buttonGroup[buttonName].func;
-            btn.className = `my_button ${(buttonGroup[buttonName].color || 'red')} ${(size=="small"?"small":"large")}`
+            btn.className = `my_button ${(buttonGroup[buttonName].color || 'red')} ${(size == "small" ? "small" : "large")}`
 
             btn.style.cssText = btnStyle;
 
@@ -513,7 +517,7 @@ const ReplyPlate_limit = {
         for (let buttonName in configButGroup) {
             let btn = document.createElement('button');
             btn.id = "btn_" + configButGroup[buttonName].func;
-            btn.className = `my_button ${(configButGroup[buttonName].color || 'red')} ${(size=="small"?"small":"large")}`
+            btn.className = `my_button ${(configButGroup[buttonName].color || 'red')} ${(size == "small" ? "small" : "large")}`
 
             btn.style.cssText = configBtnstyle;
 
@@ -536,43 +540,23 @@ const ReplyPlate_limit = {
         setCloseEvent(configBtnGroupId, "btn_config")
     }
 
-    GM_registerMenuCommand("左右切换", ()=> {
+    GM_registerMenuCommand("左右切换", () => {
         const lrSwitch = GM_getValue("lr");
         console.log(lrSwitch);
-        GM_setValue("lr", lrSwitch!="l"?"l":"r")
 
-        if(lrSwitch == 'l') {
-            console.log("换到右边")
-            document.querySelector('#my_buttonGroup').style.textAlign = 'right';
-            document.querySelector('#my_buttonGroup').style.left = null
-            document.querySelector('#my_buttonGroup').style.right = btnLRPx + 'px'
-        } else {
-            console.log("换到左边")
-            document.querySelector('#my_buttonGroup').style.textAlign = 'left';
-            document.querySelector('#my_buttonGroup').style.left = btnLRPx + 'px';
-            document.querySelector('#my_buttonGroup').style.right = null
-        }
+        changeLR(lrSwitch)
     }, "l");
-    GM_registerMenuCommand("上下切换", ()=> {
+    GM_registerMenuCommand("上下切换", () => {
         const udSwitch = GM_getValue("ud");
         console.log(udSwitch);
-        GM_setValue("ud", udSwitch!="u"?"d":"u")
 
-        if(udSwitch != 'u') {
-            console.log("换到下边")
-            document.querySelector('#my_buttonGroup').style.top = null
-            document.querySelector('#my_buttonGroup').style.bottom = btnTBPx + 'px'
-        } else {
-            console.log("换到上边")
-            document.querySelector('#my_buttonGroup').style.top = btnTBPx + 'px';
-            document.querySelector('#my_buttonGroup').style.bottom = null
-        }
+        changeUD(udSwitch)
     }, "u");
-    GM_registerMenuCommand("显隐切换", ()=> {
+    GM_registerMenuCommand("显隐切换", () => {
         const btnSwitch = GM_getValue(btnSwitchName);
         GM_setValue(btnSwitchName, !btnSwitch)
 
-        if(btnSwitch) {
+        if (btnSwitch) {
             document.querySelector('#my_buttonGroup').style.display = 'none';
         } else {
             document.querySelector('#my_buttonGroup').style.display = 'block';
@@ -664,13 +648,13 @@ const ReplyPlate_limit = {
         html.push(`<head><style>${tableCSS}</style></head><body>`)
 
         for (let name in ReplyPlate_limit) {
-            if(_rps[name]) {
+            if (_rps[name]) {
                 html.push(
                     `<div style="margin: 20px;text-align: center;">` +
-                        `<div class="important-text">${name} 板块下 共计回复 <span class="emphasis">${_rps[name].length}</span> 次` +
-                            `<button id="toggleBtn" class="toggle-btn t_button" onclick="let table = document.getElementById(\'table_${name}\');table.style.display == 'none'?table.style.display = 'block':table.style.display = 'none'">显隐表格</button>` +
-                        `</div>` +
-                        `<div class="">该板块下 限制 <span class="emphasis">${ReplyPlate_limit[name].limit_type}</span> 期间 回复 <span class="emphasis">${ReplyPlate_limit[name].times}</span> 次</div>` +
+                    `<div class="important-text">${name} 板块下 共计回复 <span class="emphasis">${_rps[name].length}</span> 次` +
+                    `<button id="toggleBtn" class="toggle-btn t_button" onclick="let table = document.getElementById(\'table_${name}\');table.style.display == 'none'?table.style.display = 'block':table.style.display = 'none'">显隐表格</button>` +
+                    `</div>` +
+                    `<div class="">该板块下 限制 <span class="emphasis">${ReplyPlate_limit[name].limit_type}</span> 期间 回复 <span class="emphasis">${ReplyPlate_limit[name].times}</span> 次</div>` +
                     `<div id="table_${name}" style="display: none;"><table><caption>${name} 板块</caption><tbody>`
                 )
                 html.push('<tr><th>回复时间</th><th>标题</th><th>跳转</th></tr>')
@@ -681,9 +665,9 @@ const ReplyPlate_limit = {
             } else {
                 html.push(
                     `<div style="margin: 20px;text-align: center;">` +
-                        `<div class="important-text">${name} 板块下 共计回复 <span class="emphasis">0</span> 次` +
-                        `</div>` +
-                        (name == 'ALL'?'':`<div class="">该板块下 限制 <span class="emphasis">${ReplyPlate_limit[name].limit_type}</span> 期间 回复 <span class="emphasis">${ReplyPlate_limit[name].times}</span> 次</div>`) +
+                    `<div class="important-text">${name} 板块下 共计回复 <span class="emphasis">0</span> 次` +
+                    `</div>` +
+                    (name == 'ALL' ? '' : `<div class="">该板块下 限制 <span class="emphasis">${ReplyPlate_limit[name].limit_type}</span> 期间 回复 <span class="emphasis">${ReplyPlate_limit[name].times}</span> 次</div>`) +
                     '</div><hr/>'
                 );
             }
@@ -713,7 +697,7 @@ const ReplyPlate_limit = {
         console.log('关闭 ', id)
         document.getElementById(id).style.display = 'none';
         let iframe = document.getElementById(`pop_iframe_${id}`);
-        if(iframe) {
+        if (iframe) {
             var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
             iframeDoc.body.style.display = 'none';
         }
@@ -731,7 +715,7 @@ const ReplyPlate_limit = {
             e.stopPropagation();
         });
 
-        if(parentId) {
+        if (parentId) {
             // 防止点击父级按钮时关闭弹窗
             document.getElementById(parentId).addEventListener('click', function (e) {
                 e.stopPropagation();
@@ -773,7 +757,7 @@ const ReplyPlate_limit = {
         // popup.style.left = (rect.left - tableWidth) + 'px';
         // left or right
         const lr = GM_getValue("lr") || "r"
-        if(lr == 'l') {
+        if (lr == 'l') {
             popup.style.left = (btnLRPx + 20) + 'px';
         } else {
             popup.style.right = (btnLRPx + 20) + 'px';
@@ -814,7 +798,7 @@ const ReplyPlate_limit = {
         // 计算弹窗位置（左下角）
         const rect = btn.getBoundingClientRect();
         const lr = GM_getValue("lr") || "r"
-        if(lr == 'l') {
+        if (lr == 'l') {
             popup.style.left = (btnLRPx + 20) + 'px';
         } else {
             popup.style.right = (btnLRPx + 20) + 'px';
@@ -843,16 +827,48 @@ const ReplyPlate_limit = {
     GM_addStyle(buttonCSS);
     const popupCSS = GM_getResourceText("popupCSS");
     GM_addStyle(popupCSS);
-/*    GM_addStyle(`.my_button.gray {
-    background: linear-gradient(to right, rgba(62, 62, 62, 0.9), #878787);
-    }
-    .my_button.blue {
-    background: linear-gradient(to right, #2e6183, #589eca, #6bc0ff);
-    }
-    `);*/
+
+    /*    GM_addStyle(`.my_button.gray {
+        background: linear-gradient(to right, rgba(62, 62, 62, 0.9), #878787);
+        }
+        .my_button.blue {
+        background: linear-gradient(to right, #2e6183, #589eca, #6bc0ff);
+        }
+        `);*/
 
     function changePosition(ud, lr) {
+        changeUD(ud)
+        changeLR(lr)
+    }
 
+    function changeUD(ud) {
+        GM_setValue("ud", ud != "u" ? "d" : "u")
+
+        if (ud != 'u') {
+            console.log("换到下边")
+            document.querySelector('#my_buttonGroup').style.top = null
+            document.querySelector('#my_buttonGroup').style.bottom = btnTBPx + 'px'
+        } else {
+            console.log("换到上边")
+            document.querySelector('#my_buttonGroup').style.top = btnTBPx + 'px';
+            document.querySelector('#my_buttonGroup').style.bottom = null
+        }
+    }
+
+    function changeLR(lr) {
+        GM_setValue("lr", lr != "l" ? "r" : "l")
+
+        if (lr != 'l') {
+            console.log("换到右边")
+            document.querySelector('#my_buttonGroup').style.textAlign = 'right';
+            document.querySelector('#my_buttonGroup').style.left = null
+            document.querySelector('#my_buttonGroup').style.right = btnLRPx + 'px'
+        } else {
+            console.log("换到左边")
+            document.querySelector('#my_buttonGroup').style.textAlign = 'left';
+            document.querySelector('#my_buttonGroup').style.left = btnLRPx + 'px';
+            document.querySelector('#my_buttonGroup').style.right = null
+        }
     }
 
 })();

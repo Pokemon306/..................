@@ -134,6 +134,10 @@
     background-color: #9a9a9a;
     border-radius: 5px;
     margin: 1px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+
 }
 .my_position_square.active {
     background-color: #3498db;

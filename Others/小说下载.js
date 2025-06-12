@@ -45,8 +45,14 @@ const tableHeight = 800;
             if (_item) {
                 Toast(`已经有一个任务在进行中了~请不要重复下载`, 3000)
             } else {
-                const author = document.querySelector('meta[property="og:novel:author"]')
-                const book_name = document.querySelector('meta[property="og:novel:book_name"]')
+                let author = document.querySelector('meta[property="og:novel:author"]')
+                if (!author?.content) {
+                    author = document.querySelector('.af_lst').querySelector('a').innerText
+                }
+                let book_name = document.querySelector('meta[property="og:novel:book_name"]')
+                if (!book_name?.content) {
+                    book_name = document.querySelector('h1').innerText
+                }
 
                 let name = `《${book_name?.content}》 作者：${author?.content}`
                 item.name = name
@@ -77,7 +83,7 @@ const tableHeight = 800;
         const pages_num = matchArray[1]
 
         const url = window.location.href
-        let urlMatchArray = url.match(/(\w*)\/(\d*)(_)?(\d*)?.html$/);
+        let urlMatchArray = url.match(/(\w*)\/(\d*)(_)?(\d*)?.html(.*)?$/);
         const category = urlMatchArray[1]
         const nid = urlMatchArray[2]
 
@@ -138,11 +144,7 @@ const tableHeight = 800;
 
                 // 每次加一页 如果该页已经有了，继续+1
                 while (cache[current]) {
-                    console.log(current)
                     current += 1
-                    console.log(current)
-                    console.log(cache.values().length)
-                    console.log(item.pages_num)
                     // 如果已经大于了最大页数
                     if (current > item.pages_num) {
                         // 从第一页开始检查
@@ -161,7 +163,7 @@ const tableHeight = 800;
                 item.current = current
                 localStorage.setItem(key, JSON.stringify(item));
                 // 跳转
-                // window.location.href = `https://jiqinw.com/${category}/${nid}${current == 1 ? '' : ('_' + current)}.html`
+                window.location.href = `https://jiqinw.com/${category}/${nid}${current == 1 ? '' : ('_' + current)}.html`
             }
         } else {
             console.log("没有下载任务")

@@ -29,6 +29,12 @@
     height: 40px;
     padding: 0 40px;
 }
+.my_button.medium {
+    font-size: 18px;
+    line-height: 36px;
+    height: 36px;
+    padding: 0 20px;
+}
 .my_button.small {
     font-size: 16px;
     line-height: 30px;

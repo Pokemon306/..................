@@ -245,11 +245,16 @@ const ReplyPlate_limit = {
                     el.classList.add('large')
                     GM_setValue(btnSizeName, 'large')
                     localStorage.setItem(btnSizeName, 'large')
-                } else {
-                    el.classList.remove('large')
+                } else if(el.classList.contains('medium')) {
+                    el.classList.remove('medium')
                     el.classList.add('small')
                     GM_setValue(btnSizeName, 'small')
                     localStorage.setItem(btnSizeName, 'small')
+                } else {
+                    el.classList.remove('large')
+                    el.classList.add('medium')
+                    GM_setValue(btnSizeName, 'medium')
+                    localStorage.setItem(btnSizeName, 'medium')
                 }
             })
         }

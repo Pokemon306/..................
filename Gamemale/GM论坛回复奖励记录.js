@@ -491,7 +491,7 @@ const ReplyPlate_limit = {
             }
             let btn = document.createElement('button');
             btn.id = "btn_" + buttonGroup[buttonName].func;
-            btn.className = `my_button ${(buttonGroup[buttonName].color || 'red')} ${(size == "small" ? "small" : "large")}`
+            btn.className = `my_button ${(buttonGroup[buttonName].color || 'red')} ${(size == "small" ? "small" : (size == "medium" ? "medium" : "large"))}`
 
             btn.style.cssText = btnStyle;
 
@@ -522,7 +522,7 @@ const ReplyPlate_limit = {
         for (let buttonName in configButGroup) {
             let btn = document.createElement('button');
             btn.id = "btn_" + configButGroup[buttonName].func;
-            btn.className = `my_button ${(configButGroup[buttonName].color || 'red')} ${(size == "small" ? "small" : "large")}`
+            btn.className = `my_button ${(configButGroup[buttonName].color || 'red')} ${(size == "small" ? "small" : (size == "medium" ? "medium" : "large"))}`
 
             btn.style.cssText = configBtnstyle;
 

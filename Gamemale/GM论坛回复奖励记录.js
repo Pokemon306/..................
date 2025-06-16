@@ -49,7 +49,7 @@ const btnLRPx = 10;
 
 // 表位置
 const trHeight = 30;
-const tableWidth = 600;
+const tableWidth = 640;
 const tableHeight = 800;
 
 const key_prefix = 'replyAward_';
@@ -60,6 +60,15 @@ const awardGroup = {
     '咒术': {color: '#a279f4', emoji: '🔮'},
     '知识': {color: '#0000ff', emoji: '📖'},
     '堕落': {color: '#000000', emoji: '🖤'},
+};
+const awardRate = {
+    '金币': 1,
+    '血液': 1,
+    '旅程': 30,
+    '咒术': 5,
+    '知识': 50,
+    '堕落': 0,
+    '灵魂': 1000,
 };
 
 const ReplyPlate_key = 'ReplyPlate';
@@ -600,14 +609,19 @@ const ReplyPlate_limit = {
         for (let _th in awardGroup) {
             html.push(`<th style="color:${awardGroup[_th]["color"]};">${_th}${awardGroup[_th]["emoji"]}</th>`)
         }
+        html.push('<th class="">收益</th>')
         html.push('<th class="ellipsis-column t-text">文本</th></tr>')
 
         // awardGroup
         let last = undefined
         ras.forEach((ra, index) => {
+            // 单行回复生成
             if (ra.text.indexOf('发表回复') === -1) {
                 return
             }
+
+            // 本次收益
+            let income = 0;
 
             let className = "tr ";
             if (last) {
@@ -619,12 +633,16 @@ const ReplyPlate_limit = {
             html.push(`<td>${formatDate(new Date(ra.date), 'HH:mm:SS')}</td>`)
             for (let _th in awardGroup) {
                 html.push(`<td class="inner-text">${ra[_th] ? ra[_th] : ''}</td>`)
+                income += (ra[_th] ? Number(ra[_th]) : 0) * awardRate[_th]
+
                 if (ra[_th]) {
                     let value = sum[_th] ? sum[_th] : 0;
                     value += Number(ra[_th])
                     sum[_th] = value
                 }
             }
+            // 本次收益
+            html.push(`<td class="inner-text">${income}</td>`)
             html.push(`<td class="t-text">${ra.text}</td>`)
             html.push('</tr>')
             last = ra

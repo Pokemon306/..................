@@ -4,9 +4,12 @@
 // @version      0.4.1
 // @license      GNU General Public License v3.0
 // @icon         https://www.gamemale.com/template/mwt2/extend/img/favicon.ico
-// @downloadURL https://update.greasyfork.org/scripts/460320/gm%E8%AE%BA%E5%9D%9B%E6%AF%8F%E6%97%A5.user.js
-// @updateURL https://update.greasyfork.org/scripts/460320/gm%E8%AE%BA%E5%9D%9B%E6%AF%8F%E6%97%A5.meta.js
+// @downloadURL  https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM_forum_daily.js
+// @updateURL    https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM_forum_daily.js
 // @match        https://www.gamemale.com/*
+// @match        https://www.gamemale.com/forum.php*
+// @match        https://www.gamemale.com/space-*.html
+// @exclude      https://www.gamemale.com/home.php?mod=editor*
 // @grant        GM_log
 // @run-at       document-end
 // @grant        GM_setValue
@@ -15,6 +18,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @connect      *
+// @require      https://code.jquery.com/jquery-2.1.4.min.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/datetime.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
 // @resource buttonCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/button.css
@@ -23,9 +27,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 // 按钮组 名称和方法名 倒序，下面的显示在页面上边
 const buttonGroup = {
-    "重置/中断执行": "btnClickReset",
-    "勋章赠送": "btnClickMedal",
     "日志": "btnClickLog",
+    "勋章赠送": "btnClickMedal",
+    "查看个人资料": "btnLookProfile",
+    "重置/中断执行": "btnClickReset",
 };
 
 // 按钮组到底部的距离
@@ -106,7 +111,6 @@ function dataInit() {
     setdata_gm("mode", "stop")
     setdata_gm("functionTodo", "null");
     // setdata_gm("Quickpass", "false");//只在点击的时候触发改变true/flase
-
 }
 
 function setdata_gm(key, value) {
@@ -167,7 +171,6 @@ const funcs = {
     btnClickSign() {
         dataInit();
 
-
         if (confirm("确认一键签到吗？")) {
             signIn();
         } else {
@@ -197,7 +200,6 @@ const funcs = {
             setdata_gm("numLogInput", numLogInput);
             setdata_gm("numLogCheckedPerPage", Number(numLogbegin) - 1);//当前已经检查日志个数
         }
-
         log();
     },
     btnClickVote() {
@@ -218,7 +220,6 @@ const funcs = {
                 pageVote = numbers[0]
                 numVotebegin = numbers[1]
                 numVoteInput = numbers[2]
-
             }
             setdata_gm("pageVote", pageVote);
             setdata_gm("numVoteInput", numVoteInput);
@@ -235,6 +236,10 @@ const funcs = {
         myWindow.document.write(getHtmlText());
         myWindow.focus();
     },
+    btnLookProfile() {
+        const uid = getUidInSpace();
+        window.location.href = `https://www.gamemale.com/home.php?mod=space&uid=${uid}&do=profile`
+    }
 }
 
 /**jq .click()模拟鼠标点击,触发html的onclick
@@ -583,11 +588,15 @@ function checkReply() {
  * @return {*}
  */
 function button() {
+    // large or small
+    const size = localStorage.getItem("btnSize") || "large";
+
     let body = document.querySelector('body');
     let div = document.createElement('div');
-    let stylebutton = 'z-index:999;fontsize:14px;position: fixed;cursor: pointer;right:10px;margin:10px;bottom:'
-    let bottom = bottomPx;
-    div.style.cssText = stylebutton + bottom + 'px';
+    div.id = "my_daily_buttonGroup";
+    div.style.cssText = `z-index:999;position:fixed;text-align:right;margin:10px;right:10px;bottom:${bottomPx}px`;
+
+    let stylebutton = 'z-index:999;position:sticky;margin:5px;'
 
     let i = 1
     for (let buttonName in buttonGroup) {
@@ -598,9 +607,11 @@ function button() {
                 continue
             }
         }
+
         let btn = document.createElement('button');
-        btn.className = 'my_button'
-        btn.style.cssText = stylebutton + (bottom + (i - 1) * 50) + 'px';
+        btn.className = `my_button green ${(size=="small"?"small":"large")}`
+
+        btn.style.cssText = stylebutton;
 
         btn.textContent = buttonName;
         btn.addEventListener('click', () => {
@@ -611,6 +622,8 @@ function button() {
             continue
         }
         div.appendChild(btn);
+        div.appendChild(document.createElement('br'));
+
         i += 1
     }
 
@@ -694,37 +707,42 @@ function getHtmlText() {
         '<span style="cursor: pointer;">',
         '    金币勋章：',
         '    <button type="button" onclick="setChekedValueByClass(\'coin\',true)">全选</button><br>',
-        '    <span>',
-        '        <input type="checkbox" class="Cost-effective coin" name="Checkbox[]" value="143" /><span',
-        '            onclick="setChekedValue(this)">萨赫的蛋糕</span>',
-        '    </span><br>',
-        '    <span>',
-        '        <input type="checkbox" class="Cost-effective coin" name="Checkbox[]" value="150" /><span',
-        '            onclick="setChekedValue(this)">神秘商店贵宾卡</span>',
-        '    </span><br>',
+
         '    <span>',
         '        <input type="checkbox" class="Cost-effective coin" name="Checkbox[]" value="19" /><span',
-        '            onclick="setChekedValue(this)">送情书</span>',
-        '    </span><br>',
-        '    <span>',
-        '        <input type="checkbox" class="Cost-effective coin" name="Checkbox[]" value="46" /><span',
-        '            onclick="setChekedValue(this)">灵光补脑剂</span>',
+        '            onclick="setChekedValue(this)">送情书（15金币 咒术）</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="coin" name="Checkbox[]" value="20" /><span',
-        '            onclick="setChekedValue(this)">丢肥皂</span>',
+        '            onclick="setChekedValue(this)">丢肥皂（10金币 堕落）</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="coin" name="Checkbox[]" value="45" /><span',
-        '            onclick="setChekedValue(this)">千杯不醉</span>',
+        '            onclick="setChekedValue(this)">千杯不醉（12金币 血液 堕落）</span>',
+        '    </span><br>',
+        '    <span>',
+        '        <input type="checkbox" class="Cost-effective coin" name="Checkbox[]" value="46" /><span',
+        '            onclick="setChekedValue(this)">灵光补脑剂（22金币 知识）</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="coin" name="Checkbox[]" value="174" /><span',
-        '            onclick="setChekedValue(this)">变骚喷雾</span>',
+        '            onclick="setChekedValue(this)">变骚喷雾（13金币 堕落 金币）</span>',
+        '    </span><br>',
+        '    <span>',
+        '        <input type="checkbox" class="coin" name="Checkbox[]" value="456" /><span',
+        '            onclick="setChekedValue(this)">茉莉啤酒</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="coin" name="Checkbox[]" value="195" /><span',
         '            onclick="setChekedValue(this)">没有梦想的咸鱼</span>',
+        '    </span><br>',
+        '    <span>',
+        '        <input type="checkbox" class="Cost-effective coin" name="Checkbox[]" value="143" /><span',
+        '            onclick="setChekedValue(this)">萨赫的蛋糕（40金币 血液）</span>',
+        '    </span><br>',
+        '    <span>',
+        '        <input type="checkbox" class="Cost-effective coin" name="Checkbox[]" value="150" /><span',
+        '            onclick="setChekedValue(this)">神秘商店贵宾卡（50金币 金币）</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="coin" name="Checkbox[]" value="104" /><span',
@@ -736,19 +754,35 @@ function getHtmlText() {
         '    <button type="button" onclick="setChekedValueByClass(\'magic\',true)">全选</button><br>',
         '    <span>',
         '        <input type="checkbox" class="Cost-effective magic" name="Checkbox[]" value="119" /><span',
-        '            onclick="setChekedValue(this)">霍格沃茨五日游</span>',
+        '            onclick="setChekedValue(this)">霍格沃茨五日游（8咒术 咒术|血液）</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="Cost-effective magic" name="Checkbox[]" value="44" /><span',
-        '            onclick="setChekedValue(this)">召唤古代战士</span>',
+        '            onclick="setChekedValue(this)">召唤古代战士（8咒术 血液）</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="Cost-effective magic" name="Checkbox[]" value="186" /><span',
-        '            onclick="setChekedValue(this)">石肤术</span>',
+        '            onclick="setChekedValue(this)">石肤术（4咒术 血液）</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="Cost-effective magic" name="Checkbox[]" value="14" /><span',
-        '            onclick="setChekedValue(this)">炼金之心</span>',
+        '            onclick="setChekedValue(this)">炼金之心（4咒术 金币）</span>',
+        '    </span><br>',
+        '    <span>',
+        '        <input type="checkbox" class="magic" name="Checkbox[]" value="100" /><span',
+        '            onclick="setChekedValue(this)">咆哮诅咒（8咒术 堕落）</span>',
+        '    </span><br>',
+/*        '    <span>',
+        '        <input type="checkbox" class="magic" name="Checkbox[]" value="455" /><span',
+        '            onclick="setChekedValue(this)">闪光糖果盒</span>',
+        '    </span><br>',*/
+        '    <span>',
+        '        <input type="checkbox" class="magic" name="Checkbox[]" value="457" /><span',
+        '            onclick="setChekedValue(this)">雷霆晶球（7咒术 血液 咒术）</span>',
+        '    </span><br>',
+        '    <span>',
+        '        <input type="checkbox" class="magic" name="Checkbox[]" value="458" /><span',
+        '            onclick="setChekedValue(this)">思绪骤聚（15咒术 知识）</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="magic" name="Checkbox[]" value="43" /><span',
@@ -756,27 +790,7 @@ function getHtmlText() {
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="magic" name="Checkbox[]" value="61" /><span',
-        '            onclick="setChekedValue(this)">祈祷术</span>',
-        '    </span><br>',
-        '    <span>',
-        '        <input type="checkbox" class="magic" name="Checkbox[]" value="100" /><span',
-        '            onclick="setChekedValue(this)">咆哮诅咒</span>',
-        '    </span><br>',
-        '    <span>',
-        '        <input type="checkbox" class="magic" name="Checkbox[]" value="455" /><span',
-        '            onclick="setChekedValue(this)">闪光糖果盒</span>',
-        '    </span><br>',
-        '    <span>',
-        '        <input type="checkbox" class="magic" name="Checkbox[]" value="456" /><span',
-        '            onclick="setChekedValue(this)">茉莉啤酒</span>',
-        '    </span><br>',
-        '    <span>',
-        '        <input type="checkbox" class="magic" name="Checkbox[]" value="457" /><span',
-        '            onclick="setChekedValue(this)">雷霆晶球</span>',
-        '    </span><br>',
-        '    <span>',
-        '        <input type="checkbox" class="magic" name="Checkbox[]" value="458" /><span',
-        '            onclick="setChekedValue(this)">思绪骤聚</span>',
+        '            onclick="setChekedValue(this)">祈祷术（8咒术 -堕落）</span>',
         '    </span>',
         '</span>',
         '<br>',

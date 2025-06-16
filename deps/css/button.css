@@ -23,6 +23,24 @@
     -webkit-transition-duration: .3s;
     transition-duration: .3s;
 }
+.my_button.large {
+    font-size: 18px;
+    line-height: 40px;
+    height: 40px;
+    padding: 0 30px;
+}
+.my_button.medium {
+    font-size: 18px;
+    line-height: 36px;
+    height: 36px;
+    padding: 0 24px;
+}
+.my_button.small {
+    font-size: 16px;
+    line-height: 30px;
+    height: 30px;
+    padding: 0 20px;
+}
 .my_button.green {
     background: linear-gradient(to right,#16a085,#2ecc71);
 }
@@ -36,9 +54,11 @@
     background: linear-gradient(to right, #5e5e5e, #878787);
 }
 .my_button.black {
-    background: linear-gradient(to right, #000000,  #2e2e2e, #3e3e3e, #4e4e4e);
+    background: linear-gradient(to right, #000000, #2e2e2e, #3e3e3e, #4e4e4e);
 }
-.my_button::after {
+
+/* 悬停效果 */
+.my_button:hover::after {
     content: " ";
     position: absolute;
     top: 0;
@@ -51,7 +71,6 @@
     transition: box-shadow .4s ease-in-out;
     transition: box-shadow .4s ease-in-out,-webkit-box-shadow .4s ease-in-out;
 }
-
 .my_button:hover::after {
     -webkit-box-shadow: 0 0 16px #16a085;
     box-shadow: 0 0 16px #16a085
@@ -60,11 +79,24 @@
     -webkit-box-shadow: 0 0 16px #16a085;
     box-shadow: 0 0 16px #16a085
 }
+.my_button.blue:hover::after {
+    -webkit-box-shadow: 0 0 16px #589eca;
+    box-shadow: 0 0 16px #589eca
+}
 .my_button.red:hover::after {
     -webkit-box-shadow: 0 0 16px #ff0068;
     box-shadow: 0 0 16px #ff0068
 }
+.my_button.gray:hover::after {
+    -webkit-box-shadow: 0 0 16px #5e5e5e;
+    box-shadow: 0 0 16px #5e5e5e
+}
+.my_button.black:hover::after {
+    -webkit-box-shadow: 0 0 16px #000000;
+    box-shadow: 0 0 16px #000000
+}
 
+/* 按下后的效果 */
 .my_button:active {
     color: black;
     background: linear-gradient(to right,#3498db,#2980b9);
@@ -73,7 +105,6 @@
     color: black;
     background: linear-gradient(to right,#3498db,#2980b9);
 }
-
 .my_button.red:active {
     color: black;
     background: linear-gradient(to right,#ffb11e, #ff9e1e);
@@ -82,4 +113,53 @@
     color: yellow;
     background: linear-gradient(to right,#ffb11e, #ff9e1e);
 }
+.my_button.black:hover:active {
+    color: black;
+    background: linear-gradient(to right,#878787, #aaaaaa);
+}
+.my_button.gray:hover:active {
+    color: darkgray;
+    background: linear-gradient(to right,#2e2e2e, #3e3e3e);
+}
 
+.my_position_container {
+    z-index: 1001;
+    position: sticky;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 1em;
+    background-color: rgba(128, 128, 128, 0.5);
+    display: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    width: fit-content;
+}
+.my_position_square {
+    width: 50px;
+    height: 50px;
+    background-color: #9a9a9a;
+    border-radius: 5px;
+    margin: 1px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+}
+.my_position_square.active {
+    background-color: #3498db;
+}
+/*
+.my_position_square:hover::after {
+    content: " ";
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 1em;
+    !* -webkit-transition:-webkit-box-shadow .4s ease-in-out; *!
+    transition: -webkit-box-shadow .4s ease-in-out;
+    transition: box-shadow .4s ease-in-out;
+    transition: box-shadow .4s ease-in-out,-webkit-box-shadow .4s ease-in-out;
+    -webkit-box-shadow: 0 0 8px #5e5e5e;
+    box-shadow: 0 0 8px #5e5e5e
+}*/

@@ -27,8 +27,9 @@ function transfer(text) {
 }
 
 //提示信息 封装
-function Toast(msg, duration) {
+function Toast(msg, duration, movedown) {
     duration = isNaN(duration) ? 1000 : duration;
+    movedown = isNaN(movedown) ? 0 : movedown;
     var m = document.createElement('div');
     m.innerHTML = msg;
     m.style.cssText = "font-size: 15px;" +
@@ -41,7 +42,7 @@ function Toast(msg, duration) {
         "margin: 0 0 0 -60px;" +
         "border-radius: 4px;" +
         "position: fixed;" +
-        "top: 20%;" +
+        `top: 20% + ${movedown}px;` +
         "left: 50%;" +
         "width: auto;" +
         "text-align: center;";

@@ -2,7 +2,7 @@
 // @name         Pixiv Novel Downloader
 // @name:zh-CN   Pixiv 小说下载器
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      V1.0
 // @description  Download novels from Pixiv
 // @description:zh-CN 从Pixiv下载小说
 // @author       calary
@@ -15,8 +15,8 @@
 // @require      https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js
 // @grant        GM_addStyle
 // @run-at       document-end
-// @downloadURL https://update.greasyfork.org/scripts/439918/Pixiv%20Novel%20Downloader.user.js
-// @updateURL https://update.greasyfork.org/scripts/439918/Pixiv%20Novel%20Downloader.meta.js
+// @downloadURL https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Others/Pixiv_noval_Download.js
+// @updateURL https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Others/Pixiv_noval_Download.js
 // ==/UserScript==
 
 jQuery(function ($) {

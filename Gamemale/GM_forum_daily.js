@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GM论坛每日
 // @description  右下角有小菜单栏速通签到日志投票，一键批量送勋章，延时回帖
-// @version      0.4.1
+// @version      V1.1
 // @license      GNU General Public License v3.0
 // @icon         https://www.gamemale.com/template/mwt2/extend/img/favicon.ico
 // @downloadURL  https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM_forum_daily.js

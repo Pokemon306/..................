@@ -26,8 +26,9 @@ const btnSwitchName = "btnSwitch"
 const btnSizeName = "btnSize"
 
 const buttonGroup = {
-    "查看回复奖励": {"name": "ReplyAward", "func": "ReplyAward"},
+    "查看今日奖励": {"name": "ReplyAward", "func": "ReplyAward"},
     "今天还未回复过": {"name": "NotReplied", "func": "NotReplied", "color": "gray"},
+    "查看往期奖励": {"name": "ReplyAward_past", "func": "ReplyAward_past"},
     "查看回复板块": {"name": "ReplyPlate", "func": "ReplyPlate"},
     "看看系统奖励": {"name": "SystemAward", "func": "SystemAward", "color": "blue"},
     // "测试": {"name": "test", "func": "test", "color": "gray"},
@@ -97,6 +98,7 @@ const ReplyPlate_limit = {
                         // 回复奖励
                         if (node.id == "ntcwin" || node.className == "ntcwin") {
                             console.log("检测到回复奖励触发~")
+                            console.log(node.outerHTML);
                             save(node)
                         }
                     }
@@ -113,6 +115,13 @@ const ReplyPlate_limit = {
             let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
             if (!localStorage.getItem(key)) {
                 Toast("没有今天的回复记录！", 3000)
+                return;
+            }
+        },
+        ReplyAward_past() {
+            let key = `${key_prefix}keys`
+            if (!localStorage.getItem(key)) {
+                Toast("没有回复记录！", 3000)
                 return;
             }
         },
@@ -708,6 +717,46 @@ const ReplyPlate_limit = {
         return html.join('');
     }
 
+    // ReplyAward_past to HTML
+    function rapToHtml(_rap) {
+        let now = new Date();
+
+        let html = []
+
+        const tableCSS = GM_getResourceText("tableCSS");
+        html.push(`<html><head>
+<style>${tableCSS}
+  tr {
+    height: ${trHeight}px;
+  }
+  </style></head>`)
+        html.push(`<body><table><tbody>`)
+        // 表头
+        html.push('<tr><th>回复时间</th><th>查看</th><th>操作</th></tr>')
+
+        let index = 0
+        Object.keys(_rap).forEach(key => {
+            const datetime = _rap[key];
+            const date = new Date(datetime)
+
+            if(index == 0 || date.getDate() == 1) {
+                html.push(`<tr class="tr"><td colspan="2" style="text-align: center;font-weight: 1000;">${formatDate(date, 'YYYY年MM月')}</td><td class=""><button id="delete" class="toggle-btn t_button" onclick="" value="${key}">删除</button></td></tr>`)
+            }
+            html.push(`<tr class="tr">`)
+            html.push(`<td class="">${formatDate(date, 'YYYY-MM-dd')}</td>`)
+            html.push(`<td class=""><button id="look" class="toggle-btn t_button" onclick="" value="${key}">查看</button></td>`)
+            html.push(`<td class=""><button id="delete" class="toggle-btn t_button" onclick="" value="${key}">删除</button></td>`)
+
+            html.push(`</tr>`)
+
+            index += 1
+        })
+
+        html.push('</tbody></table></body></html>')
+
+        return html.join('');
+    }
+
     // 创建弹窗
     function createIFrame(id) {
         // 添加弹窗
@@ -724,7 +773,7 @@ const ReplyPlate_limit = {
 
     // 关闭弹窗
     function closePopup(id) {
-        console.log('关闭 ', id)
+        // console.log('关闭 ', id)
         document.getElementById(id).style.display = 'none';
         let iframe = document.getElementById(`pop_iframe_${id}`);
         if (iframe) {
@@ -807,7 +856,7 @@ const ReplyPlate_limit = {
 
         // 对iFram做特殊处理
         if(iframeFunc) {
-            iframeFunc(iframe)
+            iframeFunc(iframe, popup)
         }
     }
 
@@ -830,6 +879,26 @@ const ReplyPlate_limit = {
             let scriptElement = iframeDoc.createElement("script");
             scriptElement.append(timerJS);
             iframeDoc.body.appendChild(scriptElement);
+        });
+    });
+
+    // 往期回复奖励的弹窗
+    popupEvent("btn_ReplyAward_past", "popup_ReplyAward_past", function (e, popupId) {
+        createPopup(e, popupId, ()=> {
+            let key = `${key_prefix}keys`
+            if (!localStorage.getItem(key)) {
+                Toast("没有回复记录！", 3000)
+                return;
+            }
+            let rap = JSON.parse(localStorage.getItem(key) || '[]');
+            let html = rapToHtml(rap);
+
+            return html;
+        }, (iframe, popup) => {
+            popup.style.width = 300 + 'px';
+            popup.style.height = 400 + 'px';
+            iframe.style.width = 300 + 'px';
+            iframe.style.height = 400 + 'px';
         });
     });
 
@@ -888,5 +957,8 @@ const ReplyPlate_limit = {
         }
     }
 
+    function deleteRA(date) {
+
+    }
 })();
 

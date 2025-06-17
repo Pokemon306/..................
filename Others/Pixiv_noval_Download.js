@@ -32,6 +32,7 @@ jQuery(function ($) {
             ui_dl_page: "DL This Work",
             ui_dl_author: "Batch DL This Author",
             ui_dl_series: "Batch DL This Series",
+            ui_dl_series: "Batch DL This Series And Combine",
             ui_dl_list: "Batch DL This List",
             ui_dl_favlist: "Batch DL Bookmark List",
             ui_start: "START",
@@ -69,6 +70,7 @@ jQuery(function ($) {
             ui_dl_page: "下载此小说",
             ui_dl_author: "批量下载此作者",
             ui_dl_series: "批量下载此系列",
+            ui_dl_series_combine: "批量下载此系列（合并）",
             ui_dl_list: "批量下载此列表页",
             ui_dl_favlist: "批量下载收藏列表",
             ui_start: "开始",
@@ -112,7 +114,8 @@ jQuery(function ($) {
 
     const website = "pixiv";
     const fontFamily = "Arial, 'Microsoft Yahei', Helvetica, sans-serif";
-    const noop = () => {};
+    const noop = () => {
+    };
 
     const $panel = $(`<div>
     <h4 style="padding: 0; margin: 0 0 10px;">${i18n("ui_title")}</h4>
@@ -196,7 +199,7 @@ jQuery(function ($) {
     }
 
     function request(config) {
-        return baseRequest(config).then(({ error, message, body }) => {
+        return baseRequest(config).then(({error, message, body}) => {
             if (error) {
                 return new Error(message);
             }
@@ -234,6 +237,7 @@ jQuery(function ($) {
             this.errorHandler = this.errorHandler.bind(this);
             this.init();
         }
+
         init() {
             const $item = $(`<div style="margin-top: 5px">
         ${i18n(this.title)}
@@ -271,6 +275,7 @@ jQuery(function ($) {
             this.$currentStatus = $item.find(".status .current");
             this.$pageStatus = $item.find(".status .page");
         }
+
         start() {
             this.status = "running";
             this.includeLikes = $("input[name='dl_includelikes']:checked").val();
@@ -281,6 +286,7 @@ jQuery(function ($) {
             this.$cancel.show();
             this.$status.hide();
         }
+
         pause() {
             this.status = "paused";
             this.$start.hide();
@@ -290,6 +296,7 @@ jQuery(function ($) {
             this.$cancel.show();
             this.$status.show();
         }
+
         resume() {
             this.status = "running";
             this.$start.hide();
@@ -299,6 +306,7 @@ jQuery(function ($) {
             this.$cancel.show();
             this.$status.show();
         }
+
         error() {
             this.status = "error";
             this.$start.hide();
@@ -308,6 +316,7 @@ jQuery(function ($) {
             this.$cancel.show();
             this.$status.show();
         }
+
         retry() {
             this.status = "running";
             this.$start.hide();
@@ -317,6 +326,7 @@ jQuery(function ($) {
             this.$cancel.show();
             this.$status.show();
         }
+
         cancel() {
             this.status = "";
             this.$start.show();
@@ -326,14 +336,17 @@ jQuery(function ($) {
             this.$cancel.hide();
             this.$status.hide();
         }
+
         isRunning() {
             return this.status === "running";
         }
+
         checkRunning() {
             if (!this.isRunning()) {
                 throw new Error("CANCEL");
             }
         }
+
         errorHandler(e) {
             if (e.message === "CANCEL") {
                 return;
@@ -342,6 +355,7 @@ jQuery(function ($) {
             console.trace(e);
             alert(e);
         }
+
         getWork(id) {
             return request({
                 url: `/ajax/novel/${id}`,
@@ -351,6 +365,7 @@ jQuery(function ($) {
                 let output = [];
 
                 title.push(`[${body.userName}]`);
+                title.push(`[${body.title}]`);
                 title.push(`[${website}]`);
                 title.push(`[${body.id}]`);
                 if (body.xRestrict === 1) {
@@ -358,7 +373,7 @@ jQuery(function ($) {
                 } else if (body.xRestrict === 2) {
                     title.push("[R18G]");
                 }
-                title.push(`[${body.title}]`);
+
                 title.push(`[${body.content.length}${i18n("txt_words2")}]`);
                 if (this.includeLikes) {
                     title.push(`[${body.likeCount}${i18n("txt_likes2")}]`);
@@ -450,7 +465,8 @@ jQuery(function ($) {
             return "";
         }
 
-        check() {}
+        check() {
+        }
 
         start() {
             try {
@@ -511,7 +527,7 @@ jQuery(function ($) {
             this.setParams();
 
             this.promise = this.getList()
-                .then(({ data = [], total }) => {
+                .then(({data = [], total}) => {
                     this.checkRunning();
 
                     this.total = total;
@@ -523,9 +539,11 @@ jQuery(function ($) {
                     if (data.length < 0) {
                         return;
                     }
+                    console.log("getList then")
+                    // console.log(data)
 
-                    const ids = (this.ids = new Set());
-                    data.forEach((item) => ids.add(item.id));
+                    const ids = (this.ids = []);
+                    data.forEach((item) => ids.push(item.id));
 
                     this.getWorks();
                 })
@@ -541,6 +559,7 @@ jQuery(function ($) {
                 responseType: "json",
             }).then((body) => {
                 this.checkRunning();
+                // console.log(body)
                 return this.parseList(body);
             });
         }
@@ -554,16 +573,20 @@ jQuery(function ($) {
                 return;
             }
             this.step = "works";
+            // console.log(this)
 
-            const { ids } = this;
+            const {ids} = this;
 
             let i = 0;
 
+            console.log(ids)
+            this.checkRunning()
+            let that = this;
             this.promises = ids.map((id) => {
                 return new Promise((resolve, reject) => {
                     setTimeout(() => {
                         try {
-                            this.checkRunning();
+                            // that.checkRunning();
                             resolve();
                         } catch (e) {
                             reject(e);
@@ -571,18 +594,22 @@ jQuery(function ($) {
                     }, i++ * 100);
                 })
                     .then(() => {
-                        this.checkRunning();
-                        return this.getWork(id);
+                        // that.checkRunning();
+                        return that.getWork(id);
                     })
                     .then((work) => {
-                        this.checkRunning();
+                        // that.checkRunning();
 
-                        this.finished++;
-                        this.ids.delete(id);
-                        this.entries[id] = work;
-                        this.updateStatus();
+                        that.finished++;
+                        that.ids = that.ids.filter((_id) => {
+                            id != _id
+                        })
+
+                        that.entries[id] = work;
+                        that.updateStatus();
                     });
             });
+            console.log(this)
 
             Promise.all(this.promises)
                 .then(() => {
@@ -592,7 +619,7 @@ jQuery(function ($) {
 
                     const zip = new JSZip();
                     let hasFile = false;
-                    Object.values(this.entries).forEach(({ filename, content }) => {
+                    Object.values(this.entries).forEach(({filename, content}) => {
                         hasFile = true;
                         zip.file(filename, content);
                     });
@@ -601,7 +628,7 @@ jQuery(function ($) {
                         this.savedPage = this.page;
 
                         zip
-                            .generateAsync({ type: "blob" })
+                            .generateAsync({type: "blob"})
                             .then((content) => saveAs(content, this.getSaveFilename()));
                     }
 
@@ -618,7 +645,7 @@ jQuery(function ($) {
         updateStatus() {
             this.$status.show();
 
-            const { finished, limit, total, page, pages } = this;
+            const {finished, limit, total, page, pages} = this;
             let curPageTotal = limit;
             if (page === pages) {
                 curPageTotal = total - limit * (page - 1);
@@ -652,7 +679,7 @@ jQuery(function ($) {
             super.start();
 
             this.promise = this.getWork(id)
-                .then(({ filename, content }) => {
+                .then(({filename, content}) => {
                     if (!this.isRunning()) {
                         return;
                     }
@@ -660,7 +687,7 @@ jQuery(function ($) {
                     this.cancel();
 
                     saveAs(
-                        new Blob([content], { type: "text/plain;charset=UTF-8" }),
+                        new Blob([content], {type: "text/plain;charset=UTF-8"}),
                         filename
                     );
                 })
@@ -733,7 +760,7 @@ jQuery(function ($) {
                     lang: "zh",
                 },
             }).then((payload) => {
-                const { novels } = payload;
+                const {novels} = payload;
                 this.workIds = Object.keys(novels).sort((a, b) => b - a);
                 this.total = this.workIds.length;
             });
@@ -746,12 +773,12 @@ jQuery(function ($) {
                 return super.getList();
             }
 
-            const { limit, page, workIds } = this;
+            const {limit, page, workIds} = this;
             let offset = limit * (page - 1);
             return Promise.resolve({
                 total: workIds.length,
                 data: workIds.slice(offset, offset + limit).map((id) => {
-                    return { id };
+                    return {id};
                 }),
             });
         }
@@ -777,7 +804,7 @@ jQuery(function ($) {
         }
 
         setParams() {
-            const { tag, limit, page } = this;
+            const {tag, limit, page} = this;
             let offset = limit * (page - 1);
             this.params = {
                 tag,
@@ -804,13 +831,13 @@ jQuery(function ($) {
 
     class TaskSeries extends TaskMultiPage {
         defaultParams = {
-            limit: 10,
+            limit: 30,
             last_order: 0,
             order_by: "asc",
             lang: "zh",
         };
         id = "";
-        limit = 10;
+        limit = 30;
         title = "";
         userName = "";
         total = 0;
@@ -833,7 +860,8 @@ jQuery(function ($) {
                     lang: "zh",
                 },
             }).then((payload) => {
-                const { title, userName, displaySeriesContentCount } = payload;
+                console.log(payload)
+                const {title, userName, displaySeriesContentCount} = payload;
                 this.title = title;
                 this.userName = userName;
                 this.total = displaySeriesContentCount;
@@ -841,7 +869,7 @@ jQuery(function ($) {
         }
 
         parseList(payload) {
-            return { data: payload.seriesContents, total: this.total };
+            return {data: payload.page.seriesContents, total: this.total};
         }
 
         getUrl() {
@@ -886,8 +914,8 @@ jQuery(function ($) {
         }
 
         parseList(payload) {
-            const { data, total } = payload.novel;
-            return { data, total };
+            const {data, total} = payload.novel;
+            return {data, total};
         }
 
         getUrl() {
@@ -923,9 +951,9 @@ jQuery(function ($) {
         }
 
         parseList(payload) {
-            const { works, total } = payload;
+            const {works, total} = payload;
             const data = works.filter((item) => !!item.xRestrict);
-            return { data, total };
+            return {data, total};
         }
 
         getUrl() {
@@ -940,9 +968,126 @@ jQuery(function ($) {
         }
     }
 
+    class TaskSeriesCombine extends TaskSeries {
+        getNextList() {
+            console.log("getNextList1")
+            if (!this.isRunning()) {
+                return;
+            }
+            this.step = "list";
+            this.setParams();
+            console.log("getNextList2")
+
+            this.promise = this.getList()
+                .then(({data = [], total}) => {
+                    console.log(data)
+                    this.checkRunning();
+
+                    this.total = total;
+                    this.pages = Math.ceil(total / this.limit);
+                    this.finished = 0;
+                    this.entries = this.entries? this.entries: {};
+                    this.updateStatus();
+
+                    if (data.length < 0) {
+                        return;
+                    }
+
+                    const ids = (this.ids? this.ids: []);
+                    data.forEach((item) => ids.push(item.id));
+                    this.ids = ids;
+
+                    this.getWorks();
+                })
+                .catch(this.errorHandler);
+            console.log("getNextList3")
+        }
+
+        getWorks() {
+            if (!this.isRunning()) {
+                return;
+            }
+            this.step = "works";
+
+            const {ids} = this;
+
+            let i = 0;
+
+            this.checkRunning()
+
+            console.log("working")
+            if (this.mode === "all" && this.page < this.pages) {
+                this.page++;
+                Promise.resolve().then(() => {this.getNextList()})
+                console.log("getNextList")
+            }
+
+            this.cancel();
+            console.log("working")
+            console.log(ids)
+
+            let that = this;
+            this.promises = ids.map((id) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        try {
+                            // that.checkRunning();
+                            resolve();
+                        } catch (e) {
+                            reject(e);
+                        }
+                    }, i++ * 100);
+                })
+                    .then(() => {
+                        // that.checkRunning();
+                        return that.getWork(id);
+                    })
+                    .then((work) => {
+                        // that.checkRunning();
+
+                        that.finished++;
+                        that.ids = that.ids.filter((_id) => {
+                            id != _id
+                        })
+
+                        that.entries[id] = work;
+                        that.updateStatus();
+                    });
+            });
+
+            console.log(this.entries);
+            console.log(this.promises);
+
+            let text = "";
+            Promise.all(this.promises)
+                .then(() => {
+                    if (!this.isRunning()) {
+                        return;
+                    }
+
+                    console.log(this.entries)
+
+                    Object.values(this.entries).forEach(({filename, content}) => {
+                        text += content
+                    });
+
+                    console.log(text)
+                })
+                .catch(this.errorHandler);
+
+            let filename = `${this.title} 作者：${this.userName} [pixiv][series.${this.id}].txt`
+
+            saveAs(
+                new Blob([text], {type: "text/plain;charset=UTF-8"}),
+                filename
+            );
+        }
+    }
+
     new TaskPage("ui_dl_page");
     new TaskAuthor("ui_dl_author");
     new TaskSeries("ui_dl_series");
+    new TaskSeriesCombine("ui_dl_series_combine")
     new TaskList("ui_dl_list");
     new TaskFavList("ui_dl_favlist");
 });

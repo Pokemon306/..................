@@ -45,6 +45,7 @@ function Toast(msg, duration, movedown) {
         `top: 20% + ${movedown}px;` +
         "left: 50%;" +
         "width: auto;" +
+        "z-index:1001;" +
         "text-align: center;";
     document.body.appendChild(m);
     setTimeout(function () {

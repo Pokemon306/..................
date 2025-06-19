@@ -71,6 +71,15 @@ const awardRate = {
     '堕落': 0,
     '灵魂': 1000,
 };
+const awardUnit = {
+    '旅程': 'km',
+    '金币': '枚',
+    '血液': '滴',
+    '咒术': '卷',
+    '知识': '点',
+    '堕落': '黑',
+    '灵魂': '只',
+}
 
 const ReplyPlate_key = 'ReplyPlate';
 const ReplyPlate_limit = {
@@ -97,9 +106,13 @@ const ReplyPlate_limit = {
 
                         // 回复奖励
                         if (node.id == "ntcwin" || node.className == "ntcwin") {
-                            console.log("检测到回复奖励触发~")
-                            console.log(node.outerHTML);
-                            save(node)
+                            if(node.classList.contains('test')) {
+                                console.log("只是测试")
+                            } else {
+                                console.log("检测到回复奖励触发~")
+                                console.log(node.outerHTML);
+                                save(node)
+                            }
                         }
                     }
                 }
@@ -196,21 +209,6 @@ const ReplyPlate_limit = {
 }
 .my_position_square.active {
     background-color: #3498db;
-}
-.my_position_square:hover::after {
-    content: " ";
-    position: sticky;
-    top: 0;
-    left: 0;
-    width: 50px;
-    height: 50px;
-    border-radius: 1em;
-    /* -webkit-transition:-webkit-box-shadow .4s ease-in-out; */
-    transition: -webkit-box-shadow .4s ease-in-out;
-    transition: box-shadow .4s ease-in-out;
-    transition: box-shadow .4s ease-in-out,-webkit-box-shadow .4s ease-in-out;
-    -webkit-box-shadow: 0 0 8px #5e5e5e;
-    box-shadow: 0 0 8px #5e5e5e
 }
 `)
 
@@ -651,7 +649,7 @@ const ReplyPlate_limit = {
                 }
             }
             // 本次收益
-            html.push(`<td class="inner-text">${income}</td>`)
+            html.push(`<td class="inner-text my_income" ra='${JSON.stringify(ra)}'>${income}</td>`)
             html.push(`<td class="t-text">${ra.text}</td>`)
             html.push('</tr>')
             last = ra
@@ -740,12 +738,12 @@ const ReplyPlate_limit = {
             const date = new Date(datetime)
 
             if(index == 0 || date.getDate() == 1) {
-                html.push(`<tr class="tr"><td colspan="2" style="text-align: center;font-weight: 1000;">${formatDate(date, 'YYYY年MM月')}</td><td class=""><button id="delete" class="toggle-btn t_button" onclick="" value="${key}">删除</button></td></tr>`)
+                html.push(`<tr class="tr"><td colspan="2" style="text-align: center;font-weight: 1000;">${formatDate(date, 'YYYY年MM月')}</td><td class=""><button id="delete" class="toggle-btn t_button ra_history_delete_button" onclick="" date="${key}">删除</button></td></tr>`)
             }
             html.push(`<tr class="tr">`)
             html.push(`<td class="">${formatDate(date, 'YYYY-MM-dd')}</td>`)
-            html.push(`<td class=""><button id="look" class="toggle-btn t_button" onclick="" value="${key}">查看</button></td>`)
-            html.push(`<td class=""><button id="delete" class="toggle-btn t_button" onclick="" value="${key}">删除</button></td>`)
+            html.push(`<td class=""><button id="look" class="toggle-btn t_button ra_history_show_button" onclick="" date="${key}">查看</button></td>`)
+            html.push(`<td class=""><button id="delete" class="toggle-btn t_button ra_history_delete_button" onclick="" date="${key}">删除</button></td>`)
 
             html.push(`</tr>`)
 
@@ -858,6 +856,10 @@ const ReplyPlate_limit = {
         if(iframeFunc) {
             iframeFunc(iframe, popup)
         }
+
+        if(endFunc) {
+            endFunc(iframe);
+        }
     }
 
     // 回复奖励的弹窗
@@ -879,6 +881,13 @@ const ReplyPlate_limit = {
             let scriptElement = iframeDoc.createElement("script");
             scriptElement.append(timerJS);
             iframeDoc.body.appendChild(scriptElement);
+
+            // 点击收益触发事件
+            iframeDoc.body.querySelectorAll(".my_income").forEach(el=>{
+                el.addEventListener('click', function (e) {
+                    showRA(el.getAttribute('ra'))
+                });
+            })
         });
     });
 
@@ -899,6 +908,14 @@ const ReplyPlate_limit = {
             popup.style.height = 400 + 'px';
             iframe.style.width = 300 + 'px';
             iframe.style.height = 400 + 'px';
+        }, (iframe) => {
+            iframe.contentWindow.document.querySelectorAll('.ra_history_show_button').forEach(el=>{
+                // 查看按钮绑定事件
+                el.addEventListener('click', function (e) {
+                    console.log(el.getAttribute('date'))
+                })
+            })
+
         });
     });
 
@@ -957,8 +974,54 @@ const ReplyPlate_limit = {
         }
     }
 
-    function deleteRA(date) {
+    // 展示指定日期收益记录
+    function showHistoryRA(date) {
 
+    }
+
+    // 删除指定日期收益记录
+    function deleteHistoryRA(date) {
+
+    }
+
+    // 模拟展示收益
+    function showRA(_ra) {
+        let ra = JSON.parse(_ra);
+        const element = document.querySelector('#ntcwin');
+        if(element) {
+            console.log('已经有存在的奖励提示了')
+            return
+        }
+
+        const div = document.createElement('div');
+        div.id = "ntcwin";
+        div.className = "ntcwin test";
+        div.style = 'position: fixed; z-index: 501; left: 50%; top: 40%; transform: translate(-50%, -50%);'
+
+        let html = `
+        <table cellspacing="0" cellpadding="0" class="popupcredit"><tbody><tr><td class="pc_l">&nbsp;</td><td class="pc_c"><div class="pc_inner">
+        <div id="creditpromptdiv">
+        <i>发表回复 勋章功能触发</i>`;
+        Object.keys(awardUnit).forEach((key) => {
+            if(ra[key]) {
+                html += `<span>${key}<em>${ra[key]}</em>${awardUnit[key]}</span>`
+            }
+        })
+        html += `</div></div></td><td class="pc_r">&nbsp;</td></tr></tbody></table>`;
+
+        div.innerHTML = html;
+        document.body.appendChild(div);
+
+        let time = 3;
+        Toast(`${time} 秒后消失`, time * 1000, 100)
+
+        // 3s后清除
+        timer(time * 1000, ()=> {
+            const element = document.querySelector('#ntcwin');
+            element.remove()
+        })
+
+        document.body.querySelector("#popup_ReplyAward").style.display = 'none';
     }
 
     GM_addStyle(`

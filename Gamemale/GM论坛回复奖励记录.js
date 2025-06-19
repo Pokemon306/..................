@@ -28,7 +28,7 @@ const btnSizeName = "btnSize"
 const buttonGroup = {
     "查看今日奖励": {"name": "ReplyAward", "func": "ReplyAward"},
     "今天还未回复过": {"name": "NotReplied", "func": "NotReplied", "color": "gray"},
-    "查看往期奖励": {"name": "ReplyAward_past", "func": "ReplyAward_past"},
+    "查看往期奖励": {"name": "ReplyAward_history", "func": "ReplyAward_history", color: "orange"},
     "查看回复板块": {"name": "ReplyPlate", "func": "ReplyPlate"},
     "看看系统奖励": {"name": "SystemAward", "func": "SystemAward", "color": "blue"},
     // "测试": {"name": "test", "func": "test", "color": "gray"},
@@ -118,7 +118,7 @@ const ReplyPlate_limit = {
                 return;
             }
         },
-        ReplyAward_past() {
+        ReplyAward_history() {
             let key = `${key_prefix}keys`
             if (!localStorage.getItem(key)) {
                 Toast("没有回复记录！", 3000)
@@ -495,7 +495,7 @@ const ReplyPlate_limit = {
         let i = 1
         for (let buttonName in buttonGroup) {
             let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
-            if (buttonName === "查看回复奖励") {
+            if (buttonName === "查看今日奖励") {
                 // 需要有数据才显示按钮
                 if (!localStorage.getItem(key)) {
                     continue
@@ -717,7 +717,7 @@ const ReplyPlate_limit = {
         return html.join('');
     }
 
-    // ReplyAward_past to HTML
+    // ReplyAward_history to HTML
     function rapToHtml(_rap) {
         let now = new Date();
 
@@ -883,7 +883,7 @@ const ReplyPlate_limit = {
     });
 
     // 往期回复奖励的弹窗
-    popupEvent("btn_ReplyAward_past", "popup_ReplyAward_past", function (e, popupId) {
+    popupEvent("btn_ReplyAward_history", "popup_ReplyAward_history", function (e, popupId) {
         createPopup(e, popupId, ()=> {
             let key = `${key_prefix}keys`
             if (!localStorage.getItem(key)) {
@@ -960,5 +960,24 @@ const ReplyPlate_limit = {
     function deleteRA(date) {
 
     }
+
+    GM_addStyle(`
+.my_button.orange {
+    background: linear-gradient(to right, #701a00, #d8420f, #ff9e1e, #ffd944);
+}
+.my_button.orange:hover::after {
+    -webkit-box-shadow: 0 0 16px #ff9e1e;
+    box-shadow: 0 0 16px #ff9e1e
+}
+.my_button.orange:hover:active {
+    color: yellow;
+    background: linear-gradient(to right,#ffb11e, #ff9e1e);
+}
+.my_button.red:hover:active {
+    color: pink;
+    background: linear-gradient(to right,#d61361,#fc1e39);
+}
+`);
+
 })();
 

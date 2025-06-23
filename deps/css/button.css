@@ -42,7 +42,7 @@
     padding: 0 20px;
 }
 .my_button.green {
-    background: linear-gradient(to right,#16a085,#2ecc71);
+    background: linear-gradient(to right, #08705a, #25a88f, #2ecc71);
 }
 .my_button.blue {
     background: linear-gradient(to right, #2e6183, #589eca, #6bc0ff);

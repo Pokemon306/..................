@@ -46,7 +46,7 @@ const configBtnGroupId = 'my_configBtnGroup'
 
 // 按钮组到底部的距离
 const btnTBPx = 100;
-const btnLRPx = 10;
+const btnLRPx = 20;
 
 // 表位置
 const trHeight = 30;
@@ -388,7 +388,12 @@ const ReplyPlate_limit = {
             console.log(plateName);
 
             // https://www.gamemale.com/thread-${tid}-1-1.html
+            // https://www.gamemale.com/forum.php?mod=viewthread&tid=149849&ctid=486
+
             let matchArray = window.location.href.match(/(\w*)?\/thread-(\d*)-(\d*)-(\d*).html(.+)?$/);
+            if(!matchArray) {
+                matchArray = window.location.href.match(/(\w*)?\/forum.php\?mod=viewthread\&tid=(\d*)(.+)?$/);
+            }
             // 帖子id
             let tid = matchArray[2];
             console.log(tid)
@@ -762,6 +767,7 @@ const ReplyPlate_limit = {
         htmlDivElement.id = id;
         htmlDivElement.className = "my_popup";
         htmlDivElement.style.display = "none";
+        htmlDivElement.scrolling = "auto";
         htmlDivElement.innerHTML = `
     <div class="popup-arrow" style="">
         <iframe id="pop_iframe_${id}" frameborder="no" scrolling="auto"  style="overflow-y：auto"></iframe>
@@ -832,11 +838,11 @@ const ReplyPlate_limit = {
         const rect = btn.getBoundingClientRect();
         const lr = GM_getValue("lr") || "r"
         if (lr == 'l') {
-            popup.style.left = (btnLRPx + 20) + 'px';
+            popup.style.left = (btnLRPx + 50) + 'px';
         } else {
-            popup.style.right = (btnLRPx + 20) + 'px';
+            popup.style.right = (btnLRPx + 50) + 'px';
         }
-        popup.style.top = (rect.bottom + 20) + 'px';
+        popup.style.top = (rect.bottom) + 'px';
 
         let html = HTMLFunc()
 
@@ -874,7 +880,7 @@ const ReplyPlate_limit = {
             let html = raToHtml(ra);
 
             return html;
-        }, (iframe) => {
+        }, (iframe, popup) => {
             var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 
             const timerJS = GM_getResourceText("timerJS");
@@ -888,6 +894,11 @@ const ReplyPlate_limit = {
                     showRA(el.getAttribute('ra'))
                 });
             })
+
+            console.log("window.innerHeight : ", window.innerHeight)
+            popup.style.height = window.innerHeight * 0.8;
+            iframe.style.height = window.innerHeight * 0.8;
+        }, () => {
         });
     });
 
@@ -925,19 +936,6 @@ const ReplyPlate_limit = {
             return rpToHtml();
         });
     });
-
-    const buttonCSS = GM_getResourceText("buttonCSS");
-    GM_addStyle(buttonCSS);
-    const popupCSS = GM_getResourceText("popupCSS");
-    GM_addStyle(popupCSS);
-
-    /*    GM_addStyle(`.my_button.gray {
-        background: linear-gradient(to right, rgba(62, 62, 62, 0.9), #878787);
-        }
-        .my_button.blue {
-        background: linear-gradient(to right, #2e6183, #589eca, #6bc0ff);
-        }
-        `);*/
 
     function changePosition(ud, lr) {
         changeUD(ud)
@@ -1024,22 +1022,12 @@ const ReplyPlate_limit = {
         document.body.querySelector("#popup_ReplyAward").style.display = 'none';
     }
 
+    const buttonCSS = GM_getResourceText("buttonCSS");
+    GM_addStyle(buttonCSS);
+    const popupCSS = GM_getResourceText("popupCSS");
+    GM_addStyle(popupCSS);
+
     GM_addStyle(`
-.my_button.orange {
-    background: linear-gradient(to right, #701a00, #d8420f, #ff9e1e, #ffd944);
-}
-.my_button.orange:hover::after {
-    -webkit-box-shadow: 0 0 16px #ff9e1e;
-    box-shadow: 0 0 16px #ff9e1e
-}
-.my_button.orange:hover:active {
-    color: yellow;
-    background: linear-gradient(to right,#ffb11e, #ff9e1e);
-}
-.my_button.red:hover:active {
-    color: pink;
-    background: linear-gradient(to right,#d61361,#fc1e39);
-}
 `);
 
 })();

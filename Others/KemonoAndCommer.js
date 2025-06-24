@@ -597,8 +597,28 @@ const tableHeight = 800;
                         urls += `#O,F:\\Downloads\\Default\\Other\\Kemono\\${name.trim()}\n`
                     }
 
+                    // 先循环一遍，看看有没有和第一个重复的文件，如果有，就删除第一条
+                    let _index = 0
+                    let _pic = postData.previews[0]
+                    // _pic.path
+                    let repeated = false;
+
+                    while(postData.previews.length - 1 > _index) {
+                        _index += 1
+                        if(postData.previews[_index].path == _pic.path) {
+                            repeated = true;
+                            break
+                        }
+                    }
+                    // console.log(repeated)
+
                     for (let pic of postData.previews) {
                         let twoDigitText = num.toString().padStart(2, '0');
+                        num += 1;
+                        if(repeated && num == 1) {
+                            console.log("repeated")
+                            continue;
+                        }
 
                         let url = `${pic.server}/data${pic.path}`
 
@@ -608,7 +628,6 @@ const tableHeight = 800;
                             filename = name.trim().concat(' ', twoDigitText, '.', fileSuffix)
                         }
 
-                        num += 1
                         urls += `${filename},${url}\n`
                     }
                 }

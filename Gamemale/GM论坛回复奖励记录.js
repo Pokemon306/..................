@@ -767,11 +767,8 @@ const ReplyPlate_limit = {
         htmlDivElement.id = id;
         htmlDivElement.className = "my_popup";
         htmlDivElement.style.display = "none";
-        htmlDivElement.scrolling = "auto";
-        htmlDivElement.innerHTML = `
-    <div class="popup-arrow" style="">
-        <iframe id="pop_iframe_${id}" frameborder="no" scrolling="auto"  style="overflow-y：auto"></iframe>
-    </div>`
+        htmlDivElement.scrolling = true;
+        htmlDivElement.innerHTML = `<iframe id="pop_iframe_${id}" frameborder="no" scrolling="yes" style="overflow-y：auto;width: 100%; height: 100%"></iframe>`
         targetNode.appendChild(htmlDivElement);
     }
 
@@ -854,9 +851,12 @@ const ReplyPlate_limit = {
         // 显示弹窗
         popup.style.display = 'block';
         popup.style.width = tableWidth + 'px';
-        popup.style.minHeight = tableHeight - 10 + 'px';
-        iframe.style.width = tableWidth + 'px';
-        iframe.style.minHeight = tableHeight + 'px';
+        // popup.style.minHeight = tableHeight - 10 + 'px';
+        // popup.style.height = tableHeight - 10 + 'px';
+
+        console.log("window.innerHeight : ", window.innerHeight)
+        popup.style.height = (window.innerHeight * 0.8) + 'px';
+        popup.style.maxHeight = (window.innerHeight - popup.style.top) + 'px';
 
         // 对iFram做特殊处理
         if(iframeFunc) {
@@ -895,9 +895,6 @@ const ReplyPlate_limit = {
                 });
             })
 
-            console.log("window.innerHeight : ", window.innerHeight)
-            popup.style.height = window.innerHeight * 0.8;
-            iframe.style.height = window.innerHeight * 0.8;
         }, () => {
         });
     });
@@ -916,9 +913,6 @@ const ReplyPlate_limit = {
             return html;
         }, (iframe, popup) => {
             popup.style.width = 300 + 'px';
-            popup.style.height = 400 + 'px';
-            iframe.style.width = 300 + 'px';
-            iframe.style.height = 400 + 'px';
         }, (iframe) => {
             iframe.contentWindow.document.querySelectorAll('.ra_history_show_button').forEach(el=>{
                 // 查看按钮绑定事件
@@ -926,7 +920,6 @@ const ReplyPlate_limit = {
                     console.log(el.getAttribute('date'))
                 })
             })
-
         });
     });
 

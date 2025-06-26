@@ -36,6 +36,8 @@ const buttonGroup = {
     // "清除": {"name": "clean", "func": "clean", "color": "gray"},
     "设置": {"name": "config", "func": "config", "color": "black"},
     // "显示位置": {"name": "showPosition", "func": "showPosition"},
+    "提示": {"name": "config", "func": "toast", "color": "black"},
+    "倒计时": {name: "ReplyCD", type: "auto", func: "ReplyCD", color: "translucence"},
 };
 
 const configButGroup = {
@@ -273,7 +275,14 @@ const ReplyPlate_limit = {
                     localStorage.setItem(btnSizeName, 'medium')
                 }
             })
-        }
+        },
+        toast() {
+          Toast("提示", 10000)
+        },
+        ReplyCD() {
+            // 回复冷却
+            const id = "btn_ReplyCD";
+        },
     }
 
     // 显示DIV
@@ -364,6 +373,7 @@ const ReplyPlate_limit = {
         // 保存到浏览器缓存中
         localStorage.setItem(key, JSON.stringify(ra));
         localStorage.setItem(sum_key, JSON.stringify(ra_sum));
+        localStorage.setItem('replyAward_lastTime', JSON.stringify(map)); // 保存上次的时间
 
         // 如果没有当天的记录，就新增一条，方便后面遍历删除
         if (!ra_keys[today_str]) {
@@ -496,8 +506,10 @@ const ReplyPlate_limit = {
         let btnStyle = `z-index:999;position:sticky;margin:5px;`
 
         let i = 1
+        let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+
         for (let buttonName in buttonGroup) {
-            let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+            let buttonConfig = buttonGroup[buttonName];
             if (buttonName === "查看今日奖励") {
                 // 需要有数据才显示按钮
                 if (!localStorage.getItem(key)) {
@@ -511,15 +523,22 @@ const ReplyPlate_limit = {
                 }
             }
             let btn = document.createElement('button');
-            btn.id = "btn_" + buttonGroup[buttonName].func;
-            btn.className = `my_button ${(buttonGroup[buttonName].color || 'red')} ${(size == "small" ? "small" : (size == "medium" ? "medium" : "large"))}`
+            btn.id = "btn_" + buttonConfig.func;
+            btn.className = `my_button ${(buttonConfig.color || 'red')} ${(size == "small" ? "small" : (size == "medium" ? "medium" : "large"))}`
 
             btn.style.cssText = btnStyle;
 
             btn.textContent = buttonName;
-            btn.addEventListener('click', (event) => {
-                funcs[buttonGroup[buttonName].func](event);
-            });
+
+            if(btn.type == 'auto') {
+                // 自动执行的类型
+                funcs[buttonConfig.func]();
+            } else {
+                // 点击触发的类型
+                btn.addEventListener('click', (event) => {
+                    funcs[buttonConfig.func](event);
+                });
+            }
 
             if (!btn.textContent) {
                 continue

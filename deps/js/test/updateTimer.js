@@ -15,7 +15,7 @@ function formatTime(milliseconds) {
 }
 
 // 更新计时器显示
-function updateTimer(date) {
+function updateTimer(timerElement, date) {
     if (!date) {
         date = _startTime;
     }
@@ -28,7 +28,7 @@ function updateTimer(date) {
 var lastReplyTime = document.getElementById('lastReplyTime');
 if (lastReplyTime) {
     let date = new Date(lastReplyTime.value);
-    updateTimer(date);
+    updateTimer(timerElement, date);
 
     // 每秒更新一次
     let timer = setInterval(function (date) {
@@ -37,7 +37,7 @@ if (lastReplyTime) {
                 clearInterval(timer)
                 return;
             }
-            updateTimer(date);
+            updateTimer(timerElement, date);
         }, 1000,
         date
     );

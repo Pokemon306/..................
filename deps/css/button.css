@@ -59,6 +59,10 @@
 .my_button.black {
     background: linear-gradient(to right, #000000, #2e2e2e, #3e3e3e, #4e4e4e);
 }
+.my_button.translucence {
+    color: #000000;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(70, 70, 70, 0.5), rgba(135, 135, 135, 0.5));
+}
 
 /* 悬停效果 */
 .my_button:hover::after {
@@ -101,6 +105,10 @@
 .my_button.black:hover::after {
     -webkit-box-shadow: 0 0 16px #000000;
     box-shadow: 0 0 16px #000000
+}
+.my_button.translucencehover::after {
+    -webkit-box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
 }
 
 /* 按下后的效果 */

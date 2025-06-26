@@ -37,7 +37,7 @@ const buttonGroup = {
     // "清除": {"name": "clean", "func": "clean", "color": "gray"},
     "设置": {"name": "config", "func": "config", "color": "black"},
     // "显示位置": {"name": "showPosition", "func": "showPosition"},
-    "提示": {"name": "config", "func": "toast", "color": "black"},
+    // "提示": {"name": "config", "func": "toast", "color": "black"},
     "回复倒计时": {name: "ReplyCD", type: "afterCreate", func: "ReplyCD", color: "translucence"},
 };
 

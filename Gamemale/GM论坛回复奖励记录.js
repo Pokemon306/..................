@@ -17,6 +17,7 @@
 // @grant        GM_getResourceText
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/datetime.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
+// @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/test/updateTimer.js
 // @resource buttonCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/button.css
 // @resource tableCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/table.css
 // @resource popupCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/popup.css
@@ -37,7 +38,7 @@ const buttonGroup = {
     "设置": {"name": "config", "func": "config", "color": "black"},
     // "显示位置": {"name": "showPosition", "func": "showPosition"},
     "提示": {"name": "config", "func": "toast", "color": "black"},
-    "倒计时": {name: "ReplyCD", type: "auto", func: "ReplyCD", color: "translucence"},
+    "回复倒计时": {name: "ReplyCD", type: "afterCreate", func: "ReplyCD", color: "translucence"},
 };
 
 const configButGroup = {
@@ -280,8 +281,11 @@ const ReplyPlate_limit = {
           Toast("提示", 10000)
         },
         ReplyCD() {
+            console.log("ReplyCD")
             // 回复冷却
             const id = "btn_ReplyCD";
+            const button = document.getElementById(id);
+            showReplyCD(button);
         },
     }
 
@@ -483,6 +487,8 @@ const ReplyPlate_limit = {
 
     // 初始化按钮
     function init() {
+        let afterCreateFuncs = [];
+
         // left or right
         const lr = GM_getValue("lr") || "r"
         // up or down
@@ -530,9 +536,12 @@ const ReplyPlate_limit = {
 
             btn.textContent = buttonName;
 
-            if(btn.type == 'auto') {
+            if(buttonConfig.type == 'auto') {
+                console.log("auto")
                 // 自动执行的类型
                 funcs[buttonConfig.func]();
+            } else if(buttonConfig.type == 'afterCreate') {
+                afterCreateFuncs.push(buttonConfig.func)
             } else {
                 // 点击触发的类型
                 btn.addEventListener('click', (event) => {
@@ -583,6 +592,13 @@ const ReplyPlate_limit = {
 
         body.appendChild(configDiv);
         setCloseEvent(configBtnGroupId, "btn_config")
+
+        // 如果有创建后才执行的方法，此时进行执行
+        if(afterCreateFuncs.length > 0) {
+            afterCreateFuncs.forEach(item => {
+                funcs[item]();
+            })
+        }
     }
 
     GM_registerMenuCommand("左右切换", () => {
@@ -1034,12 +1050,40 @@ const ReplyPlate_limit = {
         document.body.querySelector("#popup_ReplyAward").style.display = 'none';
     }
 
+    function showReplyCD(button) {
+        let last = JSON.parse(localStorage.getItem('replyAward_lastTime') || '{}');
+        if(button && last.date) {
+            let date = new Date(last.date);
+            console.log(date.getDay())
+            console.log(new Date().getDay())
+
+            // 每秒更新一次
+            let timer = setInterval(function (date) {
+                    if(button.display == 'none') {
+                        console.log("停止更新计时器")
+                        clearInterval(timer)
+                        return;
+                    }
+                    updateTimer(button, date);
+                }, 1000,
+                date
+            );
+        } else {
+            console.log(button)
+            console.log(last)
+        }
+    }
+
     const buttonCSS = GM_getResourceText("buttonCSS");
     GM_addStyle(buttonCSS);
     const popupCSS = GM_getResourceText("popupCSS");
     GM_addStyle(popupCSS);
 
     GM_addStyle(`
+    .my_button.translucence {
+    color: #000000;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(70, 70, 70, 0.5), rgba(135, 135, 135, 0.5));
+}
 `);
 
 })();

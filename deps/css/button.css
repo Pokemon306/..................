@@ -60,8 +60,8 @@
     background: linear-gradient(to right, #000000, #2e2e2e, #3e3e3e, #4e4e4e);
 }
 .my_button.translucence {
-    color: #000000;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(70, 70, 70, 0.5), rgba(135, 135, 135, 0.5));
+    color: #888888;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(70, 70, 70, 0.2), rgba(135, 135, 135, 0.2));
 }
 
 /* 悬停效果 */
@@ -106,7 +106,7 @@
     -webkit-box-shadow: 0 0 16px #000000;
     box-shadow: 0 0 16px #000000
 }
-.my_button.translucencehover::after {
+.my_button.translucence:hover::after {
     -webkit-box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
     box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
 }
@@ -139,6 +139,10 @@
 .my_button.gray:hover:active {
     color: darkgray;
     background: linear-gradient(to right,#2e2e2e, #3e3e3e);
+}
+.my_button.translucence:hover:active {
+    color: #888888;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(70, 70, 70, 0.2), rgba(135, 135, 135, 0.2));
 }
 
 .my_position_container {

@@ -17,7 +17,6 @@
 // @grant        GM_getResourceText
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/datetime.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
-// @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/test/updateTimer.js
 // @resource buttonCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/button.css
 // @resource tableCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/table.css
 // @resource popupCSS https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/css/popup.css
@@ -778,7 +777,7 @@ const ReplyPlate_limit = {
             const date = new Date(datetime)
 
             if(index == 0 || date.getDate() == 1) {
-                html.push(`<tr class="tr"><td colspan="2" style="text-align: center;font-weight: 1000;">${formatDate(date, 'YYYY年MM月')}</td><td class=""><button id="delete" class="toggle-btn t_button ra_history_delete_button" onclick="" date="${key}">删除</button></td></tr>`)
+                html.push(`<tr class="tr"><td colspan="2" style="text-align: center;font-weight: 1000;">${formatDate(date, 'YYYY年MM月')}</td><td class=""><button id="delete" class="toggle-btn t_button ra_history_delete_button" onclick="" date="${key.substring(0, 6)}">删除</button></td></tr>`)
             }
             html.push(`<tr class="tr">`)
             html.push(`<td class="">${formatDate(date, 'YYYY-MM-dd')}</td>`)
@@ -952,7 +951,20 @@ const ReplyPlate_limit = {
             iframe.contentWindow.document.querySelectorAll('.ra_history_show_button').forEach(el=>{
                 // 查看按钮绑定事件
                 el.addEventListener('click', function (e) {
-                    console.log(el.getAttribute('date'))
+                    let _date = el.getAttribute('date')
+                    console.log(_date)
+                })
+            })
+            iframe.contentWindow.document.querySelectorAll('.ra_history_delete_button').forEach(el=>{
+                // 查看按钮绑定事件
+                el.addEventListener('click', function (e) {
+                    let _date = el.getAttribute('date')
+                    console.log(_date)
+                    if(_date.length == 6) {
+                        console.log("删除这个月的数据：", _date)
+                    } else if(_date.length == 8) {
+                        console.log("删除这天的数据：", _date)
+                    }
                 })
             })
         });
@@ -1039,7 +1051,7 @@ const ReplyPlate_limit = {
         document.body.appendChild(div);
 
         let time = 3;
-        Toast(`${time} 秒后消失`, time * 1000, 100)
+        // Toast(`${time} 秒后消失`, time * 1000, 100)
 
         // 3s后清除
         timer(time * 1000, ()=> {
@@ -1050,28 +1062,51 @@ const ReplyPlate_limit = {
         document.body.querySelector("#popup_ReplyAward").style.display = 'none';
     }
 
-    function showReplyCD(button) {
-        let last = JSON.parse(localStorage.getItem('replyAward_lastTime') || '{}');
-        if(button && last.date) {
-            let date = new Date(last.date);
-            console.log(date.getDay())
-            console.log(new Date().getDay())
+    // 格式化时间显示
+    function formatTime(milliseconds) {
+        let totalSeconds = Math.floor(milliseconds / 1000);
+        let hours = Math.floor(totalSeconds / 3600);
+        let minutes = Math.floor((totalSeconds % 3600) / 60);
+        let seconds = totalSeconds % 60;
 
+        return hours.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0');
+    }
+
+    // 更新计时器显示
+    function updateTimer(timerElement, date) {
+        if (!date) {
+            date = _startTime;
+        }
+        let now = new Date();
+        let elapsedMilliseconds = now - date;
+        timerElement.textContent = formatTime(elapsedMilliseconds);
+    }
+
+    function showReplyCD(button) {
             // 每秒更新一次
-            let timer = setInterval(function (date) {
-                    if(button.display == 'none') {
+            let timer = setInterval(function () {
+                    let last = JSON.parse(localStorage.getItem('replyAward_lastTime') || '{}');
+                    if(button && last.date) {
+                        let date = new Date(last.date);
+                        console.log(date.getDate())
+                        console.log(new Date().getDate())
+
+                        if(button.display == 'none') {
+                            console.log("停止更新计时器")
+                            clearInterval(timer)
+                            return;
+                        }
+                        updateTimer(button, date);
+                    } else {
                         console.log("停止更新计时器")
+                        console.log(button)
+                        console.log(last)
                         clearInterval(timer)
                         return;
                     }
-                    updateTimer(button, date);
-                }, 1000,
-                date
+                }, 1000
             );
-        } else {
-            console.log(button)
-            console.log(last)
-        }
+
     }
 
     const buttonCSS = GM_getResourceText("buttonCSS");
@@ -1080,9 +1115,17 @@ const ReplyPlate_limit = {
     GM_addStyle(popupCSS);
 
     GM_addStyle(`
-    .my_button.translucence {
-    color: #000000;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(70, 70, 70, 0.5), rgba(135, 135, 135, 0.5));
+.my_button.translucence {
+    color: #888888;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(70, 70, 70, 0.2), rgba(135, 135, 135, 0.2));
+}
+.my_button.translucence:hover::after {
+    -webkit-box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
+}
+.my_button.translucence:hover:active {
+    color: #888888;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(70, 70, 70, 0.2), rgba(135, 135, 135, 0.2));
 }
 `);
 

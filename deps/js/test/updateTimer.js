@@ -27,6 +27,8 @@ function updateTimer(timerElement, date) {
 // 初始化显示
 var lastReplyTime = document.getElementById('lastReplyTime');
 if (lastReplyTime) {
+    console.log("开始倒计时")
+
     let date = new Date(lastReplyTime.value);
     updateTimer(timerElement, date);
 
@@ -41,4 +43,6 @@ if (lastReplyTime) {
         }, 1000,
         date
     );
+} else {
+    console.log("没找到要倒计时的元素")
 }

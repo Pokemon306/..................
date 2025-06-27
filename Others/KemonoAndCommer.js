@@ -515,6 +515,7 @@ const tableHeight = 800;
             let username = profileData.name;
             let platform = postData.post.service;
             let title = postData.post.title;
+            let id = postData.post.id;
 
             let datetime = postData.post.published;
             let _date = new Date(datetime)
@@ -523,7 +524,7 @@ const tableHeight = 800;
             let date = formatDate(_date, 'YYYY年MM月DD日');
 
             let name =
-                "@".concat(username, " ", "[", platform, "]", " - ", "(", date, ")", " ", transfer(title));
+                "@".concat(username, " ", "[", platform, "]", " - ", "(", date, ")", " ", "(", id, ")", " ", transfer(title));
 
             let urls = `#R,${window.location.href}\n`
 
@@ -626,6 +627,14 @@ const tableHeight = 800;
                         let filename = `${twoDigitText}.${fileSuffix}`
                         if(mode == 'NoFolder') {
                             filename = name.trim().concat(' ', twoDigitText, '.', fileSuffix)
+
+                            if(pic.name.length <= 10) {
+                                if(type == 'pic_origin') {
+                                    filename = `${pic.name}`
+                                } else {
+                                    filename = name.trim().concat(' ', twoDigitText, ' ', pic.name)
+                                }
+                            }
                         }
 
                         urls += `${filename},${url}\n`

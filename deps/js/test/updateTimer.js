@@ -15,7 +15,7 @@ function formatTime(milliseconds) {
 }
 
 // 更新计时器显示
-function updateTimer(date) {
+function updateTimer(timerElement, date) {
     if (!date) {
         date = _startTime;
     }
@@ -27,8 +27,10 @@ function updateTimer(date) {
 // 初始化显示
 var lastReplyTime = document.getElementById('lastReplyTime');
 if (lastReplyTime) {
+    console.log("开始倒计时")
+
     let date = new Date(lastReplyTime.value);
-    updateTimer(date);
+    updateTimer(timerElement, date);
 
     // 每秒更新一次
     let timer = setInterval(function (date) {
@@ -37,8 +39,10 @@ if (lastReplyTime) {
                 clearInterval(timer)
                 return;
             }
-            updateTimer(date);
+            updateTimer(timerElement, date);
         }, 1000,
         date
     );
+} else {
+    console.log("没找到要倒计时的元素")
 }

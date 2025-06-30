@@ -36,6 +36,8 @@ const buttonGroup = {
     // "清除": {"name": "clean", "func": "clean", "color": "gray"},
     "设置": {"name": "config", "func": "config", "color": "black"},
     // "显示位置": {"name": "showPosition", "func": "showPosition"},
+    // "提示": {"name": "config", "func": "toast", "color": "black"},
+    "回复倒计时": {name: "ReplyCD", type: "afterCreate", func: "ReplyCD", color: "translucence"},
 };
 
 const configButGroup = {
@@ -46,7 +48,7 @@ const configBtnGroupId = 'my_configBtnGroup'
 
 // 按钮组到底部的距离
 const btnTBPx = 100;
-const btnLRPx = 10;
+const btnLRPx = 20;
 
 // 表位置
 const trHeight = 30;
@@ -273,7 +275,17 @@ const ReplyPlate_limit = {
                     localStorage.setItem(btnSizeName, 'medium')
                 }
             })
-        }
+        },
+        toast() {
+          Toast("提示", 10000)
+        },
+        ReplyCD() {
+            console.log("ReplyCD")
+            // 回复冷却
+            const id = "btn_ReplyCD";
+            const button = document.getElementById(id);
+            showReplyCD(button);
+        },
     }
 
     // 显示DIV
@@ -364,6 +376,7 @@ const ReplyPlate_limit = {
         // 保存到浏览器缓存中
         localStorage.setItem(key, JSON.stringify(ra));
         localStorage.setItem(sum_key, JSON.stringify(ra_sum));
+        localStorage.setItem('replyAward_lastTime', JSON.stringify(map)); // 保存上次的时间
 
         // 如果没有当天的记录，就新增一条，方便后面遍历删除
         if (!ra_keys[today_str]) {
@@ -388,7 +401,12 @@ const ReplyPlate_limit = {
             console.log(plateName);
 
             // https://www.gamemale.com/thread-${tid}-1-1.html
+            // https://www.gamemale.com/forum.php?mod=viewthread&tid=149849&ctid=486
+
             let matchArray = window.location.href.match(/(\w*)?\/thread-(\d*)-(\d*)-(\d*).html(.+)?$/);
+            if(!matchArray) {
+                matchArray = window.location.href.match(/(\w*)?\/forum.php\?mod=viewthread\&tid=(\d*)(.+)?$/);
+            }
             // 帖子id
             let tid = matchArray[2];
             console.log(tid)
@@ -468,6 +486,8 @@ const ReplyPlate_limit = {
 
     // 初始化按钮
     function init() {
+        let afterCreateFuncs = [];
+
         // left or right
         const lr = GM_getValue("lr") || "r"
         // up or down
@@ -491,8 +511,10 @@ const ReplyPlate_limit = {
         let btnStyle = `z-index:999;position:sticky;margin:5px;`
 
         let i = 1
+        let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+
         for (let buttonName in buttonGroup) {
-            let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`
+            let buttonConfig = buttonGroup[buttonName];
             if (buttonName === "查看今日奖励") {
                 // 需要有数据才显示按钮
                 if (!localStorage.getItem(key)) {
@@ -506,15 +528,25 @@ const ReplyPlate_limit = {
                 }
             }
             let btn = document.createElement('button');
-            btn.id = "btn_" + buttonGroup[buttonName].func;
-            btn.className = `my_button ${(buttonGroup[buttonName].color || 'red')} ${(size == "small" ? "small" : (size == "medium" ? "medium" : "large"))}`
+            btn.id = "btn_" + buttonConfig.func;
+            btn.className = `my_button ${(buttonConfig.color || 'red')} ${(size == "small" ? "small" : (size == "medium" ? "medium" : "large"))}`
 
             btn.style.cssText = btnStyle;
 
             btn.textContent = buttonName;
-            btn.addEventListener('click', (event) => {
-                funcs[buttonGroup[buttonName].func](event);
-            });
+
+            if(buttonConfig.type == 'auto') {
+                console.log("auto")
+                // 自动执行的类型
+                funcs[buttonConfig.func]();
+            } else if(buttonConfig.type == 'afterCreate') {
+                afterCreateFuncs.push(buttonConfig.func)
+            } else {
+                // 点击触发的类型
+                btn.addEventListener('click', (event) => {
+                    funcs[buttonConfig.func](event);
+                });
+            }
 
             if (!btn.textContent) {
                 continue
@@ -559,6 +591,13 @@ const ReplyPlate_limit = {
 
         body.appendChild(configDiv);
         setCloseEvent(configBtnGroupId, "btn_config")
+
+        // 如果有创建后才执行的方法，此时进行执行
+        if(afterCreateFuncs.length > 0) {
+            afterCreateFuncs.forEach(item => {
+                funcs[item]();
+            })
+        }
     }
 
     GM_registerMenuCommand("左右切换", () => {
@@ -738,7 +777,7 @@ const ReplyPlate_limit = {
             const date = new Date(datetime)
 
             if(index == 0 || date.getDate() == 1) {
-                html.push(`<tr class="tr"><td colspan="2" style="text-align: center;font-weight: 1000;">${formatDate(date, 'YYYY年MM月')}</td><td class=""><button id="delete" class="toggle-btn t_button ra_history_delete_button" onclick="" date="${key}">删除</button></td></tr>`)
+                html.push(`<tr class="tr"><td colspan="2" style="text-align: center;font-weight: 1000;">${formatDate(date, 'YYYY年MM月')}</td><td class=""><button id="delete" class="toggle-btn t_button ra_history_delete_button" onclick="" date="${key.substring(0, 6)}">删除</button></td></tr>`)
             }
             html.push(`<tr class="tr">`)
             html.push(`<td class="">${formatDate(date, 'YYYY-MM-dd')}</td>`)
@@ -762,10 +801,8 @@ const ReplyPlate_limit = {
         htmlDivElement.id = id;
         htmlDivElement.className = "my_popup";
         htmlDivElement.style.display = "none";
-        htmlDivElement.innerHTML = `
-    <div class="popup-arrow" style="">
-        <iframe id="pop_iframe_${id}" frameborder="no" scrolling="auto"  style="overflow-y：auto"></iframe>
-    </div>`
+        htmlDivElement.scrolling = true;
+        htmlDivElement.innerHTML = `<iframe id="pop_iframe_${id}" frameborder="no" scrolling="yes" style="overflow-y：auto;width: 100%; height: 100%"></iframe>`
         targetNode.appendChild(htmlDivElement);
     }
 
@@ -832,11 +869,11 @@ const ReplyPlate_limit = {
         const rect = btn.getBoundingClientRect();
         const lr = GM_getValue("lr") || "r"
         if (lr == 'l') {
-            popup.style.left = (btnLRPx + 20) + 'px';
+            popup.style.left = (btnLRPx + 50) + 'px';
         } else {
-            popup.style.right = (btnLRPx + 20) + 'px';
+            popup.style.right = (btnLRPx + 50) + 'px';
         }
-        popup.style.top = (rect.bottom + 20) + 'px';
+        popup.style.top = (rect.bottom) + 'px';
 
         let html = HTMLFunc()
 
@@ -848,9 +885,12 @@ const ReplyPlate_limit = {
         // 显示弹窗
         popup.style.display = 'block';
         popup.style.width = tableWidth + 'px';
-        popup.style.minHeight = tableHeight - 10 + 'px';
-        iframe.style.width = tableWidth + 'px';
-        iframe.style.minHeight = tableHeight + 'px';
+        // popup.style.minHeight = tableHeight - 10 + 'px';
+        // popup.style.height = tableHeight - 10 + 'px';
+
+        console.log("window.innerHeight : ", window.innerHeight)
+        popup.style.height = (window.innerHeight * 0.8) + 'px';
+        popup.style.maxHeight = (window.innerHeight - popup.style.top) + 'px';
 
         // 对iFram做特殊处理
         if(iframeFunc) {
@@ -874,7 +914,7 @@ const ReplyPlate_limit = {
             let html = raToHtml(ra);
 
             return html;
-        }, (iframe) => {
+        }, (iframe, popup) => {
             var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 
             const timerJS = GM_getResourceText("timerJS");
@@ -888,6 +928,8 @@ const ReplyPlate_limit = {
                     showRA(el.getAttribute('ra'))
                 });
             })
+
+        }, () => {
         });
     });
 
@@ -905,17 +947,26 @@ const ReplyPlate_limit = {
             return html;
         }, (iframe, popup) => {
             popup.style.width = 300 + 'px';
-            popup.style.height = 400 + 'px';
-            iframe.style.width = 300 + 'px';
-            iframe.style.height = 400 + 'px';
         }, (iframe) => {
             iframe.contentWindow.document.querySelectorAll('.ra_history_show_button').forEach(el=>{
                 // 查看按钮绑定事件
                 el.addEventListener('click', function (e) {
-                    console.log(el.getAttribute('date'))
+                    let _date = el.getAttribute('date')
+                    console.log(_date)
                 })
             })
-
+            iframe.contentWindow.document.querySelectorAll('.ra_history_delete_button').forEach(el=>{
+                // 查看按钮绑定事件
+                el.addEventListener('click', function (e) {
+                    let _date = el.getAttribute('date')
+                    console.log(_date)
+                    if(_date.length == 6) {
+                        console.log("删除这个月的数据：", _date)
+                    } else if(_date.length == 8) {
+                        console.log("删除这天的数据：", _date)
+                    }
+                })
+            })
         });
     });
 
@@ -925,19 +976,6 @@ const ReplyPlate_limit = {
             return rpToHtml();
         });
     });
-
-    const buttonCSS = GM_getResourceText("buttonCSS");
-    GM_addStyle(buttonCSS);
-    const popupCSS = GM_getResourceText("popupCSS");
-    GM_addStyle(popupCSS);
-
-    /*    GM_addStyle(`.my_button.gray {
-        background: linear-gradient(to right, rgba(62, 62, 62, 0.9), #878787);
-        }
-        .my_button.blue {
-        background: linear-gradient(to right, #2e6183, #589eca, #6bc0ff);
-        }
-        `);*/
 
     function changePosition(ud, lr) {
         changeUD(ud)
@@ -1013,7 +1051,7 @@ const ReplyPlate_limit = {
         document.body.appendChild(div);
 
         let time = 3;
-        Toast(`${time} 秒后消失`, time * 1000, 100)
+        // Toast(`${time} 秒后消失`, time * 1000, 100)
 
         // 3s后清除
         timer(time * 1000, ()=> {
@@ -1024,21 +1062,70 @@ const ReplyPlate_limit = {
         document.body.querySelector("#popup_ReplyAward").style.display = 'none';
     }
 
+    // 格式化时间显示
+    function formatTime(milliseconds) {
+        let totalSeconds = Math.floor(milliseconds / 1000);
+        let hours = Math.floor(totalSeconds / 3600);
+        let minutes = Math.floor((totalSeconds % 3600) / 60);
+        let seconds = totalSeconds % 60;
+
+        return hours.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0');
+    }
+
+    // 更新计时器显示
+    function updateTimer(timerElement, date) {
+        if (!date) {
+            date = _startTime;
+        }
+        let now = new Date();
+        let elapsedMilliseconds = now - date;
+        timerElement.textContent = formatTime(elapsedMilliseconds);
+    }
+
+    function showReplyCD(button) {
+            // 每秒更新一次
+            let timer = setInterval(function () {
+                    let last = JSON.parse(localStorage.getItem('replyAward_lastTime') || '{}');
+                    if(button && last.date) {
+                        let date = new Date(last.date);
+                        console.log(date.getDate())
+                        console.log(new Date().getDate())
+
+                        if(button.display == 'none') {
+                            console.log("停止更新计时器")
+                            clearInterval(timer)
+                            return;
+                        }
+                        updateTimer(button, date);
+                    } else {
+                        console.log("停止更新计时器")
+                        console.log(button)
+                        console.log(last)
+                        clearInterval(timer)
+                        return;
+                    }
+                }, 1000
+            );
+
+    }
+
+    const buttonCSS = GM_getResourceText("buttonCSS");
+    GM_addStyle(buttonCSS);
+    const popupCSS = GM_getResourceText("popupCSS");
+    GM_addStyle(popupCSS);
+
     GM_addStyle(`
-.my_button.orange {
-    background: linear-gradient(to right, #701a00, #d8420f, #ff9e1e, #ffd944);
+.my_button.translucence {
+    color: #888888;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(70, 70, 70, 0.2), rgba(135, 135, 135, 0.2));
 }
-.my_button.orange:hover::after {
-    -webkit-box-shadow: 0 0 16px #ff9e1e;
-    box-shadow: 0 0 16px #ff9e1e
+.my_button.translucence:hover::after {
+    -webkit-box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
 }
-.my_button.orange:hover:active {
-    color: yellow;
-    background: linear-gradient(to right,#ffb11e, #ff9e1e);
-}
-.my_button.red:hover:active {
-    color: pink;
-    background: linear-gradient(to right,#d61361,#fc1e39);
+.my_button.translucence:hover:active {
+    color: #888888;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(70, 70, 70, 0.2), rgba(135, 135, 135, 0.2));
 }
 `);
 

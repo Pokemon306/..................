@@ -30,6 +30,10 @@ function transfer(text) {
 function Toast(msg, duration, movedown) {
     duration = isNaN(duration) ? 1000 : duration;
     movedown = isNaN(movedown) ? 0 : movedown;
+    let top = '20%';
+    if(movedown > 0) {
+        top = (window.innerHeight + movedown) + 'px';
+    }
     var m = document.createElement('div');
     m.innerHTML = msg;
     m.style.cssText = "font-size: 15px;" +
@@ -42,7 +46,7 @@ function Toast(msg, duration, movedown) {
         "margin: 0 0 0 -60px;" +
         "border-radius: 4px;" +
         "position: fixed;" +
-        `top: 20% + ${movedown}px;` +
+        `top: ${top};` +
         "left: 50%;" +
         "width: auto;" +
         "z-index:1001;" +

@@ -817,6 +817,16 @@ const ReplyPlate_limit = {
         }
     }
 
+    // 关闭所有弹窗
+    function closeAllPopup() {
+        let elementNodeListOf = document.body.querySelectorAll('.my_popup');
+
+        elementNodeListOf.forEach(element => {
+            console.log(element.id, " : ", element.style.display);
+            element.style.display = 'none';
+        })
+    }
+
     // 设置关闭事件
     function setCloseEvent(id, parentId) {
         // 点击页面其他地方关闭弹窗
@@ -845,6 +855,8 @@ const ReplyPlate_limit = {
 
             // 增加点击监听 显示弹出窗口
             button.addEventListener('click', function (e) {
+                closeAllPopup()
+
                 // 如果弹窗已显示，则进行关闭
                 if (document.getElementById(popupId).style.display != 'none') {
                     closePopup(popupId);
@@ -1088,8 +1100,8 @@ const ReplyPlate_limit = {
                     let last = JSON.parse(localStorage.getItem('replyAward_lastTime') || '{}');
                     if(button && last.date) {
                         let date = new Date(last.date);
-                        console.log(date.getDate())
-                        console.log(new Date().getDate())
+                        // console.log(date.getDate())
+                        // console.log(new Date().getDate())
 
                         if(button.display == 'none') {
                             console.log("停止更新计时器")
@@ -1099,8 +1111,8 @@ const ReplyPlate_limit = {
                         updateTimer(button, date);
                     } else {
                         console.log("停止更新计时器")
-                        console.log(button)
-                        console.log(last)
+                        // console.log(button)
+                        // console.log(last)
                         clearInterval(timer)
                         return;
                     }

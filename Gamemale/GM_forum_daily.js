@@ -730,7 +730,7 @@ function getHtmlText() {
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="coin" name="Checkbox[]" value="456" /><span',
-        '            onclick="setChekedValue(this)">茉香啤酒</span>',
+        '            onclick="setChekedValue(this)">茉香啤酒（25金币 -堕落+血液）</span>',
         '    </span><br>',
         '    <span>',
         '        <input type="checkbox" class="coin" name="Checkbox[]" value="195" /><span',

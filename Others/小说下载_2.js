@@ -1,12 +1,13 @@
 // ==UserScript==
-// @name         小说下载
+// @name         小说下载 2
 // @namespace    http://tampermonkey.net/
 // @version      V1.0
-// @description  目前支持jiqinw
+// @description  目前支持shibashuwu
 // @updateURL
 // @downloadURL
 // @author       Sam
-// @match        https://jiqinw.com/*/*.html
+// @match        https://www.shibashuwu.net/book/*
+// @match        https://www.shibashuwu.net/book/*/*
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUfHh7////5+fkzMjJEQ0PX19esq6vs7Ozm5uZubW0rKio8OzsmJSW4uLdfXl7y8vLg39+Yl5fOzs3DwsKHhoZLSkqhoKBXV1d7e3rIyMiRkZCMjIt2dXVSUlHrlbybAAABAUlEQVQ4y92S2a7DIAxEGTBbCISsbbb//80bS6iKEqXvt/MC0hyNwbb4Wam0tr569mmWgJweidCDZV9P+RFNHIxJ94T6Ne1CGVh/3FVQ9dVvG5hqkNAjbUa7bOhCrECXvIR0VoLVq09dH/h1OcdJzWBJlw/SF3/TcuXzHRs7jr212njiz7QFmADNEd4Ck6iIOHrUwFKA8TAGIZID4EgIIkqtO7fCAFrtGQDHemedZPb9ef+rQTNoSN0BOSxg5YVOLYgyatm91c7FyB3oEMRZKXYwqhQL7YFeB3AYfVWK+UrdpkBbaUttIk/pBtTVXCLU0xrwDNLXNetcG8Q3jST+r/4AvW8KgFIEhZIAAAAASUVORK5CYII=
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
@@ -19,60 +20,36 @@
 const buttonGroup = {
     "下载全文": {"name": "downloadAll", "func": "downloadAll"},
     "停止下载": {"name": "stopDownload", "func": "stopDownload"},
+    "测试": {"name": "test", "func": "test"},
 };
 
 const website_config = {
-    "jiqinw.com": {
-        "pages_num": {
-            "method": 0,
-            "selector": ".alt_page"
-        },
-        "book": {
-            "selector": `meta[property="og:novel:book_name"]`
-        },
-        "author": {
-            "method": 0,
-            "selector": `meta[property="og:novel:author"]`
-        },
-        "content": {
-            "selector": '.wznrb',
-            "selector_1": '.co-bay'
-        },
-        "item": {
-            "match": /(\w*)\/(\d*)(_)?(\d*)?.html(.*)?$/,
-            "current_index": 4,
-            "category_index": 1,
-            "nid_index": 2,
-        },
-        "jump": {
-            "url": 'https://jiqinw.com/${category}/${nid}${current}.html'
-        }
-    },
     "www.shibashuwu.net": {
         "pages_num": {
-            "method": 0,
+            "method": 1,
             "selector": ".alt_page"
         },
         "book": {
-            "selector": `meta[property="og:novel:book_name"]`
+            "selector": `meta[property="og:title"]`
         },
         "author": {
             "method": 0,
             "selector": `meta[property="og:novel:author"]`
         },
         "content": {
-            "selector": '.wznrb',
+            "selector": '.RBGsectionThree-content',
             "selector_1": '.co-bay'
         },
         "item": {
-            // book/36382/
-            "match": /(\w*)\/(\d*)\/(\d*)(_)?(\d*)?.html(.*)?$/,
+            // /book/36382/
+            "match": /(\w*)\/(\d*)\/((\d*)(_)?(\d*)?.html(.*)?)?$/,
             "current_index": 4,
             "category_index": 1,
             "nid_index": 2,
         },
         "jump": {
-            "url": 'https://jiqinw.com/${category}/${nid}${current}.html'
+            "method": 1,
+            "selector": '.RBGsectionTwo-right',
         }
     }
 };
@@ -109,8 +86,14 @@ const tableHeight = 800;
                 let name = `《${bookName}》 作者：${authorName}`
                 item.name = name
 
+                console.log(item)
                 localStorage.setItem(item.key, JSON.stringify(item))
-                checkDownloadTask()
+
+                // checkDownloadTask()
+                document.body.querySelector('.CGsectionOne-active')
+                    .querySelector('a').click()
+                document.body.querySelector('.RBGsectionTwo-right')
+                    .querySelector('a').click()
             }
         },
         stopDownload() {
@@ -124,6 +107,9 @@ const tableHeight = 800;
             } else {
                 Toast('没有找到本篇任务')
             }
+        },
+        test() {
+            let config = getConfig();
         }
     };
 
@@ -166,22 +152,37 @@ const tableHeight = 800;
     const page_funcs = {
         0() {
             const alt_page = targetNode.querySelector(".alt_page");
-            const a = alt_page.querySelector('a');
+            if(alt_page) {
+                const a = alt_page.querySelector('a');
 
-            let matchArray = a.innerText.match(/共(\d*)页:$/);
-            const pages_num = matchArray[1]
-            return pages_num;
+                let matchArray = a.innerText.match(/共(\d*)页:$/);
+                const pages_num = matchArray[1]
+                return pages_num;
+            }
+        },
+        1() {
+            const lastPage = targetNode.querySelector(".BGsectionThree-content");
+            if(lastPage) {
+                const a = lastPage.querySelector('a');
+                console.log(a.innerText)
+
+                // 汉字 ([^\x00-\xff]+)
+                let matchArray = a.innerText.match(/(\d*)$/);
+                const pages_num = matchArray[1]
+                return pages_num;
+            }
         }
     }
 
     function getDownItem(config) {
-        const pages_num =
-            page_funcs[config.pages_num.method]();
-
         const url = window.location.href
         let urlMatchArray = url.match(config.item.match);
+        console.log(urlMatchArray)
         const category = urlMatchArray[config.item.category_index]
         const nid = urlMatchArray[2]
+
+        const pages_num =
+            page_funcs[config.pages_num.method]();
 
         Toast(`分类：${category}, 帖子编号：${nid}，分页数量：${pages_num}`, 3000)
 
@@ -197,9 +198,18 @@ const tableHeight = 800;
         return value;
     }
 
-
+    const jump_funcs = {
+        1(jump) {
+            document.body.querySelector(jump.selector)
+                .querySelector('a').click()
+        }
+    }
     // 检查当前页面是否有下载任务
     function checkDownloadTask() {
+        if(!window.location.pathname.endsWith("html")) {
+            return;
+        }
+
         console.log("checkDownloadTask")
         let config = getConfig();
         const _item = getDownItem(config);
@@ -238,9 +248,13 @@ const tableHeight = 800;
                     if (!element) {
                         element = document.querySelector(config.content.selector_1);
                     }
+                    console.log(element.childNodes)
+                    if(element.childNodes && element.childNodes[element.childNodes.length - 1].innerText.indexOf("继续阅读") > 0) {
+                        element.removeChild(element.childNodes[element.childNodes.length - 1])
+                    }
                     const text = element.innerText;
 
-                    cache[current] = text
+                    cache[current] = text.replaceAll("\n\n\n\n", "\n")
 
                     localStorage.setItem(cacheKey, JSON.stringify(cache));
                 }
@@ -264,15 +278,22 @@ const tableHeight = 800;
                 }
                 console.log(current)
                 item.current = current
+                console.log(item)
+                return;
                 localStorage.setItem(key, JSON.stringify(item));
 
-                let jumpUrl = config.jump.url
-                    .replaceAll('${category}', category)
-                    .replaceAll('${nid}', nid)
-                    .replaceAll('${current}', current == 1 ? '' : ('_' + current))
+                // 跳转到下一页
+                if(config.jump.method == 0) {
+                    let jumpUrl = config.jump.url
+                        .replaceAll('${category}', category)
+                        .replaceAll('${nid}', nid)
+                        .replaceAll('${current}', current == 1 ? '' : ('_' + current))
 
-                // 跳转
-                window.location.href = jumpUrl;
+                    // 跳转
+                    window.location.href = jumpUrl;
+                } else {
+                    jump_funcs[config.jump.method](config.jump);
+                }
             }
         } else {
             console.log("没有下载任务")
@@ -431,7 +452,6 @@ const tableHeight = 800;
     }
 
     const popup_btnReplyPlate_btn = document.getElementById('btn_btnReplyPlate');
-    console.log(popup_btnReplyPlate_btn)
     const popup_btnReplyPlate_id = "popup_ReplyPlate"
     if (popup_btnReplyPlate_btn) {
         createIFrame(popup_btnReplyPlate_id)

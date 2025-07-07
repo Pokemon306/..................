@@ -26,6 +26,7 @@ const buttonGroup = {
     "复制图片（文件夹）": {"name": "copyPics_folder", "func": "copyPics_folder", "color": "green"},
     "复制附件": {"name": "copyAttachments", "func": "copyAttachments", "color": "blue"},
     // "复制附件（原名）": {"name": "copyAttachments_origin", "func": "copyAttachments_origin", "color": "blue"},
+    "复制附件（序号）": {"name": "copyAttachments_serial", "func": "copyAttachments_serial", "color": "blue"},
     "复制附件（文件夹）": {"name": "copyAttachments_folder", "func": "copyAttachments_folder", "color": "blue"},
     "复制所有": {"name": "copyAll", "func": "copyAll"},
     "复制所有（文件夹）": {"name": "copyAll_folder", "func": "copyAll_folder"},
@@ -62,8 +63,8 @@ const tableHeight = 800;
         copyAttachments() {
             copyAll('NoFolder', 'attachment');
         },
-        copyAttachments_origin() {
-            copyAll('NoFolder', 'attachment_origin');
+        copyAttachments_serial() {
+            copyAll('NoFolder', 'attachment_serial');
         },
         copyAttachments_folder() {
             copyAll('', 'attachment');
@@ -529,7 +530,7 @@ const tableHeight = 800;
             let urls = `#R,${window.location.href}\n`
 
             // 处理附件 视频/ZIP
-            if((type == 'all' || type == 'attachment' || type == 'attachment_origin') && postData.attachments && postData.attachments.length > 0) {
+            if((type == 'all' || type == 'attachment' || type == 'attachment_origin' || type == 'attachment_serial') && postData.attachments && postData.attachments.length > 0) {
                 let num = 1
 
                 if(postData.attachments.length == 1) {
@@ -554,12 +555,12 @@ const tableHeight = 800;
                         let filename = ''
                         let url = `${attach.server}/data${attach.path}`
 
-                        if(attach.extension === ".mp4" || attach.extension === ".m4v") {
+                        if(attach.extension === ".mp4" || attach.extension === ".m4v" || attach.extension === ".mov") {
 
                             let twoDigitText = num.toString().padStart(2, '0');
                             filename = name.trim().concat(' ', twoDigitText, attach.extension)
 
-                            if(attach.name.length <= 50) {
+                            if(type != 'attachment_serial' && attach.name.length <= 50) {
                                 if(type == 'attachment_origin') {
                                     filename = `${attach.name}`
                                 } else {
@@ -570,7 +571,7 @@ const tableHeight = 800;
                             num += 1
                         } else {
                             filename = name.trim().concat(' ', attach.name)
-                            if(attach.name.length <= 50) {
+                            if(type != 'attachment_serial' && attach.name.length <= 50) {
                                 filename = `${attach.name}`
                             }
                         }

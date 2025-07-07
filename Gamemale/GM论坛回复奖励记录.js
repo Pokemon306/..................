@@ -775,12 +775,15 @@ const ReplyPlate_limit = {
         Object.keys(_rap).forEach(key => {
             const datetime = _rap[key];
             const date = new Date(datetime)
+            a
 
             if(index == 0 || date.getDate() == 1) {
                 html.push(`<tr class="tr"><td colspan="2" style="text-align: center;font-weight: 1000;">${formatDate(date, 'YYYY年MM月')}</td><td class=""><button id="delete" class="toggle-btn t_button ra_history_delete_button" onclick="" date="${key.substring(0, 6)}">删除</button></td></tr>`)
             }
-            html.push(`<tr class="tr">`)
+            html.push(`<tr class="tr" date="${formatDate(date, 'YYYYMMdd')}" month="${formatDate(date, 'YYYYMM')}">`)
             html.push(`<td class="">${formatDate(date, 'YYYY-MM-dd')}</td>`)
+
+
             html.push(`<td class=""><button id="look" class="toggle-btn t_button ra_history_show_button" onclick="" date="${key}">查看</button></td>`)
             html.push(`<td class=""><button id="delete" class="toggle-btn t_button ra_history_delete_button" onclick="" date="${key}">删除</button></td>`)
 
@@ -953,7 +956,7 @@ const ReplyPlate_limit = {
                 Toast("没有回复记录！", 3000)
                 return;
             }
-            let rap = JSON.parse(localStorage.getItem(key) || '[]');
+            let rap = JSON.parse(localStorage.getItem(key) || '{}');
             let html = rapToHtml(rap);
 
             return html;
@@ -974,8 +977,43 @@ const ReplyPlate_limit = {
                     console.log(_date)
                     if(_date.length == 6) {
                         console.log("删除这个月的数据：", _date)
+                        console.log(this.parentElement.parentElement.parentElement)
+                        let list = this.parentNode.parentNode.parentNode
+
+                        list.childNodes.forEach(child=>{
+                            if(child.getAttribute("month") == _date) {
+                                console.log('删除', child.getAttribute("date"))
+                                // child.remove()
+                                list.removeChild(child)
+                            }
+                        })
+                        // this.parentElement.parentElement.remove();
+
+                        let key = `${key_prefix}keys`;
+                        let keys = JSON.parse(localStorage.getItem(key) || '{}');
+                        for (let key in keys) {
+                            if(key.startsWith(_date)) {
+                                // console.log(`删除 ${key}`)
+                            }
+                        }
+
                     } else if(_date.length == 8) {
                         console.log("删除这天的数据：", _date)
+
+                        // console.log(this.parentElement.parentElement)
+                        this.parentElement.parentElement.remove();
+
+                        let key = `${key_prefix}keys`;
+                        let keys = JSON.parse(localStorage.getItem(key) || '{}');
+                        if(keys[_date]) {
+                            Toast("没有找到这天的数据")
+                            return
+                        }
+                        keys[_date] = undefined
+                        localStorage.setItem(`${key_prefix}keys`, JSON.stringify(keys));
+
+                        localStorage.removeItem(`${key_prefix}${_date}`)
+                        localStorage.removeItem(`${key_prefix}${_date}_sum`)
                     }
                 })
             })

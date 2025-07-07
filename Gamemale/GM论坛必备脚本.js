@@ -5,7 +5,7 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_addStyle
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      1.0
 // @description  泥潭！
 // @updateURL    https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM%E8%AE%BA%E5%9D%9B%E5%BF%85%E5%A4%87%E8%84%9A%E6%9C%AC.js
 // @downloadURL  https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM%E8%AE%BA%E5%9D%9B%E5%BF%85%E5%A4%87%E8%84%9A%E6%9C%AC.js
@@ -252,17 +252,32 @@
             (function () {
                 'use strict';
                 const medals = [
-                    {name: '野兽之子', id: 188},
-                    {name: '禽兽扒手', id: 107},
-                    {name: '风雪之家', id: 345},
-                    {name: '牧羊人', id: 4},
-                    {name: '男色诱惑', id: 401},
-                    {name: '四季之歌', id: 287},
-                    {name: '海边的邻居', id: 430},
-                    {name: '森林羊男', id: 27},
-                    {name: '堕落之舞', id: 80},
-                    {name: '黄色就是俏皮', id: 81},
-                    {name: '骑兽之子', id: 82},
+                    {name: '五谷丰年', id: 652, type: "综合向", note: "24% 回帖（0.24）金币+1、发帖（0.96）金币+4"},
+                    {name: '海边的邻居', id: 430, type: "发帖向", note: "30% 发帖（1.5）咒术+1"},
+                    {name: '男色诱惑', id: 401, type: "发帖向", note: "33% 发帖（1.65）血液+5"},
+                    {name: '四季之歌', id: 287, type: "回帖向", note: "10% 回帖（0.1）金币+1、发帖（5.0）知识+1"},
+                    {name: '风雪之家', id: 345, type: "综合向", note: "1% 回帖（0.1）血液+5 金币+5、发帖（10.0）灵魂+1"},
+                    {name: '野兽之子', id: 188, type: "回帖向", note: "9% 回帖（4.41）知识+1 血液-1"},
+                    {name: '牧羊人', id: 4, type: "发帖向", note: "10% 发帖（3.0）旅程+1"},
+                    {name: '森林羊男', id: 27, type: "综合向", note: "5% 回帖（2.5）知识+1、发帖（2.5）知识+1"},
+                    {name: '堕落之舞', id: 80, type: "发帖向", note: "35% 发帖（1.05）金币+3"},
+                    {name: '黄色就是俏皮', id: 81, type: "综合向", note: "10% 回帖（0.1）血液+1、发帖（0.1）血液+1"},
+                    {name: '骑兽之子', id: 82, type: "综合向", note: "20% 回帖（0.2）血液+1、发帖（1.6）血液+3 咒术+1"},
+                    {name: '禽兽扒手', id: 107, type: "回帖向", note: ""},
+                ];
+                // 发帖勋章
+                const medals_post = [
+                    {name: '男色诱惑', id: 401, type: "发帖向", note: "33% 发帖（1.65）血液+5"},
+                    {name: '风雪之家', id: 345, type: "综合向", note: "1% 发帖（10.0）灵魂+1"},
+                    {name: '森林羊男', id: 27, type: "综合向", note: "5% 发帖（2.5）知识+1"},
+                    {name: '牧羊人', id: 4, type: "发帖向", note: "10% 发帖（3.0）旅程+1"},
+                ];
+                // 回帖勋章
+                const medals_reply = [
+                    {name: '野兽之子', id: 188, type: "回帖向", note: "9% 回帖（4.41）知识+1 血液-1"},
+                    {name: '森林羊男', id: 27, type: "综合向", note: "5% 回帖（2.5）知识+1"},
+                    {name: '骑兽之子', id: 82, type: "综合向", note: "20% 回帖（0.2）血液+1"},
+                    {name: '禽兽扒手', id: 107, type: "回帖向", note: ""},
                 ];
                 let youxi = ["杰夫‧莫罗", "克里斯‧雷德菲尔德", "疾风剑豪", "光之战士", "艾吉奥", "弗图博士", "裸体克里斯", "凯登‧阿兰科", "果体76", "尼克斯·乌尔里克", "岛田半藏", "内森·德雷克", "卡洛斯·奥利维拉", "诺克提斯·路西斯·伽拉姆", "文森特‧瓦伦丁", "炙热的格拉迪欧拉斯", "竹村五郎", "【周年限定】克里斯(8)", "沃特·沙利文", "里昂‧S‧甘乃迪", "亚瑟‧摩根", "萨菲罗斯", "岛田源氏", "BIG BOSS", "【夏日限定】夏日的泰凯斯", "Dante", "库伦 (起源)", "康纳/Connor", "英普瑞斯", "乔纳森·里德", "Doc", "杰克·莫里森/士兵 76", "维吉尔", "皮尔斯‧尼凡斯", "杰西·麦克雷", "泰比里厄斯", "Vergil", "普隆普特·阿金塔姆", "桐生一马", "格拉迪欧拉斯", "亚当‧简森", "铁牛", "黑墙", "安杜因·乌瑞恩", "阿尔伯特·威斯克", "V (DMC5)", "汉克/Hank", "希德‧海温特", "巴尔弗雷亚", "肥皂", "士官长", "豹王", "阿列克西欧斯（Alexios）", "莱因哈特·威尔海姆", "幻象", "加勒特·霍克", "不灭狂雷-沃利贝尔", "泰凯斯·芬得利", "陷阱杀手", "Scott Ryder", "不屈之枪·阿特瑞斯", "詹姆斯‧维加", "阿尔萨斯‧米奈希尔", "盖拉斯‧瓦卡瑞安", "法卡斯", "库伦 (审判)", "【新手友好】昆進", "鬼王酒吞童子", "维克多‧天火", "蛮族战士", "奧倫", "吉姆‧雷诺", "但丁", "威尔卡斯", "亚力斯塔尔", "艾德尔", "桑克瑞德·沃特斯", "天照大神", "百相千面", "虎头怪", "里昂（RE4）", "苇名弦一郎", "克莱夫・罗兹菲尔德", "约书亚・罗兹菲尔德"];
                 let zhenren = ["约翰·康斯坦丁","托尼·史塔克", "Joker", "克里斯·埃文斯", "魯杰羅·弗雷迪", "虎克船长", "安德森‧戴维斯", "索尔·奥丁森", "擎天柱（Peterbilt389）", "麦迪文（Medivh）", "西弗勒斯·斯内普", "神灯", "索林·橡木盾", "阿拉贡", "乔治·迈克尔", "魔术师奥斯卡", "杰森‧斯坦森", "小天狼星·布莱克", "阿不思·邓布利多", "甘道夫", "博伊卡", "死神", "马克·史贝特", "史蒂文·格兰特", "亚瑟·库瑞（海王）", "巴基 (猎鹰与冬兵)", "哈尔‧乔丹", "克苏鲁", "异形", "卢西亚诺‧科斯塔", "罗宾·西克", "超人", "丹·雷诺斯", "罗伯‧史塔克", "蓝礼·拜拉席恩", "卡德加（Khadgar）", "吉姆·霍普", "大古", "黑豹", "莱托·厄崔迪", "Drover", "艾利克斯", "三角头", "布莱恩‧欧康纳", "迪恩‧温彻斯特", "山姆‧温彻斯特", "丹尼爾·紐曼", "迈克尔迈尔斯", "金刚狼", "Chris Mazdzer", "瑟兰迪尔", "威克多尔·克鲁姆", "大黄蜂（ChevroletCamaro）", "勒维恩·戴维斯", "安德鲁·库珀", "丹·安博尔", "塞巴斯蒂安·斯坦", "莱戈拉斯", "奥利弗‧奎恩", "盖里", "汤姆·赫兰德", "Frank (LBF)", "詹米·多南", "羅素·托維", "藤田優馬", "康纳‧沃什", "巴特‧贝克", "戴尔‧芭芭拉", "猫化弩哥", "卡斯迪奥", "史蒂夫‧金克斯", "戴蒙‧萨尔瓦托", "尼克·贝特曼", "尤利西斯", "阿齐斯", "纣王·子受", "阿尔瓦罗·索莱尔", "克劳斯·迈克尔森", "尼克‧贝特曼", "尼克·王尔德"];
@@ -271,8 +286,9 @@
                 let asset = ["健忘礼物盒","神秘挑战书","雪王的心脏", "沙漠神灯", "SCP-s-1889", "梦中的列车", "婴儿泪之瓶", "幽灵竹筒", "羽毛笔", "老旧怀表", "海潮之歌", "冒险用指南针", "勇者与龙之书", "这是一片丛林", "漂洋小船", "圣甲虫秘典", "充满魔力的种子", "奇怪的紫水晶", "锻造卷轴", "流失之椅", "知识大典", "德拉克魂匣", "宝箱内的球", "暖心小火柴", "神秘的邀请函", "红石", "秘密空瓶", "GHOST", "冒险用面包", "深红矿土", "海螺号角", "冒险用宝箱", "木柴堆", "章鱼小丸子", "种植土豆", "冒险用绷带", "预知水晶球", "发芽的种子", "魔法石碑", "神秘的红茶", "夜灯", "远古石碑", "用过的粪桶", "种植菠菜", "种植菊花", "GM論壇初心者勛章", "箭术卷轴", "种植小草", "One Ring", "超级无敌名贵金卡", "金钱马车", "聚魔花盆", "谜之瓶", "诺曼底号", "社畜专用闹钟", "神秘的漂流瓶", "史莱姆养殖证书", "微笑的面具", "【圣诞限定】心心念念小雪人", "浪潮之歌", "暗红矿土", "老旧的怀表", "双项圣杯", "散佚的文集", "令人不安的契约书", "被尘封之书", "黑暗水晶", "无垠", "冰海钓竿"];
                 let pet = ["软泥怪蛋", "洞窟魔蛋", "结晶卵", "五彩斑斓的蛋", "史莱姆蛋", "珊瑚色礁石蛋", "【年中限定】GM村金蛋", "迷のDoge", "黑龙蛋", "电磁卵", "月影蛋", "郁苍卵", "熔岩蛋", "灵鹫蛋", "血鹫蛋", "深渊遗物", "小阿尔的蛋", "幽光彩蛋", "青鸾蛋", "马戏团灰蛋", "万圣彩蛋", "林中之蛋", "沙漠羽蛋", "海边的蛋", "暮色卵", "血红色的蛋", "螺旋纹卵", "红龙蛋", "腐化龙蛋", "漆黑的蝎卵", "新手蛋", "狱炎蛋", "灵藤蛋", "棕色条纹蛋", "长花的蛋", "可疑的肉蛋", "崩朽龙卵", "波纹蓝蛋"];
                 let forum = ["达拉然", "时间变异管理局", "美恐：启程", "男巫之歌", "最终幻想XIV", "赛博朋克2077", "龙腾世纪：审判", "荒野大镖客：救赎 II", "奥兹大陆", "五花八门版块", "TRPG版塊", "堕落飨宴", "质量效应三部曲", "上古卷轴V：天际", "雾都血医", "恶魔城", "生化危机：复仇", "街头霸王", "模拟人生4", "寶可夢 Pokémon", "英雄联盟", "辐射：新维加斯", "最终幻想XVI", "雄躯的昇格", "极客的晚宴"];
-                let skill = ["野兽之子", "森林羊男", "骑兽之子", "禽兽扒手", "黄色就是俏皮", "四季之歌", "风雪之家", "牧羊人", "堕落之舞", "男色诱惑", "海边的邻居"];
+                let skill = ["五谷丰年", "野兽之子", "森林羊男", "骑兽之子", "禽兽扒手", "黄色就是俏皮", "四季之歌", "风雪之家", "牧羊人", "堕落之舞", "男色诱惑", "海边的邻居"];
                 let huishou = {
+                    "五谷丰年": 0,
                     "野兽之子": 0,
                     "森林羊男": 0,
                     "骑兽之子": 0,
@@ -336,7 +352,6 @@
                         result["咒术"] += matches[1] + ","
                     } else if (plot.indexOf(matches[1]) >= 0) {
                         result["剧情"] += matches[1] + ","
-
                     } else {
                         result["其他"] += matches[1] + ","
                     }
@@ -431,6 +446,7 @@
 
                 showValid()
 
+                console.log(huishou)
                 // 创建勋章回收相关DOM元素
                 let recycleContainer = document.createElement('div');
                 recycleContainer.style.marginTop = '20px';
@@ -440,8 +456,8 @@
         <form id="recycleForm">
             <div class="myfldiv" style="margin-top: 5px;margin-bottom: 5px;">
             ${Object.entries(huishou).map(([medalName, 回收号]) => `
-                <label style="display:block;margin-right: 5px;">
-                    <input type="checkbox" name="${medalName}" value="${回收号}">
+                <label style="display:block;margin-right: 5px;font-size:14px;">
+                    <input type="checkbox" name="${medalName}" value="${回收号}" ${回收号 > 0 ? 'checked="true"': ""}>
                     <span>${medalName}</span>
                 </label>
             `).join('')}
@@ -449,6 +465,7 @@
             <button type="button" id="batchRecycleBtn" class="medal_button">批量回收</button>
         </form>
     `;
+
                 let receiveContainer = document.createElement('div');
                 receiveContainer.className = 'receive-form-container'; // 添加类名以便自定义样式
                 // receiveContainer.style.marginTop = '20px';
@@ -460,39 +477,92 @@
           background-color: rgba(0, 0, 0, 0.05);
           padding: 3px;
           border-radius: 5px;">（牧羊人发帖加旅程，森林羊男加知识，风雪之家加灵魂，其他加金币或者血液以及咒术）</p></h2>
-            <form id="receiveForm">
-                <div class="myfldiv" style="margin-top: 5px;margin-bottom: 5px;">
+    <form id="receiveForm">
+        <div class="myfldiv" style="margin-top: 5px;margin-bottom: 5px;margin-right: 5px;">
                 ${medals.map(medal => `
-        <label style="display:block;margin-right: 5px;">
-            <input type="checkbox" name="${medal.name}" value="${medal.id}">
-            <span>${medal.name}</span>
+        <label style="display:block;font-size:14px;margin-right: 10px;color: ${medal.type == '回帖向'? 'green': (medal.type == '发帖向'? 'blue': 'black')};">
+            <input type="checkbox" name="${medal.name}" value="${medal.id}" >
+            <span title="${medal.note}">${medal.name}</span>
         </label>
         `).join('')}
         </div>
         <button type="button" id="batchReceiveBtn" class="medal_button">批量领取</button>
     </form>
-    `;
+
+    <div style="margin-top: 20px"></div>
+    <h2>批量领取回帖勋章</h2>
+    <form id="receiveForm_reply">
+        <div class="myfldiv" style="margin-top: 5px;margin-bottom: 5px;margin-right: 5px;">
+        ${medals_reply.map(medal => `
+        <label style="display:block;font-size:14px;margin-right: 10px;color: ${medal.type == '回帖向'? 'green': (medal.type == '发帖向'? 'blue': 'black')};">
+            <input type="checkbox" name="${medal.name}" value="${medal.id}" >
+            <span title="${medal.note}">${medal.name}</span>
+        </label>
+        `).join('')}
+        </div>
+
+        <button type="button" id="check_all_reply" class="check_all">全选</button>
+        <button type="button" id="batchReceiveBtn_reply" class="medal_button">批量领取</button>
+    </form>
+
+    <div style="margin-top: 20px"></div>
+    <h2>批量领取发帖勋章</h2>
+    <form id="receiveForm_post">
+        <div class="myfldiv" style="margin-top: 5px;margin-bottom: 5px;margin-right: 5px;">
+        ${medals_post.map(medal => `
+        <label style="display:block;font-size:14px;margin-right: 10px;color: ${medal.type == '回帖向'? 'green': (medal.type == '发帖向'? 'blue': 'black')};">
+            <input type="checkbox" name="${medal.name}" value="${medal.id}" >
+            <span title="${medal.note}">${medal.name}</span>
+        </label>
+        `).join('')}
+        </div>
+        
+        <button type="button" id="check_all_post" class="check_all">全选</button>
+        <button type="button" id="batchReceiveBtn_post" class="medal_button">批量领取</button>
+    </form>`;
 
                 const targetElement = document.querySelector("#medalid_f > div.my_fenlei > div.my_biaoti");
                 targetElement.parentNode.appendChild(recycleContainer);
                 targetElement.parentNode.appendChild(receiveContainer);
-                document.getElementById('batchReceiveBtn').addEventListener('click', () => {
-                    const checkboxes = document.querySelectorAll('#receiveForm input[type="checkbox"]:checked');
-                    checkboxes.forEach(checkbox => {
-                        const medalName = checkbox.name;
-                        const medalId = parseInt(checkbox.value, 10);
 
-                        if (!isNaN(medalId)) {
-                            const url = `https://www.gamemale.com/wodexunzhang-showxunzhang.html?action=lingqu&medalid=${medalId}`;
-                            // 使用GM_openInTab打开新的标签页，如果在普通环境下则使用window.open
-                            // 注意：由于安全策略，window.open可能会被浏览器阻止，除非用户有交互行为
-                            // 如果您的环境支持Greasemonkey或Tampermonkey等脚本管理器，请使用GM_openInTab
-                            // 否则请注释掉GM_openInTab这一行，并取消注释下面的window.open
-                            // GM_openInTab(url);
-                            window.open(url, '_blank');
-                        }
+                let elementsByClassName = document.querySelectorAll('.check_all');
+                elementsByClassName.forEach(element => {
+                    console.log(element)
+                    element.addEventListener('click', e => {
+                        console.log(element.parentElement)
+                        let inputs = element.parentElement.querySelectorAll('input');
+                        inputs.forEach(el => {
+                            el.checked = !el.checked;
+                        })
+                    })
+                })
+
+                // 批量领取方法
+                function receive(btnId, formId) {
+                    document.getElementById(btnId).addEventListener('click', () => {
+                        const checkboxes = document.querySelectorAll(`#${formId} input[type="checkbox"]:checked`);
+                        checkboxes.forEach(checkbox => {
+                            const medalName = checkbox.name;
+                            const medalId = parseInt(checkbox.value, 10);
+
+                            if (!isNaN(medalId)) {
+                                const url = `https://www.gamemale.com/wodexunzhang-showxunzhang.html?action=lingqu&medalid=${medalId}`;
+                                // 使用GM_openInTab打开新的标签页，如果在普通环境下则使用window.open
+                                // 注意：由于安全策略，window.open可能会被浏览器阻止，除非用户有交互行为
+                                // 如果您的环境支持Greasemonkey或Tampermonkey等脚本管理器，请使用GM_openInTab
+                                // 否则请注释掉GM_openInTab这一行，并取消注释下面的window.open
+                                // GM_openInTab(url);
+                                window.open(url, '_blank');
+                            }
+                        });
                     });
-                });
+                }
+
+                // 批量领取方法
+                receive('batchReceiveBtn', 'receiveForm');
+                receive('batchReceiveBtn_reply', 'receiveForm_reply');
+                receive('batchReceiveBtn_post', 'receiveForm_post');
+
                 // 注册批量回收按钮点击事件
                 document.getElementById('batchRecycleBtn').addEventListener('click', () => {
                     const checkboxes = document.querySelectorAll('#recycleForm input[type="checkbox"]:checked');
@@ -865,7 +935,6 @@ background-color: #FFCDD2;
             }, refreshIntervalInSeconds * 300000);
         }
 
-
         if (autoClickEnabled && clickCount < maxClicksPerDay && /https:\/\/www\.gamemale\.com\/blog-.*\.html/.test(window.location.href)) {
             window.addEventListener('load', function () {
                 var links = document.getElementsByTagName('a');
@@ -909,7 +978,6 @@ background-color: #FFCDD2;
         `;
             document.body.appendChild(panel);
 
-
             document.getElementById('saveSettingsButton').addEventListener('click', function () {
                 var newRefreshInterval = parseInt(document.getElementById('refreshIntervalInput').value, 10);
                 var newAutoRefreshEnabled = document.getElementById('autoRefreshCheckbox').checked;
@@ -923,13 +991,10 @@ background-color: #FFCDD2;
                 GM_setValue('autoClickEnabled', newAutoClickEnabled);
                 GM_setValue('maxClicksPerDay', newMaxClicksPerDay);
 
-
                 alert('设置已保存。请手动刷新页面以应用设置。');
-
 
                 closeSettingsPanel();
             });
-
 
             document.getElementById('closeSettingsButton').addEventListener('click', function () {
                 closeSettingsPanel();

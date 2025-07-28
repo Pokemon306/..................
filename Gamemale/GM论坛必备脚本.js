@@ -6,7 +6,7 @@
 // @grant        GM_addStyle
 // @namespace    http://tampermonkey.net/
 // @version      1.0
-// @description  GM_forum_AllInOne_Script 泥潭！
+// @description  GM_forum_AllInOne 泥潭！
 // @updateURL    https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM%E8%AE%BA%E5%9D%9B%E5%BF%85%E5%A4%87%E8%84%9A%E6%9C%AC.js
 // @downloadURL  https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/Gamemale/GM%E8%AE%BA%E5%9D%9B%E5%BF%85%E5%A4%87%E8%84%9A%E6%9C%AC.js
 // @author       轶名&轶致&Chr_&1F&源子&Makima$Samuel
@@ -1012,6 +1012,56 @@ background-color: #FFCDD2;
     } else {
         console.log('如果不满足以上任何一个条件，可以在这里编写通用代码');
         // 如果不满足以上任何一个条件，可以在这里编写通用代码
+    }
+
+    // 一键打招呼
+    const replyAllButton = document.createElement('li')
+    replyAllButton.className = 'y'
+    replyAllButton.innerHTML = '<a href="javascript:;" id="replyAll" class="xi2">一键回打</a>'
+    const ignoreAllButton = document.createElement('li')
+    ignoreAllButton.className = 'y'
+    ignoreAllButton.innerHTML = '<a href="javascript:;" id="ignoreAll" class="xi2">一键忽略</a>'
+    document.querySelector('.tb.cl').appendChild(replyAllButton)
+    document.querySelector('.tb.cl').appendChild(ignoreAllButton)
+    document.querySelector('#replyAll').addEventListener('click', async function () {
+        let replyList = document.querySelector('.nts .cl')
+        while (replyList) {
+            replyList = document.querySelector('.nts .cl')
+            if (replyList) {
+                replyList.querySelector('.xw1').click()
+                const replyType = replyList.querySelector('.xw0 img').alt
+                let replyBoxType
+                while (true) {
+                    replyBoxType = document.querySelector(`.fwinmask img[alt="${replyType}"]`)
+                    if (replyBoxType) break
+                    await delay(100)
+                }
+                replyBoxType.click()
+                document.querySelector('#pokesubmit_btn').click()
+            }
+            await delay(1000)
+        }
+    })
+
+    document.querySelector('#ignoreAll').addEventListener('click', async function () {
+        let replyList = document.querySelector('.nts .cl')
+        while (replyList) {
+            replyList = document.querySelector('.nts .cl')
+            if (replyList) {
+                replyList.querySelector('.ntc_body a:last-child').click()
+                let ignoreButton
+                while (true) {
+                    ignoreButton = document.querySelector('button[name="ignoresubmit_btn"]')
+                    if (ignoreButton) break
+                    await delay(100)
+                }
+                ignoreButton.click()
+            }
+            await delay(1000)
+        }
+    })
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms))
     }
 
 })();

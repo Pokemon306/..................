@@ -91,10 +91,29 @@
                 }
 
                 if(type && air) {
+                    let modelVersion = undefined;
+
+                    let area = document.querySelector('.mantine-ScrollArea-root');
+                    if(area) {
+                        let list = area.querySelectorAll('.mantine-Group-root');
+                        console.log(list);
+                        for (const node of list) {
+                            let button = node.querySelector('button');
+                            if(button) {
+                                let button_hover = button?.style.getPropertyValue('--button-hover') || 'none';
+                                if(button_hover == 'var(--mantine-color-blue-filled-hover)') {
+                                    console.log(button.innerText, " true")
+                                    modelVersion = button.innerText;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
                     console.log(type.innerText)
                     console.log(air.innerText)
 
-                    let filename = transfer(`[${type.innerText}] ${name} (${air.innerText})`)
+                    let filename = transfer(`[${type.innerText}] ${name} ${modelVersion?"- " + modelVersion + " ":""}(${air.innerText})`)
                         .replaceAll('：', '')
                         .replaceAll(',', ' ')
                         .replaceAll('、', ' ')

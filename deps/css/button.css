@@ -53,7 +53,7 @@
 .my_button.orange {
     background: linear-gradient(to right, #701a00, #d8420f, #ff9e1e, #ffd944);
 }
-.my_button.orange {
+.my_button.yellow {
     background: linear-gradient(to right, #D9E021,#FCEE21,#f5ce62,#FBB03B);
 }
 .my_button.gray {
@@ -147,7 +147,7 @@
     color: #888888;
     background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(70, 70, 70, 0.2), rgba(135, 135, 135, 0.2));
 }
-.btn-hover.color-yellow:hover:active {
+.my_button.yellow:hover:active {
     color: black;
     background: linear-gradient(to right,#009245,#FCEE21);
 }

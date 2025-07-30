@@ -4,14 +4,14 @@
 // @version      V1.0
 // @description  KemonoAndCommer
 // @author       Sam
-// @match        https://kemono.su/patreon/user/**/post/**
-// @match        https://kemono.su/**
+// @match        https://kemono.cr/patreon/user/**/post/**
+// @match        https://kemono.cr/**
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUfHh7////5+fkzMjJEQ0PX19esq6vs7Ozm5uZubW0rKio8OzsmJSW4uLdfXl7y8vLg39+Yl5fOzs3DwsKHhoZLSkqhoKBXV1d7e3rIyMiRkZCMjIt2dXVSUlHrlbybAAABAUlEQVQ4y92S2a7DIAxEGTBbCISsbbb//80bS6iKEqXvt/MC0hyNwbb4Wam0tr569mmWgJweidCDZV9P+RFNHIxJ94T6Ne1CGVh/3FVQ9dVvG5hqkNAjbUa7bOhCrECXvIR0VoLVq09dH/h1OcdJzWBJlw/SF3/TcuXzHRs7jr212njiz7QFmADNEd4Ck6iIOHrUwFKA8TAGIZID4EgIIkqtO7fCAFrtGQDHemedZPb9ef+rQTNoSN0BOSxg5YVOLYgyatm91c7FyB3oEMRZKXYwqhQL7YFeB3AYfVWK+UrdpkBbaUttIk/pBtTVXCLU0xrwDNLXNetcG8Q3jST+r/4AvW8KgFIEhZIAAAAASUVORK5CYII=
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_getResourceText
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/2.2.4/jquery.min.js
+// @require      https://cdn.bootcdn.netajax/libs/jquery/2.2.4/jquery.min.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/datetime.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/buttons.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
@@ -30,6 +30,7 @@ const buttonGroup = {
     "复制附件（文件夹）": {"name": "copyAttachments_folder", "func": "copyAttachments_folder", "color": "blue"},
     "复制所有": {"name": "copyAll", "func": "copyAll"},
     "复制所有（文件夹）": {"name": "copyAll_folder", "func": "copyAll_folder"},
+    "下载文本内容": {"name": "downloadContent", "func": "downloadContent", "color": "yellow"},
     "设置": {"name": "config", "func": "config", "color": "black"},
 };
 console.log(" KemonoAndCommer init ");
@@ -74,6 +75,9 @@ const tableHeight = 800;
         },
         copyAll_folder() {
             copyAll('', 'all');
+        },
+        downloadContent() {
+            downloadContent();
         },
         config(event) {
             // 生成一套按钮组
@@ -653,5 +657,13 @@ const tableHeight = 800;
         }
     }
 
+    function downloadContent() {
+        let node = document.body.querySelector('.post__content');
+        if(node) {
+            console.log(node.textContent)
+        } else {
+            Toast(`copyContent failed!`)
+        }
+    }
 })();
 

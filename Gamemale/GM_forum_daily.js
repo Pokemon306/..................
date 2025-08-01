@@ -35,8 +35,10 @@ const buttonGroup = {
     "重置/中断执行": "btnClickReset",
 };
 
+// 按钮组优先级
+const zindex = 299;
 // 按钮组到底部的距离
-const bottomPx = 200;
+const bottomPx = 50;
 
 const key_prefix = 'replyAward_';
 const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
@@ -604,9 +606,9 @@ function button() {
     let body = document.querySelector('body');
     let div = document.createElement('div');
     div.id = "my_daily_buttonGroup";
-    div.style.cssText = `z-index:999;position:fixed;text-align:right;margin:10px;right:10px;bottom:${bottomPx}px`;
+    div.style.cssText = `z-index:${zindex};position:fixed;text-align:right;margin:10px;right:10px;bottom:${bottomPx}px`;
 
-    let stylebutton = 'z-index:999;position:sticky;margin:5px;'
+    let stylebutton = `z-index:${zindex};position:sticky;margin:5px;`
 
     let i = 1
     for (let buttonName in buttonGroup) {

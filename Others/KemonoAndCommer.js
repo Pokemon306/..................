@@ -11,7 +11,8 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_getResourceText
-// @require      https://cdn.bootcdn.netajax/libs/jquery/2.2.4/jquery.min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/2.2.4/jquery.min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/datetime.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/buttons.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
@@ -508,12 +509,9 @@ const tableHeight = 800;
     const popupCSS = GM_getResourceText("popupCSS");
     GM_addStyle(popupCSS);
 
-    function copyAll(mode, type) {
-        console.log("copyAll")
+    function getPostname() {
         let profileData = profileApi()
         let postData = postApi();
-        console.log(postData);
-        console.log(JSON.stringify(postData));
 
         if(profileData && postData && postData.post) {
             // 文件标题
@@ -522,6 +520,12 @@ const tableHeight = 800;
             let title = postData.post.title;
             let id = postData.post.id;
 
+            // 判断是否已有作品id(兼容按左右方向键翻页的情况)
+            const key = `kc_post_name_${id}`
+            let postname = localStorage.getItem(key);
+            if(postname) {
+                return postname;
+            }
             let datetime = postData.post.published;
             let _date = new Date(datetime)
 
@@ -530,6 +534,21 @@ const tableHeight = 800;
 
             let name =
                 "@".concat(username, " ", "[", platform, "]", " - ", "(", date, ")", " ", "(", id, ")", " ", transfer(title));
+            localStorage.setItem(key, name);
+
+            return name;
+        }
+    }
+
+    function copyAll(mode, type) {
+        console.log("copyAll")
+        let profileData = profileApi()
+        let postData = postApi();
+        console.log(postData);
+        console.log(JSON.stringify(postData));
+
+        if(profileData && postData && postData.post) {
+            let name = getPostname();
 
             let urls = `#R,${window.location.href}\n`
 
@@ -660,7 +679,15 @@ const tableHeight = 800;
     function downloadContent() {
         let node = document.body.querySelector('.post__content');
         if(node) {
-            console.log(node.textContent)
+            let name = getPostname();
+            let text = node.innerText;
+            console.log(node.innerText)
+
+            saveAs(
+                new Blob([name + '\n\n' + text], {type: "text/plain;charset=UTF-8"}),
+                name + ".txt"
+            );
+
         } else {
             Toast(`copyContent failed!`)
         }

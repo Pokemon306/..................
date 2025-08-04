@@ -30,11 +30,15 @@ const buttonGroup = {
     "日志": "btnClickLog",
     "勋章赠送": "btnClickMedal",
     "查看个人资料": "btnLookProfile",
+    "查看互动信息": "btnLookInteraction",
+    "查看系统提醒": "btnLookSystem",
     "重置/中断执行": "btnClickReset",
 };
 
+// 按钮组优先级
+const zindex = 299;
 // 按钮组到底部的距离
-const bottomPx = 200;
+const bottomPx = 50;
 
 const key_prefix = 'replyAward_';
 const awardGroup = ['金币', '旅程', '血液', '咒术', '知识', '堕落'];
@@ -239,6 +243,14 @@ const funcs = {
     btnLookProfile() {
         const uid = getUidInSpace();
         window.location.href = `https://www.gamemale.com/home.php?mod=space&uid=${uid}&do=profile`
+    },
+    btnLookInteraction() {
+        // 互动消息
+        window.location.href = `https://www.gamemale.com/home.php?mod=space&do=notice&view=interactive`
+    },
+    btnLookSystem() {
+        // 系统提醒
+        window.location.href = `https://www.gamemale.com/home.php?mod=space&do=notice&view=system`
     }
 }
 
@@ -594,9 +606,9 @@ function button() {
     let body = document.querySelector('body');
     let div = document.createElement('div');
     div.id = "my_daily_buttonGroup";
-    div.style.cssText = `z-index:999;position:fixed;text-align:right;margin:10px;right:10px;bottom:${bottomPx}px`;
+    div.style.cssText = `z-index:${zindex};position:fixed;text-align:right;margin:10px;right:10px;bottom:${bottomPx}px`;
 
-    let stylebutton = 'z-index:999;position:sticky;margin:5px;'
+    let stylebutton = `z-index:${zindex};position:sticky;margin:5px;`
 
     let i = 1
     for (let buttonName in buttonGroup) {
@@ -609,7 +621,7 @@ function button() {
         }
 
         let btn = document.createElement('button');
-        btn.className = `my_button green ${(size=="small"?"small":"large")}`
+        btn.className = `my_button green ${(size=="small"?"small":"medium")}`
 
         btn.style.cssText = stylebutton;
 

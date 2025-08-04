@@ -4,14 +4,15 @@
 // @version      V1.0
 // @description  KemonoAndCommer
 // @author       Sam
-// @match        https://kemono.su/patreon/user/**/post/**
-// @match        https://kemono.su/**
+// @match        https://kemono.cr/patreon/user/**/post/**
+// @match        https://kemono.cr/**
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUfHh7////5+fkzMjJEQ0PX19esq6vs7Ozm5uZubW0rKio8OzsmJSW4uLdfXl7y8vLg39+Yl5fOzs3DwsKHhoZLSkqhoKBXV1d7e3rIyMiRkZCMjIt2dXVSUlHrlbybAAABAUlEQVQ4y92S2a7DIAxEGTBbCISsbbb//80bS6iKEqXvt/MC0hyNwbb4Wam0tr569mmWgJweidCDZV9P+RFNHIxJ94T6Ne1CGVh/3FVQ9dVvG5hqkNAjbUa7bOhCrECXvIR0VoLVq09dH/h1OcdJzWBJlw/SF3/TcuXzHRs7jr212njiz7QFmADNEd4Ck6iIOHrUwFKA8TAGIZID4EgIIkqtO7fCAFrtGQDHemedZPb9ef+rQTNoSN0BOSxg5YVOLYgyatm91c7FyB3oEMRZKXYwqhQL7YFeB3AYfVWK+UrdpkBbaUttIk/pBtTVXCLU0xrwDNLXNetcG8Q3jST+r/4AvW8KgFIEhZIAAAAASUVORK5CYII=
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_getResourceText
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/2.2.4/jquery.min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/datetime.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/buttons.js
 // @require      https://raw.githubusercontent.com/SSamuelH/profiles/refs/heads/main/deps/js/Tools/tools.js
@@ -30,6 +31,7 @@ const buttonGroup = {
     "复制附件（文件夹）": {"name": "copyAttachments_folder", "func": "copyAttachments_folder", "color": "blue"},
     "复制所有": {"name": "copyAll", "func": "copyAll"},
     "复制所有（文件夹）": {"name": "copyAll_folder", "func": "copyAll_folder"},
+    "下载文本内容": {"name": "downloadContent", "func": "downloadContent", "color": "yellow"},
     "设置": {"name": "config", "func": "config", "color": "black"},
 };
 console.log(" KemonoAndCommer init ");
@@ -74,6 +76,9 @@ const tableHeight = 800;
         },
         copyAll_folder() {
             copyAll('', 'all');
+        },
+        downloadContent() {
+            downloadContent();
         },
         config(event) {
             // 生成一套按钮组
@@ -504,12 +509,9 @@ const tableHeight = 800;
     const popupCSS = GM_getResourceText("popupCSS");
     GM_addStyle(popupCSS);
 
-    function copyAll(mode, type) {
-        console.log("copyAll")
+    function getPostname() {
         let profileData = profileApi()
         let postData = postApi();
-        console.log(postData);
-        console.log(JSON.stringify(postData));
 
         if(profileData && postData && postData.post) {
             // 文件标题
@@ -518,6 +520,12 @@ const tableHeight = 800;
             let title = postData.post.title;
             let id = postData.post.id;
 
+            // 判断是否已有作品id(兼容按左右方向键翻页的情况)
+            const key = `kc_post_name_${id}`
+            let postname = localStorage.getItem(key);
+            if(postname) {
+                return postname;
+            }
             let datetime = postData.post.published;
             let _date = new Date(datetime)
 
@@ -526,6 +534,21 @@ const tableHeight = 800;
 
             let name =
                 "@".concat(username, " ", "[", platform, "]", " - ", "(", date, ")", " ", "(", id, ")", " ", transfer(title));
+            localStorage.setItem(key, name);
+
+            return name;
+        }
+    }
+
+    function copyAll(mode, type) {
+        console.log("copyAll")
+        let profileData = profileApi()
+        let postData = postApi();
+        console.log(postData);
+        console.log(JSON.stringify(postData));
+
+        if(profileData && postData && postData.post) {
+            let name = getPostname();
 
             let urls = `#R,${window.location.href}\n`
 
@@ -653,5 +676,21 @@ const tableHeight = 800;
         }
     }
 
+    function downloadContent() {
+        let node = document.body.querySelector('.post__content');
+        if(node) {
+            let name = getPostname();
+            let text = node.innerText;
+            console.log(node.innerText)
+
+            saveAs(
+                new Blob([name + '\n\n' + text], {type: "text/plain;charset=UTF-8"}),
+                name + ".txt"
+            );
+
+        } else {
+            Toast(`copyContent failed!`)
+        }
+    }
 })();
 

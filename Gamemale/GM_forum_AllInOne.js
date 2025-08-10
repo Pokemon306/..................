@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         GM论坛必备脚本
+// @name         GM必备脚本合集
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_registerMenuCommand
@@ -681,7 +681,10 @@
             par.appendChild(inputObj);
         })();
         // 在这里写针对 example2.com 的代码...
-    } else if (/^.*:\/\/.*\.gamemale\.com\/forum-/.test(currentUrl) || /^https:\/\/www\.gamemale\.com\/forum\.php\?mod=forumdisplay/.test(currentUrl)) {
+    } else if (/^.*:\/\/.*\.gamemale\.com\/forum-/.test(currentUrl) ||
+        /^https:\/\/www\.gamemale\.com\/forum\.php\?mod=forumdisplay/.test(currentUrl) ||
+        /^https:\/\/www\.gamemale\.com\/forum\.php\?mod=collection/.test(currentUrl)
+    ) {
         // 对于 论坛列表 的页面，执行这段代码
         console.log('This is running on 论坛列表');
 
@@ -700,7 +703,6 @@
             }
         }
 
-        console.log('This is running on 论坛列表');
         const isDiscuz = typeof discuz_uid != "undefined";
         const userId = isDiscuz ? discuz_uid : __CURRENT_UID;
         let twentyFourHourRepliesCount = 0;
@@ -742,6 +744,7 @@ background-color: #FFCDD2;
         }
 
         function updateThreadStatuses(allThreadElements) {
+            console.log("帖子数量：", allThreadElements.length);
             const promises = [];
             allThreadElements.forEach(threadElement => {
                 const threadLinkElement = threadElement.querySelector('.xst');
@@ -798,10 +801,16 @@ background-color: #FFCDD2;
             }
         }
 
+        // 查找所有的
+        function findAllThreadElements() {
+            const threadElements = document.querySelectorAll('.bm_c tbody[id^="normalthread_"]:not(.processed)');
+            threadElements.forEach(threadElement => threadElement.classList.add('processed'));
+            return threadElements;
+        }
+
         // 当页面内容变化或刷新时，可以调用此函数
         window.addEventListener('DOMContentLoaded', () => {
-            const newThreadElements = document.querySelectorAll('.bm_c tbody[id^="normalthread_"]:not(.processed)');
-            newThreadElements.forEach(threadElement => threadElement.classList.add('processed'));
+            const newThreadElements = findAllThreadElements()
 
             updateThreadStatuses(newThreadElements);
         });
@@ -810,15 +819,13 @@ background-color: #FFCDD2;
             event.preventDefault();
 
             setTimeout(() => {
-                const newThreadElements = document.querySelectorAll('.bm_c tbody[id^="normalthread_"]:not(.processed)');
-                newThreadElements.forEach(threadElement => threadElement.classList.add('processed'));
+                const newThreadElements = findAllThreadElements()
                 updateThreadStatuses(newThreadElements);
             }, 1500);
         });
 
         // 初始化显示
-        const initialThreadElements = document.querySelectorAll('.bm_c tbody[id^="normalthread_"]:not(.processed)');
-        initialThreadElements.forEach(threadElement => threadElement.classList.add('processed'));
+        const initialThreadElements = findAllThreadElements()
         updateThreadStatuses(initialThreadElements);
     } else if (/^https:\/\/www\.gamemale\.com\/forum\.php\?/.test(currentUrl) || /^https:\/\/www\.gamemale\.com\/thread/.test(currentUrl)) {
         // 对于 帖子 的页面，执行这段代码

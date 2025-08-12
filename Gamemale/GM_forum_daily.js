@@ -251,6 +251,9 @@ const funcs = {
     btnLookSystem() {
         // 系统提醒
         window.location.href = `https://www.gamemale.com/home.php?mod=space&do=notice&view=system`
+    },
+    btnVisit() {
+        //
     }
 }
 

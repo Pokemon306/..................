@@ -1014,59 +1014,60 @@ background-color: #FFCDD2;
                 document.body.removeChild(panel);
             }
         }
+    } else if (/^.*:\/\/.*\.gamemale\.com\/home\.php\?mod=space&do=notice&view=interactive/.test(currentUrl)) {
+        // https://www.gamemale.com/home.php?mod=space&do=notice&view=interactive
+        // 打招呼
 
-        // 在这里写针对 example2.com 的代码...
+        // 一键打招呼
+        const replyAllButton = document.createElement('li')
+        replyAllButton.className = 'y'
+        replyAllButton.innerHTML = '<a href="javascript:;" id="replyAll" class="xi2">一键回打</a>'
+        const ignoreAllButton = document.createElement('li')
+        ignoreAllButton.className = 'y'
+        ignoreAllButton.innerHTML = '<a href="javascript:;" id="ignoreAll" class="xi2">一键忽略</a>'
+        document.querySelector('.tb.cl').appendChild(replyAllButton)
+        document.querySelector('.tb.cl').appendChild(ignoreAllButton)
+        document.querySelector('#replyAll').addEventListener('click', async function () {
+            let replyList = document.querySelector('.nts .cl')
+            while (replyList) {
+                replyList = document.querySelector('.nts .cl')
+                if (replyList) {
+                    replyList.querySelector('.xw1').click()
+                    const replyType = replyList.querySelector('.xw0 img').alt
+                    let replyBoxType
+                    while (true) {
+                        replyBoxType = document.querySelector(`.fwinmask img[alt="${replyType}"]`)
+                        if (replyBoxType) break
+                        await delay(100)
+                    }
+                    replyBoxType.click()
+                    document.querySelector('#pokesubmit_btn').click()
+                }
+                await delay(1000)
+            }
+        })
+
+        document.querySelector('#ignoreAll').addEventListener('click', async function () {
+            let replyList = document.querySelector('.nts .cl')
+            while (replyList) {
+                replyList = document.querySelector('.nts .cl')
+                if (replyList) {
+                    replyList.querySelector('.ntc_body a:last-child').click()
+                    let ignoreButton
+                    while (true) {
+                        ignoreButton = document.querySelector('button[name="ignoresubmit_btn"]')
+                        if (ignoreButton) break
+                        await delay(100)
+                    }
+                    ignoreButton.click()
+                }
+                await delay(1000)
+            }
+        })
     } else {
         console.log('如果不满足以上任何一个条件，可以在这里编写通用代码');
         // 如果不满足以上任何一个条件，可以在这里编写通用代码
     }
-
-    // 一键打招呼
-    const replyAllButton = document.createElement('li')
-    replyAllButton.className = 'y'
-    replyAllButton.innerHTML = '<a href="javascript:;" id="replyAll" class="xi2">一键回打</a>'
-    const ignoreAllButton = document.createElement('li')
-    ignoreAllButton.className = 'y'
-    ignoreAllButton.innerHTML = '<a href="javascript:;" id="ignoreAll" class="xi2">一键忽略</a>'
-    document.querySelector('.tb.cl').appendChild(replyAllButton)
-    document.querySelector('.tb.cl').appendChild(ignoreAllButton)
-    document.querySelector('#replyAll').addEventListener('click', async function () {
-        let replyList = document.querySelector('.nts .cl')
-        while (replyList) {
-            replyList = document.querySelector('.nts .cl')
-            if (replyList) {
-                replyList.querySelector('.xw1').click()
-                const replyType = replyList.querySelector('.xw0 img').alt
-                let replyBoxType
-                while (true) {
-                    replyBoxType = document.querySelector(`.fwinmask img[alt="${replyType}"]`)
-                    if (replyBoxType) break
-                    await delay(100)
-                }
-                replyBoxType.click()
-                document.querySelector('#pokesubmit_btn').click()
-            }
-            await delay(1000)
-        }
-    })
-
-    document.querySelector('#ignoreAll').addEventListener('click', async function () {
-        let replyList = document.querySelector('.nts .cl')
-        while (replyList) {
-            replyList = document.querySelector('.nts .cl')
-            if (replyList) {
-                replyList.querySelector('.ntc_body a:last-child').click()
-                let ignoreButton
-                while (true) {
-                    ignoreButton = document.querySelector('button[name="ignoresubmit_btn"]')
-                    if (ignoreButton) break
-                    await delay(100)
-                }
-                ignoreButton.click()
-            }
-            await delay(1000)
-        }
-    })
     function delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms))
     }

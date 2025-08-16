@@ -5,6 +5,7 @@
 // @description  KemonoAndCommer
 // @author       Sam
 // @match        https://kemono.cr/patreon/user/**/post/**
+// @match        https://coomer.st/**
 // @match        https://kemono.cr/**
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUfHh7////5+fkzMjJEQ0PX19esq6vs7Ozm5uZubW0rKio8OzsmJSW4uLdfXl7y8vLg39+Yl5fOzs3DwsKHhoZLSkqhoKBXV1d7e3rIyMiRkZCMjIt2dXVSUlHrlbybAAABAUlEQVQ4y92S2a7DIAxEGTBbCISsbbb//80bS6iKEqXvt/MC0hyNwbb4Wam0tr569mmWgJweidCDZV9P+RFNHIxJ94T6Ne1CGVh/3FVQ9dVvG5hqkNAjbUa7bOhCrECXvIR0VoLVq09dH/h1OcdJzWBJlw/SF3/TcuXzHRs7jr212njiz7QFmADNEd4Ck6iIOHrUwFKA8TAGIZID4EgIIkqtO7fCAFrtGQDHemedZPb9ef+rQTNoSN0BOSxg5YVOLYgyatm91c7FyB3oEMRZKXYwqhQL7YFeB3AYfVWK+UrdpkBbaUttIk/pBtTVXCLU0xrwDNLXNetcG8Q3jST+r/4AvW8KgFIEhZIAAAAASUVORK5CYII=
 // @grant        GM_addStyle
@@ -452,7 +453,7 @@ const tableHeight = 800;
 
     // 发布内容
     function postApi() {
-        let matchArray = window.location.href.match(/(\w*)?\/user\/(\w*)?\/post\/(\d*)?$/);
+        let matchArray = window.location.href.match(/(\w*)?\/user\/(.+)?\/post\/(\d*)?$/);
         const platform = matchArray?.[1] || '';
         const userId = matchArray?.[2] || '';
         const postId = matchArray?.[3] || '';
@@ -480,7 +481,7 @@ const tableHeight = 800;
     // 个人信息
     function profileApi() {
 
-        let matchArray = window.location.href.match(/(\w*)?\/user\/(\w*)?\/post\/(\d*)?$/);
+        let matchArray = window.location.href.match(/(\w*)?\/user\/(.+)?\/post\/(\d*)?$/);
         const platform = matchArray?.[1] || '';
         const userId = matchArray?.[2] || '';
 

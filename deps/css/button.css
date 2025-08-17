@@ -156,7 +156,7 @@
     background: linear-gradient(to right,#009245,#FCEE21);
 }
 .my_button.purple:hover:active {
-    color: white;
+    color: black;
     background: linear-gradient(to right,#764ba2,#8E37D7,#667eea);
 }
 

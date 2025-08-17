@@ -59,7 +59,7 @@ const tableHeight = 800;
     // 方法组
     const funcs = {
         copyName() {
-            getPostname();
+            copyName();
         },
         copyPics() {
             copyAll('NoFolder', 'pic');
@@ -543,6 +543,14 @@ const tableHeight = 800;
 
             return name;
         }
+    }
+
+    function copyName() {
+        let name = getPostname();
+
+        const clipboardObj = navigator.clipboard;
+        clipboardObj.writeText(name)
+        Toast(`copyName successfully copied!`)
     }
 
     function copyAll(mode, type) {

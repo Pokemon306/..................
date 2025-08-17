@@ -24,6 +24,7 @@ const btnSwitchName = "btnSwitch"
 const btnSizeName = "btnSize"
 
 const buttonGroup = {
+    "复制名称": {"name": "copyName", "func": "copyName", "color": "black"},
     "复制图片": {"name": "copyPics", "func": "copyPics", "color": "green"},
     "复制图片（文件夹）": {"name": "copyPics_folder", "func": "copyPics_folder", "color": "green"},
     "复制附件": {"name": "copyAttachments", "func": "copyAttachments", "color": "blue"},
@@ -57,6 +58,9 @@ const tableHeight = 800;
 
     // 方法组
     const funcs = {
+        copyName() {
+            getPostname();
+        },
         copyPics() {
             copyAll('NoFolder', 'pic');
         },

@@ -62,6 +62,10 @@
 .my_button.black {
     background: linear-gradient(to right, #000000, #2e2e2e, #3e3e3e, #4e4e4e);
 }
+.my_button.purple {
+    color: white;
+    background: linear-gradient(to right, #6B8DD6,#667eea,#8E37D7,#764ba2);
+}
 .my_button.translucence {
     color: #888888;
     background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(70, 70, 70, 0.2), rgba(135, 135, 135, 0.2));
@@ -150,6 +154,10 @@
 .my_button.yellow:hover:active {
     color: black;
     background: linear-gradient(to right,#009245,#FCEE21);
+}
+.my_button.purple:hover:active {
+    color: black;
+    background: linear-gradient(to right,#764ba2,#8E37D7,#667eea);
 }
 
 .my_position_container {

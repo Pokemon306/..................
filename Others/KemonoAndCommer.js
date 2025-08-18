@@ -5,6 +5,7 @@
 // @description  KemonoAndCommer
 // @author       Sam
 // @match        https://kemono.cr/patreon/user/**/post/**
+// @match        https://coomer.st/**
 // @match        https://kemono.cr/**
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUfHh7////5+fkzMjJEQ0PX19esq6vs7Ozm5uZubW0rKio8OzsmJSW4uLdfXl7y8vLg39+Yl5fOzs3DwsKHhoZLSkqhoKBXV1d7e3rIyMiRkZCMjIt2dXVSUlHrlbybAAABAUlEQVQ4y92S2a7DIAxEGTBbCISsbbb//80bS6iKEqXvt/MC0hyNwbb4Wam0tr569mmWgJweidCDZV9P+RFNHIxJ94T6Ne1CGVh/3FVQ9dVvG5hqkNAjbUa7bOhCrECXvIR0VoLVq09dH/h1OcdJzWBJlw/SF3/TcuXzHRs7jr212njiz7QFmADNEd4Ck6iIOHrUwFKA8TAGIZID4EgIIkqtO7fCAFrtGQDHemedZPb9ef+rQTNoSN0BOSxg5YVOLYgyatm91c7FyB3oEMRZKXYwqhQL7YFeB3AYfVWK+UrdpkBbaUttIk/pBtTVXCLU0xrwDNLXNetcG8Q3jST+r/4AvW8KgFIEhZIAAAAASUVORK5CYII=
 // @grant        GM_addStyle
@@ -23,6 +24,7 @@ const btnSwitchName = "btnSwitch"
 const btnSizeName = "btnSize"
 
 const buttonGroup = {
+    "复制名称": {"name": "copyName", "func": "copyName", "color": "purple"},
     "复制图片": {"name": "copyPics", "func": "copyPics", "color": "green"},
     "复制图片（文件夹）": {"name": "copyPics_folder", "func": "copyPics_folder", "color": "green"},
     "复制附件": {"name": "copyAttachments", "func": "copyAttachments", "color": "blue"},
@@ -56,6 +58,9 @@ const tableHeight = 800;
 
     // 方法组
     const funcs = {
+        copyName() {
+            copyName();
+        },
         copyPics() {
             copyAll('NoFolder', 'pic');
         },
@@ -452,7 +457,7 @@ const tableHeight = 800;
 
     // 发布内容
     function postApi() {
-        let matchArray = window.location.href.match(/(\w*)?\/user\/(\w*)?\/post\/(\d*)?$/);
+        let matchArray = window.location.href.match(/(\w*)?\/user\/(.+)?\/post\/(\d*)?$/);
         const platform = matchArray?.[1] || '';
         const userId = matchArray?.[2] || '';
         const postId = matchArray?.[3] || '';
@@ -480,7 +485,7 @@ const tableHeight = 800;
     // 个人信息
     function profileApi() {
 
-        let matchArray = window.location.href.match(/(\w*)?\/user\/(\w*)?\/post\/(\d*)?$/);
+        let matchArray = window.location.href.match(/(\w*)?\/user\/(.+)?\/post\/(\d*)?$/);
         const platform = matchArray?.[1] || '';
         const userId = matchArray?.[2] || '';
 
@@ -538,6 +543,14 @@ const tableHeight = 800;
 
             return name;
         }
+    }
+
+    function copyName() {
+        let name = getPostname();
+
+        const clipboardObj = navigator.clipboard;
+        clipboardObj.writeText(name)
+        Toast(`copyName successfully copied!`)
     }
 
     function copyAll(mode, type) {

@@ -280,7 +280,7 @@
                     {name: '禽兽扒手', id: 107, type: "回帖向", note: ""},
                 ];
                 let youxi = ["杰夫‧莫罗", "克里斯‧雷德菲尔德", "疾风剑豪", "光之战士", "艾吉奥", "弗图博士", "裸体克里斯", "凯登‧阿兰科", "果体76", "尼克斯·乌尔里克", "岛田半藏", "内森·德雷克", "卡洛斯·奥利维拉", "诺克提斯·路西斯·伽拉姆", "文森特‧瓦伦丁", "炙热的格拉迪欧拉斯", "竹村五郎", "【周年限定】克里斯(8)", "沃特·沙利文", "里昂‧S‧甘乃迪", "亚瑟‧摩根", "萨菲罗斯", "岛田源氏", "BIG BOSS", "【夏日限定】夏日的泰凯斯", "Dante", "库伦 (起源)", "康纳/Connor", "英普瑞斯", "乔纳森·里德", "Doc", "杰克·莫里森/士兵 76", "维吉尔", "皮尔斯‧尼凡斯", "杰西·麦克雷", "泰比里厄斯", "Vergil", "普隆普特·阿金塔姆", "桐生一马", "格拉迪欧拉斯", "亚当‧简森", "铁牛", "黑墙", "安杜因·乌瑞恩", "阿尔伯特·威斯克", "V (DMC5)", "汉克/Hank", "希德‧海温特", "巴尔弗雷亚", "肥皂", "士官长", "豹王", "阿列克西欧斯（Alexios）", "莱因哈特·威尔海姆", "幻象", "加勒特·霍克", "不灭狂雷-沃利贝尔", "泰凯斯·芬得利", "陷阱杀手", "Scott Ryder", "不屈之枪·阿特瑞斯", "詹姆斯‧维加", "阿尔萨斯‧米奈希尔", "盖拉斯‧瓦卡瑞安", "法卡斯", "库伦 (审判)", "【新手友好】昆進", "鬼王酒吞童子", "维克多‧天火", "蛮族战士", "奧倫", "吉姆‧雷诺", "但丁", "威尔卡斯", "亚力斯塔尔", "艾德尔", "桑克瑞德·沃特斯", "天照大神", "百相千面", "虎头怪", "里昂（RE4）", "苇名弦一郎", "克莱夫・罗兹菲尔德", "约书亚・罗兹菲尔德"];
-                let zhenren = ["约翰·康斯坦丁","托尼·史塔克", "Joker", "克里斯·埃文斯", "魯杰羅·弗雷迪", "虎克船长", "安德森‧戴维斯", "索尔·奥丁森", "擎天柱（Peterbilt389）", "麦迪文（Medivh）", "西弗勒斯·斯内普", "神灯", "索林·橡木盾", "阿拉贡", "乔治·迈克尔", "魔术师奥斯卡", "杰森‧斯坦森", "小天狼星·布莱克", "阿不思·邓布利多", "甘道夫", "博伊卡", "死神", "马克·史贝特", "史蒂文·格兰特", "亚瑟·库瑞（海王）", "巴基 (猎鹰与冬兵)", "哈尔‧乔丹", "克苏鲁", "异形", "卢西亚诺‧科斯塔", "罗宾·西克", "超人", "丹·雷诺斯", "罗伯‧史塔克", "蓝礼·拜拉席恩", "卡德加（Khadgar）", "吉姆·霍普", "大古", "黑豹", "莱托·厄崔迪", "Drover", "艾利克斯", "三角头", "布莱恩‧欧康纳", "迪恩‧温彻斯特", "山姆‧温彻斯特", "丹尼爾·紐曼", "迈克尔迈尔斯", "金刚狼", "Chris Mazdzer", "瑟兰迪尔", "威克多尔·克鲁姆", "大黄蜂（ChevroletCamaro）", "勒维恩·戴维斯", "安德鲁·库珀", "丹·安博尔", "塞巴斯蒂安·斯坦", "莱戈拉斯", "奥利弗‧奎恩", "盖里", "汤姆·赫兰德", "Frank (LBF)", "詹米·多南", "羅素·托維", "藤田優馬", "康纳‧沃什", "巴特‧贝克", "戴尔‧芭芭拉", "猫化弩哥", "卡斯迪奥", "史蒂夫‧金克斯", "戴蒙‧萨尔瓦托", "尼克·贝特曼", "尤利西斯", "阿齐斯", "纣王·子受", "阿尔瓦罗·索莱尔", "克劳斯·迈克尔森", "尼克‧贝特曼", "尼克·王尔德"];
+                let zhenren = ["John Reese", "约翰·康斯坦丁", "托尼·史塔克", "Joker", "克里斯·埃文斯", "魯杰羅·弗雷迪", "虎克船长", "安德森‧戴维斯", "索尔·奥丁森", "擎天柱（Peterbilt389）", "麦迪文（Medivh）", "西弗勒斯·斯内普", "神灯", "索林·橡木盾", "阿拉贡", "乔治·迈克尔", "魔术师奥斯卡", "杰森‧斯坦森", "小天狼星·布莱克", "阿不思·邓布利多", "甘道夫", "博伊卡", "死神", "马克·史贝特", "史蒂文·格兰特", "亚瑟·库瑞（海王）", "巴基 (猎鹰与冬兵)", "哈尔‧乔丹", "克苏鲁", "异形", "卢西亚诺‧科斯塔", "罗宾·西克", "超人", "丹·雷诺斯", "罗伯‧史塔克", "蓝礼·拜拉席恩", "卡德加（Khadgar）", "吉姆·霍普", "大古", "黑豹", "莱托·厄崔迪", "Drover", "艾利克斯", "三角头", "布莱恩‧欧康纳", "迪恩‧温彻斯特", "山姆‧温彻斯特", "丹尼爾·紐曼", "迈克尔迈尔斯", "金刚狼", "Chris Mazdzer", "瑟兰迪尔", "威克多尔·克鲁姆", "大黄蜂（ChevroletCamaro）", "勒维恩·戴维斯", "安德鲁·库珀", "丹·安博尔", "塞巴斯蒂安·斯坦", "莱戈拉斯", "奥利弗‧奎恩", "盖里", "汤姆·赫兰德", "Frank (LBF)", "詹米·多南", "羅素·托維", "藤田優馬", "康纳‧沃什", "巴特‧贝克", "戴尔‧芭芭拉", "猫化弩哥", "卡斯迪奥", "史蒂夫‧金克斯", "戴蒙‧萨尔瓦托", "尼克·贝特曼", "尤利西斯", "阿齐斯", "纣王·子受", "阿尔瓦罗·索莱尔", "克劳斯·迈克尔森", "尼克‧贝特曼", "尼克·王尔德"];
                 let maid = ["莫瑞甘", "贝优妮塔", "莎伦", "绯红女巫", "赫敏·格兰杰", "梅格", "山村贞子", "蒂法·洛克哈特", "九尾妖狐·阿狸", "丹妮莉丝·坦格利安", "希尔瓦娜斯·风行者", "刀锋女王", "维涅斯", "星籁歌姬", "莫甘娜", "凯尔", "露娜弗蕾亚·诺克斯·芙尔雷", "凯特尼斯·伊夫狄恩", "爱丽丝·盖恩斯巴勒", "朱迪·霍普斯", "“米凯拉的锋刃”玛莲妮"];
                 let equip = ["圣水瓶", "武士之魂", "布衣", "赫尔墨斯·看守者之杖", "男用贞操带", "圣英灵秘银甲", "石鬼面", "巴啦啦小魔仙棒", "贤者头盔", "符文披风", "星芒戒指", "骑士遗盔", "恩惠护符", "十字叶章", "蔷薇骑士之刃", "狩猎用小刀", "刺杀者匕首", "琉璃玉坠", "月陨戒指", "日荒戒指", "神圣十字章", "艾尔尤因", "冒险专用绳索", "十字军护盾", "力量腕带", "药剂背袋", "物理学圣剑", "眼镜蛇图腾", "海盗弯钩", "钢铁勇士弯刀", "猎鹰图腾", "山猫图腾", "重磅手环", "新月护符", "龙血之斧", "生锈的海盗刀枪", "念念往日士官盔", "超级名贵无用宝剑", "嗜血斩首斧", "变形软泥", "净化手杖", "超级幸运无敌辉石", "守望者徽章", "破旧打火机", "女神之泪", "和谐圣杯", "天使之赐", "棱镜", "射手的火枪"];
                 let asset = ["健忘礼物盒","神秘挑战书","雪王的心脏", "沙漠神灯", "SCP-s-1889", "梦中的列车", "婴儿泪之瓶", "幽灵竹筒", "羽毛笔", "老旧怀表", "海潮之歌", "冒险用指南针", "勇者与龙之书", "这是一片丛林", "漂洋小船", "圣甲虫秘典", "充满魔力的种子", "奇怪的紫水晶", "锻造卷轴", "流失之椅", "知识大典", "德拉克魂匣", "宝箱内的球", "暖心小火柴", "神秘的邀请函", "红石", "秘密空瓶", "GHOST", "冒险用面包", "深红矿土", "海螺号角", "冒险用宝箱", "木柴堆", "章鱼小丸子", "种植土豆", "冒险用绷带", "预知水晶球", "发芽的种子", "魔法石碑", "神秘的红茶", "夜灯", "远古石碑", "用过的粪桶", "种植菠菜", "种植菊花", "GM論壇初心者勛章", "箭术卷轴", "种植小草", "One Ring", "超级无敌名贵金卡", "金钱马车", "聚魔花盆", "谜之瓶", "诺曼底号", "社畜专用闹钟", "神秘的漂流瓶", "史莱姆养殖证书", "微笑的面具", "【圣诞限定】心心念念小雪人", "浪潮之歌", "暗红矿土", "老旧的怀表", "双项圣杯", "散佚的文集", "令人不安的契约书", "被尘封之书", "黑暗水晶", "无垠", "冰海钓竿"];
@@ -1007,59 +1007,61 @@ background-color: #FFCDD2;
                 document.body.removeChild(panel);
             }
         }
+    } else if (/^.*:\/\/.*\.gamemale\.com\/home\.php\?mod=space&do=notice&view=interactive/.test(currentUrl)) {
+        // https://www.gamemale.com/home.php?mod=space&do=notice&view=interactive
+        // 打招呼
 
-        // 在这里写针对 example2.com 的代码...
+        // 一键打招呼
+        const replyAllButton = document.createElement('li')
+        replyAllButton.className = 'y'
+        replyAllButton.innerHTML = '<a href="javascript:;" id="replyAll" class="xi2">一键回打</a>'
+        const ignoreAllButton = document.createElement('li')
+        ignoreAllButton.className = 'y'
+        ignoreAllButton.innerHTML = '<a href="javascript:;" id="ignoreAll" class="xi2">一键忽略</a>'
+        document.querySelector('.tb.cl').appendChild(replyAllButton)
+        document.querySelector('.tb.cl').appendChild(ignoreAllButton)
+        document.querySelector('#replyAll').addEventListener('click', async function () {
+            let replyList = document.querySelector('.nts .cl')
+            while (replyList) {
+                replyList = document.querySelector('.nts .cl')
+                if (replyList) {
+                    replyList.querySelector('.xw1').click()
+                    const replyType = replyList.querySelector('.xw0 img').alt
+                    let replyBoxType
+                    while (true) {
+                        replyBoxType = document.querySelector(`.fwinmask img[alt="${replyType}"]`)
+                        if (replyBoxType) break
+                        await delay(100)
+                    }
+                    replyBoxType.click()
+                    document.querySelector('#pokesubmit_btn').click()
+                }
+                await delay(1000)
+            }
+        })
+
+        document.querySelector('#ignoreAll').addEventListener('click', async function () {
+            let replyList = document.querySelector('.nts .cl')
+            while (replyList) {
+                replyList = document.querySelector('.nts .cl')
+                if (replyList) {
+                    replyList.querySelector('.ntc_body a:last-child').click()
+                    let ignoreButton
+                    while (true) {
+                        ignoreButton = document.querySelector('button[name="ignoresubmit_btn"]')
+                        if (ignoreButton) break
+                        await delay(100)
+                    }
+                    ignoreButton.click()
+                }
+                await delay(1000)
+            }
+        })
     } else {
         console.log('如果不满足以上任何一个条件，可以在这里编写通用代码');
         // 如果不满足以上任何一个条件，可以在这里编写通用代码
     }
 
-    // 一键打招呼
-    const replyAllButton = document.createElement('li')
-    replyAllButton.className = 'y'
-    replyAllButton.innerHTML = '<a href="javascript:;" id="replyAll" class="xi2">一键回打</a>'
-    const ignoreAllButton = document.createElement('li')
-    ignoreAllButton.className = 'y'
-    ignoreAllButton.innerHTML = '<a href="javascript:;" id="ignoreAll" class="xi2">一键忽略</a>'
-    document.querySelector('.tb.cl').appendChild(replyAllButton)
-    document.querySelector('.tb.cl').appendChild(ignoreAllButton)
-    document.querySelector('#replyAll').addEventListener('click', async function () {
-        let replyList = document.querySelector('.nts .cl')
-        while (replyList) {
-            replyList = document.querySelector('.nts .cl')
-            if (replyList) {
-                replyList.querySelector('.xw1').click()
-                const replyType = replyList.querySelector('.xw0 img').alt
-                let replyBoxType
-                while (true) {
-                    replyBoxType = document.querySelector(`.fwinmask img[alt="${replyType}"]`)
-                    if (replyBoxType) break
-                    await delay(100)
-                }
-                replyBoxType.click()
-                document.querySelector('#pokesubmit_btn').click()
-            }
-            await delay(1000)
-        }
-    })
-
-    document.querySelector('#ignoreAll').addEventListener('click', async function () {
-        let replyList = document.querySelector('.nts .cl')
-        while (replyList) {
-            replyList = document.querySelector('.nts .cl')
-            if (replyList) {
-                replyList.querySelector('.ntc_body a:last-child').click()
-                let ignoreButton
-                while (true) {
-                    ignoreButton = document.querySelector('button[name="ignoresubmit_btn"]')
-                    if (ignoreButton) break
-                    await delay(100)
-                }
-                ignoreButton.click()
-            }
-            await delay(1000)
-        }
-    })
     function delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms))
     }

@@ -472,6 +472,9 @@ const hrefMatch = /(\w*)?\/user\/(.+)?\/post\/(\w*)?$/;
         if (!postData || String(postData?.illustId) !== String(postId)) {
             $.ajax({
                 url: `/api/v1/${platform}/user/${userId}/post/${postId}`,
+                header:{
+                    Accept: 'text/css'
+                },
                 dataType: 'json',
                 async: false,
                 success: (body) => {
@@ -499,6 +502,9 @@ const hrefMatch = /(\w*)?\/user\/(.+)?\/post\/(\w*)?$/;
         if (!profileData || String(profileData?.id) !== String(userId)) {
             $.ajax({
                 url: `/api/v1/${platform}/user/${userId}/profile`,
+                header:{
+                    Accept: 'text/css'
+                },
                 dataType: 'json',
                 async: false,
                 success: (body) => {

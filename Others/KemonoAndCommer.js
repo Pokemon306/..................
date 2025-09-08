@@ -53,6 +53,9 @@ const trHeight = 30;
 const tableWidth = 640;
 const tableHeight = 800;
 
+// 正则匹配
+const hrefMatch = /(\w*)?\/user\/(.+)?\/post\/(\w*)?$/;
+
 (function () {
     console.log(" KemonoAndCommer init ");
 
@@ -161,7 +164,7 @@ const tableHeight = 800;
                     el.classList.add('large')
                     GM_setValue(btnSizeName, 'large')
                     localStorage.setItem(btnSizeName, 'large')
-                } else if(el.classList.contains('medium')) {
+                } else if (el.classList.contains('medium')) {
                     el.classList.remove('medium')
                     el.classList.add('small')
                     GM_setValue(btnSizeName, 'small')
@@ -254,15 +257,16 @@ const tableHeight = 800;
 
         check()
     }
+
     init();
 
     // 检查
     function check() {
         // 每隔两秒检测按钮组是否存在
-        timer(2 * 1000, ()=> {
+        timer(2 * 1000, () => {
             const element = document.body.querySelector('#my_buttonGroup');
-            if(element) {
-                if(element.style.display == "none") {
+            if (element) {
+                if (element.style.display == "none") {
                     element.style.display == "block"
                 }
             } else {
@@ -446,18 +450,18 @@ const tableHeight = 800;
         iframe.style.minHeight = tableHeight + 'px';
 
         // 对iFram做特殊处理
-        if(iframeFunc) {
+        if (iframeFunc) {
             iframeFunc(iframe, popup)
         }
 
-        if(endFunc) {
+        if (endFunc) {
             endFunc(iframe);
         }
     }
 
     // 发布内容
     function postApi() {
-        let matchArray = window.location.href.match(/(\w*)?\/user\/(.+)?\/post\/(\d*)?$/);
+        let matchArray = window.location.href.match(hrefMatch);
         const platform = matchArray?.[1] || '';
         const userId = matchArray?.[2] || '';
         const postId = matchArray?.[3] || '';
@@ -468,10 +472,13 @@ const tableHeight = 800;
         if (!postData || String(postData?.illustId) !== String(postId)) {
             $.ajax({
                 url: `/api/v1/${platform}/user/${userId}/post/${postId}`,
+                header:{
+                    Accept: 'text/css'
+                },
                 dataType: 'json',
                 async: false,
                 success: (body) => {
-                    if(body) {
+                    if (body) {
                         localStorage.setItem(key, JSON.stringify(body));
                         Toast(`GET ${postId} of ${userId}`)
                         postData = body
@@ -485,7 +492,7 @@ const tableHeight = 800;
     // 个人信息
     function profileApi() {
 
-        let matchArray = window.location.href.match(/(\w*)?\/user\/(.+)?\/post\/(\d*)?$/);
+        let matchArray = window.location.href.match(hrefMatch);
         const platform = matchArray?.[1] || '';
         const userId = matchArray?.[2] || '';
 
@@ -495,10 +502,13 @@ const tableHeight = 800;
         if (!profileData || String(profileData?.id) !== String(userId)) {
             $.ajax({
                 url: `/api/v1/${platform}/user/${userId}/profile`,
+                header:{
+                    Accept: 'text/css'
+                },
                 dataType: 'json',
                 async: false,
                 success: (body) => {
-                    if(body) {
+                    if (body) {
                         Toast(`GET profile of ${userId}`)
                         profileData = body
                         localStorage.setItem(key, JSON.stringify(body));
@@ -518,7 +528,7 @@ const tableHeight = 800;
         let profileData = profileApi()
         let postData = postApi();
 
-        if(profileData && postData && postData.post) {
+        if (profileData && postData && postData.post) {
             // 文件标题
             let username = profileData.name;
             let platform = postData.post.service;
@@ -528,7 +538,7 @@ const tableHeight = 800;
             // 判断是否已有作品id(兼容按左右方向键翻页的情况)
             const key = `kc_post_name_${id}`
             let postname = localStorage.getItem(key);
-            if(postname) {
+            if (postname) {
                 return postname;
             }
             let datetime = postData.post.published;
@@ -560,44 +570,48 @@ const tableHeight = 800;
         console.log(postData);
         console.log(JSON.stringify(postData));
 
-        if(profileData && postData && postData.post) {
+        if (profileData && postData && postData.post) {
             let name = getPostname();
 
             let urls = `#R,${window.location.href}\n`
 
             // 处理附件 视频/ZIP
-            if((type == 'all' || type == 'attachment' || type == 'attachment_origin' || type == 'attachment_serial') && postData.attachments && postData.attachments.length > 0) {
+            if ((type == 'all' || type == 'attachment' || type == 'attachment_origin' || type == 'attachment_serial')
+                && ((postData.attachments && postData.attachments.length > 0) || (postData.post.attachments && postData.post.attachments.length > 0))) {
+                let attachments = postData.attachments.length > 0 ? postData.attachments : postData.post.attachments
+                let postAttachs = postData.attachments.length > 0 ? false : true
+
                 let num = 1
 
-                if(postData.attachments.length == 1) {
-                    let attach = postData.attachments[0]
+                if (attachments.length == 1) {
+                    let attach = attachments[0]
 
-                    let url = `${attach.server}/data${attach.path}`
+                    let url = postAttachs ? `${window.location.origin}/data${attach.path}` : `${attach.server}/data${attach.path}`
 
                     let fileSuffix = getFileSuffix(attach.name);
 
                     let filename = `${name.trim()}.${fileSuffix}`
-                    if(attach.name.length <= 50) {
+                    if (attach.name.length <= 50) {
                         filename = `${name.trim()} ${attach.name}`
                     }
 
                     urls += `${filename},${url}\n`
                 } else {
-                    if(mode != 'NoFolder') {
+                    if (mode != 'NoFolder') {
                         urls += `#O,F:\\Downloads\\Default\\Other\\Kemono\\${name.trim()}\n`
                     }
 
-                    for (let attach of postData.attachments) {
+                    for (let attach of attachments) {
                         let filename = ''
-                        let url = `${attach.server}/data${attach.path}`
+                        let url = postAttachs ? `${window.location.origin}/data${attach.path}` : `${attach.server}/data${attach.path}`
 
-                        if(attach.extension === ".mp4" || attach.extension === ".m4v" || attach.extension === ".mov") {
+                        if (attach.extension === ".mp4" || attach.extension === ".m4v" || attach.extension === ".mov") {
 
                             let twoDigitText = num.toString().padStart(2, '0');
                             filename = name.trim().concat(' ', twoDigitText, attach.extension)
 
-                            if(type != 'attachment_serial' && attach.name.length <= 50) {
-                                if(type == 'attachment_origin') {
+                            if (type != 'attachment_serial' && attach.name.length <= 50) {
+                                if (type == 'attachment_origin') {
                                     filename = `${attach.name}`
                                 } else {
                                     filename = name.trim().concat(' ', twoDigitText, ' ', attach.name)
@@ -607,21 +621,23 @@ const tableHeight = 800;
                             num += 1
                         } else {
                             filename = name.trim().concat(' ', attach.name)
-                            if(type != 'attachment_serial' && attach.name.length <= 50) {
+                            if (type != 'attachment_serial' && attach.name.length <= 50) {
                                 filename = `${attach.name}`
                             }
                         }
                         urls += `${filename},${url}\n`
                     }
                 }
+            } else {
+                console.log("not found attachments")
             }
 
             // 处理图片
-            if((type == 'all' || type == 'pic') && postData.previews && postData.previews.length > 0) {
+            if ((type == 'all' || type == 'pic') && postData.previews && postData.previews.length > 0) {
                 urls += ""
                 let num = 0
 
-                if(postData.previews.length == 1) {
+                if (postData.previews.length == 1) {
                     // 如果只有一张图片
                     let pic = postData.previews[0]
                     let url = `${pic.server}/data${pic.path}`
@@ -631,7 +647,7 @@ const tableHeight = 800;
 
                     urls += `${filename},${url}\n`
                 } else {
-                    if(mode != 'NoFolder') {
+                    if (mode != 'NoFolder') {
                         urls += `#O,F:\\Downloads\\Default\\Other\\Kemono\\${name.trim()}\n`
                     }
 
@@ -641,9 +657,9 @@ const tableHeight = 800;
                     // _pic.path
                     let repeated = false;
 
-                    while(postData.previews.length - 1 > _index) {
+                    while (postData.previews.length - 1 > _index) {
                         _index += 1
-                        if(postData.previews[_index].path == _pic.path) {
+                        if (postData.previews[_index].path == _pic.path) {
                             repeated = true;
                             break
                         }
@@ -653,7 +669,7 @@ const tableHeight = 800;
                     for (let pic of postData.previews) {
                         let twoDigitText = num.toString().padStart(2, '0');
                         num += 1;
-                        if(repeated && num == 1) {
+                        if (repeated && num == 1) {
                             console.log("repeated")
                             continue;
                         }
@@ -662,11 +678,11 @@ const tableHeight = 800;
 
                         let fileSuffix = getFileSuffix(pic.name);
                         let filename = `${twoDigitText}.${fileSuffix}`
-                        if(mode == 'NoFolder') {
+                        if (mode == 'NoFolder') {
                             filename = name.trim().concat(' ', twoDigitText, '.', fileSuffix)
 
-                            if(pic.name.length <= 10) {
-                                if(type == 'pic_origin') {
+                            if (pic.name.length <= 10) {
+                                if (type == 'pic_origin') {
                                     filename = `${pic.name}`
                                 } else {
                                     filename = name.trim().concat(' ', twoDigitText, ' ', pic.name)
@@ -679,7 +695,7 @@ const tableHeight = 800;
                 }
             }
 
-            if(urls) {
+            if (urls) {
                 const clipboardObj = navigator.clipboard;
                 clipboardObj.writeText(urls)
                 Toast(`copyAll successfully copied!`)
@@ -691,7 +707,7 @@ const tableHeight = 800;
 
     function downloadContent() {
         let node = document.body.querySelector('.post__content');
-        if(node) {
+        if (node) {
             let name = getPostname();
             let text = node.innerText;
             console.log(node.innerText)

@@ -55,7 +55,7 @@ const tableHeight = 800;
 
 // 正则匹配
 const hrefMatch = /(\w*)?\/user\/(.+)?\/post\/(\w*)?$/;
-const userHrefMatch = /(\w*)?\/user\/(.+)?$/;
+const userHrefMatch = /(\w*)?\/user\/(\w+)?(\?.+)?$/;
 
 const LIKE_COLOR = "GoldenRod";
 const DISLIKE_COLOR = "Maroon";

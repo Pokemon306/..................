@@ -760,7 +760,7 @@ const DEFAULT_COLOR = "GRAY";
                     let fileSuffix = getFileSuffix(attach.name);
 
                     let filename = `${name.trim()}.${fileSuffix}`
-                    if (attach.name.length <= 50) {
+                    if (attach.name.length <= 50 && attach.name.length != (36 + 4)) {
                         filename = `${name.trim()} ${attach.name}`
                     }
 

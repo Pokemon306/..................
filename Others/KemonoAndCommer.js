@@ -55,9 +55,178 @@ const tableHeight = 800;
 
 // 正则匹配
 const hrefMatch = /(\w*)?\/user\/(.+)?\/post\/(\w*)?$/;
+const userHrefMatch = /(\w*)?\/user\/(.+)?$/;
+
+const LIKE_COLOR = "GoldenRod";
+const DISLIKE_COLOR = "Maroon";
+const VIEWED_COLOR = "LightYellow";
+const DEFAULT_COLOR = "GRAY";
 
 (function () {
     console.log(" KemonoAndCommer init ");
+
+    const targetNode = document.body;
+
+    const config = {childList: true, subtree: true};
+    const callback = function (mutationsList) {
+
+        let href = window.location.href
+
+        if (href.match(hrefMatch)) {
+            console.log(" 当前在内容页面 ");
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    for (let node of mutation.addedNodes) {
+                        if ((node.nodeName == "DIV" || node.nodeName == "SECTION")
+                            && node.querySelector('.post__actions')) {
+                            let matchArray = window.location.href.match(hrefMatch);
+                            const platform = matchArray?.[1] || '';
+                            const userId = matchArray?.[2] || '';
+                            const postId = matchArray?.[3] || '';
+
+                            let buttons = node.querySelector('.post__actions')
+
+                            // 数据
+                            let like = getUserPostLike(userId, postId);
+
+                            let likeColor = DEFAULT_COLOR
+                            if (like["liked"] === true) {
+                                likeColor = LIKE_COLOR
+                            } else if (like["liked"] === false) {
+                                likeColor = DISLIKE_COLOR
+                            }
+
+                            // 创建按钮
+                            let likeButton = createButtonTag("", "LIKE", likeColor, "8px 4px");
+                            buttons.appendChild(likeButton)
+                            if(like["liked"] === false) {
+                                likeButton.innerText = "DISLIKE"
+                            }
+
+                            // 创建按钮
+                            let viewButton = createButtonTag("", "VIEWED", like["viewed"] ? VIEWED_COLOR : DEFAULT_COLOR, "8px 4px");
+                            buttons.appendChild(viewButton)
+
+                            // likeButton
+                            likeButton.onclick = function () {
+                                // 修改数值
+                                like["liked"] = !like["liked"]
+                                setUserPostLike(userId, postId, like["liked"]);
+                                // 修改颜色
+                                likeButton.style.color = like["liked"] ? LIKE_COLOR : DISLIKE_COLOR;
+                                viewButton.style.color = VIEWED_COLOR;
+
+                                // 修改文字
+                                likeButton.innerText = like["liked"] ? "LIKE" : "DISLIKE";
+                            }
+                            // likeButton
+                            viewButton.onclick = function () {
+                                if (!like["viewed"]) {
+                                    like["viewed"] = true;
+                                    // 修改颜色
+                                    viewButton.style.color = VIEWED_COLOR;
+                                    setUserPostLike(userId, postId, undefined, true)
+                                }
+                                // 看过时，点击不处理
+                            }
+                        } else if (node.nodeName == "IFRAME" && node.querySelector('.post__actions')) {
+                            console.log("IFRAME")
+                        } else if (node.nodeName == "SECTION" && node.querySelector('.post__actions')) {
+                            console.log("SECTION")
+                        } else {
+                            // console.log(node.nodeName)
+                        }
+                    }
+                }
+            }
+        } else if (href.match(userHrefMatch)) {
+            console.log(" 当前在用户页面 ");
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    for (let node of mutation.addedNodes) {
+                        if ((node.nodeName == "DIV" || node.nodeName == "SECTION")
+                            && node.querySelector('.card-list__items')) {
+                            let matchArray = window.location.href.match(userHrefMatch);
+                            const platform = matchArray?.[1] || '';
+                            const userId = matchArray?.[2] || '';
+                            console.log(platform, userId)
+
+                            let items = node.querySelector('.card-list__items').children;
+                            console.log(items)
+                            let likes = getUserLikes(userId);
+                            for (let item of items) {
+                                let color = undefined;
+                                let postId = item.getAttribute('data-id');
+                                // console.log(postId)
+
+                                let like = likes[postId]
+                                if (like == undefined) {
+                                    continue
+                                } else {
+                                    // 仅看过
+                                    if (like["viewed"]) {
+                                        color = VIEWED_COLOR
+                                    }
+                                    if (like["liked"] != undefined) {
+                                        if (like["liked"]) {
+                                            color = LIKE_COLOR
+                                        } else {
+                                            color = DISLIKE_COLOR
+                                        }
+                                    }
+                                }
+
+                                item.querySelector('footer').style.backgroundColor = color;
+                            }
+                        } else {
+                            // console.log(node.nodeName)
+                        }
+                    }
+                }
+            }
+        } else {
+            console.log(" 不知道在哪 ");
+
+        }
+
+    };
+    const observer = new MutationObserver(callback);
+    observer.observe(targetNode, config);
+
+    const likesPrefix = "LIKES_"
+
+    // 获取喜欢的列表
+    function getUserLikes(userId) {
+        let likes = JSON.parse(localStorage.getItem(likesPrefix + userId) || "{}")
+        return likes
+    }
+
+    function getUserPostLike(userId, postId) {
+        let likes = getUserLikes(userId)
+        let ob = likes[postId] || {
+            viewed: false
+        }
+
+        return ob
+    }
+
+    // 设置是否喜欢
+    function setUserPostLike(userId, postId, like, viewed) {
+        console.log(userId, postId, like);
+
+        let likes = getUserLikes(userId)
+        let ob = likes[postId] || {
+            viewed: true
+        }
+
+        // 设置是否喜欢
+        ob.liked = like
+        if (viewed) {
+            ob.viewed = viewed
+        }
+        likes[postId] = ob
+        localStorage.setItem(likesPrefix + userId, JSON.stringify(likes))
+    }
 
     // 方法组
     const funcs = {
@@ -472,7 +641,7 @@ const hrefMatch = /(\w*)?\/user\/(.+)?\/post\/(\w*)?$/;
         if (!postData || String(postData?.illustId) !== String(postId)) {
             $.ajax({
                 url: `/api/v1/${platform}/user/${userId}/post/${postId}`,
-                header:{
+                header: {
                     Accept: 'text/css'
                 },
                 dataType: 'json',
@@ -502,7 +671,7 @@ const hrefMatch = /(\w*)?\/user\/(.+)?\/post\/(\w*)?$/;
         if (!profileData || String(profileData?.id) !== String(userId)) {
             $.ajax({
                 url: `/api/v1/${platform}/user/${userId}/profile`,
-                header:{
+                header: {
                     Accept: 'text/css'
                 },
                 dataType: 'json',

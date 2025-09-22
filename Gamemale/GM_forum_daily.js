@@ -27,12 +27,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 // 按钮组 名称和方法名 倒序，下面的显示在页面上边
 const buttonGroup = {
-    "日志": "btnClickLog",
     "勋章赠送": "btnClickMedal",
     "查看个人资料": "btnLookProfile",
     "查看互动信息": "btnLookInteraction",
     "查看系统提醒": "btnLookSystem",
-    "重置/中断执行": "btnClickReset",
 };
 
 // 按钮组优先级
@@ -233,6 +231,7 @@ const funcs = {
         getSearchVoteUrlBegin()
     },
     btnClickMedal() {
+
         if (getdata_gm("Quickpass") != "true") {
             dataInit();
         }
@@ -246,14 +245,13 @@ const funcs = {
     },
     btnLookInteraction() {
         // 互动消息
-        window.location.href = `https://www.gamemale.com/home.php?mod=space&do=notice&view=interactive`
+        // window.location.href = `https://www.gamemale.com/home.php?mod=space&do=notice&view=interactive`
+        window.open('/home.php?mod=space&do=notice&view=interactive');
     },
     btnLookSystem() {
         // 系统提醒
-        window.location.href = `https://www.gamemale.com/home.php?mod=space&do=notice&view=system`
-    },
-    btnVisit() {
-        //
+        // window.location.href = `https://www.gamemale.com/home.php?mod=space&do=notice&view=system`
+        window.open('/home.php?mod=space&do=notice&view=system');
     }
 }
 

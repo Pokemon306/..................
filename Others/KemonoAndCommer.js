@@ -53,6 +53,9 @@ const trHeight = 30;
 const tableWidth = 640;
 const tableHeight = 800;
 
+// 视频控件高度
+const videoHeight = 500;
+
 // 正则匹配
 const hrefMatch = /(\w*)?\/user\/(.+)?\/post\/(\w*)?$/;
 const userHrefMatch = /(\w*)?\/user\/(\w+)?(\?.+)?$/;
@@ -67,6 +70,18 @@ const DEFAULT_COLOR = "GRAY";
 
     const targetNode = document.body;
 
+    function test() {
+        let node = targetNode.querySelector('.fluid_video_wrapper');
+
+        if(node) {
+            console.log("有视频")
+        } else {
+            console.log("没视频")
+        }
+    }
+
+    test();
+
     const config = {childList: true, subtree: true};
     const callback = function (mutationsList) {
 
@@ -77,64 +92,81 @@ const DEFAULT_COLOR = "GRAY";
             for (const mutation of mutationsList) {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                     for (let node of mutation.addedNodes) {
-                        if ((node.nodeName == "DIV" || node.nodeName == "SECTION")
-                            && node.querySelector('.post__actions')) {
-                            let matchArray = window.location.href.match(hrefMatch);
-                            const platform = matchArray?.[1] || '';
-                            const userId = matchArray?.[2] || '';
-                            const postId = matchArray?.[3] || '';
 
-                            let buttons = node.querySelector('.post__actions')
+                        if ((node.nodeName == "DIV" || node.nodeName == "SECTION")) {
 
-                            // 数据
-                            let like = getUserPostLike(userId, postId);
+                            // 如果是发布内容
+                            if(node.querySelector('.post__actions')) {
 
-                            let likeColor = DEFAULT_COLOR
-                            if (like["liked"] === true) {
-                                likeColor = LIKE_COLOR
-                            } else if (like["liked"] === false) {
-                                likeColor = DISLIKE_COLOR
-                            }
+                                let matchArray = window.location.href.match(hrefMatch);
+                                const platform = matchArray?.[1] || '';
+                                const userId = matchArray?.[2] || '';
+                                const postId = matchArray?.[3] || '';
 
-                            // 创建按钮
-                            let likeButton = createButtonTag("", "LIKE", likeColor, "8px 4px");
-                            buttons.appendChild(likeButton)
-                            if(like["liked"] === false) {
-                                likeButton.innerText = "DISLIKE"
-                            }
+                                let buttons = node.querySelector('.post__actions')
 
-                            // 创建按钮
-                            let viewButton = createButtonTag("", "VIEWED", like["viewed"] ? VIEWED_COLOR : DEFAULT_COLOR, "8px 4px");
-                            buttons.appendChild(viewButton)
+                                // 数据
+                                let like = getUserPostLike(userId, postId);
 
-                            // likeButton
-                            likeButton.onclick = function () {
-                                // 修改数值
-                                like["liked"] = !like["liked"]
-                                setUserPostLike(userId, postId, like["liked"]);
-                                // 修改颜色
-                                likeButton.style.color = like["liked"] ? LIKE_COLOR : DISLIKE_COLOR;
-                                viewButton.style.color = VIEWED_COLOR;
-
-                                // 修改文字
-                                likeButton.innerText = like["liked"] ? "LIKE" : "DISLIKE";
-                            }
-                            // likeButton
-                            viewButton.onclick = function () {
-                                if (!like["viewed"]) {
-                                    like["viewed"] = true;
-                                    // 修改颜色
-                                    viewButton.style.color = VIEWED_COLOR;
-                                    setUserPostLike(userId, postId, undefined, true)
+                                let likeColor = DEFAULT_COLOR
+                                if (like["liked"] === true) {
+                                    likeColor = LIKE_COLOR
+                                } else if (like["liked"] === false) {
+                                    likeColor = DISLIKE_COLOR
                                 }
-                                // 看过时，点击不处理
+
+                                // 创建按钮
+                                let likeButton = createButtonTag("", "LIKE", likeColor, "8px 4px");
+                                buttons.appendChild(likeButton)
+                                if(like["liked"] === false) {
+                                    likeButton.innerText = "DISLIKE"
+                                }
+
+                                // 创建按钮
+                                let viewButton = createButtonTag("", "VIEWED", like["viewed"] ? VIEWED_COLOR : DEFAULT_COLOR, "8px 4px");
+                                buttons.appendChild(viewButton)
+
+                                // likeButton
+                                likeButton.onclick = function () {
+                                    // 修改数值
+                                    like["liked"] = !like["liked"]
+                                    setUserPostLike(userId, postId, like["liked"]);
+                                    // 修改颜色
+                                    likeButton.style.color = like["liked"] ? LIKE_COLOR : DISLIKE_COLOR;
+                                    viewButton.style.color = VIEWED_COLOR;
+
+                                    // 修改文字
+                                    likeButton.innerText = like["liked"] ? "LIKE" : "DISLIKE";
+                                }
+                                // likeButton
+                                viewButton.onclick = function () {
+                                    if (!like["viewed"]) {
+                                        like["viewed"] = true;
+                                        // 修改颜色
+                                        viewButton.style.color = VIEWED_COLOR;
+                                        setUserPostLike(userId, postId, undefined, true)
+                                    }
+                                    // 看过时，点击不处理
+                                }
+
                             }
+
                         } else if (node.nodeName == "IFRAME" && node.querySelector('.post__actions')) {
                             console.log("IFRAME")
                         } else if (node.nodeName == "SECTION" && node.querySelector('.post__actions')) {
                             console.log("SECTION")
+                        } else if (node.nodeName == "VIDEO") {
+                            let node = targetNode.querySelector('.fluid_video_wrapper');
+
+                            // 如果有视频控件
+                            if(targetNode.querySelector('.fluid_video_wrapper')) {
+                                console.log("找到了视频控件 ");
+                                let all = targetNode.querySelectorAll('.fluid_video_wrapper');
+                                for(let vw of all){
+                                    vw.style.height = videoHeight + 'px';
+                                }
+                            }
                         } else {
-                            // console.log(node.nodeName)
                         }
                     }
                 }
@@ -186,7 +218,6 @@ const DEFAULT_COLOR = "GRAY";
             }
         } else {
             console.log(" 不知道在哪 ");
-
         }
 
     };

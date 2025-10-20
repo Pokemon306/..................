@@ -57,7 +57,7 @@ const tableHeight = 800;
 const videoHeight = 500;
 
 // 正则匹配
-const hrefMatch = /(\w*)?\/user\/(.+)?\/post\/(\w*)?$/;
+const hrefMatch = /(\w*)?\/user\/(.+)?\/post\/((\w|-)*)?$/;
 const userHrefMatch = /(\w*)?\/user\/(\w+)?(\?.+)?$/;
 
 const LIKE_COLOR = "GoldenRod";

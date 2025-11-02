@@ -334,9 +334,9 @@ const ReplyPlate_limit = {
         let today_str = formatDate(now, 'YYYYMMdd');
 
         let text = node.innerText.trim();
-        if (text.indexOf('发表回复') === -1) {
+/*        if (text.indexOf('发表回复') === -1) {
             return
-        }
+        }*/
         let key = `${key_prefix}${today_str}`
         let sum_key = `${key}_sum`
         let keys_key = `${key_prefix}keys`

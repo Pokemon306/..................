@@ -657,7 +657,7 @@ const ReplyPlate_limit = {
         }
         html.push('<th class="">收益</th>')
         html.push('<th class="ellipsis-column t-text">文本</th></tr>')
-
+ 
         // awardGroup
         let last = undefined
         ras.forEach((ra, index) => {

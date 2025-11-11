@@ -798,7 +798,7 @@ const source_name_match = /(\w*)_source/;
 
                     // 如果匹配格式的话，就不带原始文件名
                     if(originName.match(source_name_match)) {
-                        filename = name.trim().concat(' ', twoDigitText)
+
                     } else if (attach.name.length <= 50 && attach.name.length != (36 + 4)) {
                         // 如果原始文件名很短
                         filename = `${name.trim()} ${attach.name}`

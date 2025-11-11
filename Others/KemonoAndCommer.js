@@ -65,6 +65,8 @@ const DISLIKE_COLOR = "Maroon";
 const VIEWED_COLOR = "LightYellow";
 const DEFAULT_COLOR = "GRAY";
 
+const source_name_match = /(\w*)_source/;
+
 (function () {
     console.log(" KemonoAndCommer init ");
 
@@ -791,12 +793,20 @@ const DEFAULT_COLOR = "GRAY";
                     let fileSuffix = getFileSuffix(attach.name);
 
                     let filename = `${name.trim()}.${fileSuffix}`
-                    if (attach.name.length <= 50 && attach.name.length != (36 + 4)) {
+
+                    let originName = getFilePrefix(attach.name)
+
+                    // 如果匹配格式的话，就不带原始文件名
+                    if(originName.match(source_name_match)) {
+                        filename = name.trim().concat(' ', twoDigitText)
+                    } else if (attach.name.length <= 50 && attach.name.length != (36 + 4)) {
+                        // 如果原始文件名很短
                         filename = `${name.trim()} ${attach.name}`
                     }
 
                     urls += `${filename},${url}\n`
                 } else {
+                    // 如果是非文件夹模式
                     if (mode != 'NoFolder') {
                         urls += `#O,F:\\Downloads\\Default\\Other\\Kemono\\${name.trim()}\n`
                     }
@@ -814,7 +824,13 @@ const DEFAULT_COLOR = "GRAY";
                                 if (type == 'attachment_origin') {
                                     filename = `${attach.name}`
                                 } else {
-                                    filename = name.trim().concat(' ', twoDigitText, ' ', attach.name)
+                                    let originName = getFilePrefix(attach.name)
+                                    // 如果匹配格式的话，就不带原始文件名
+                                    if(originName.match(source_name_match)) {
+                                        filename = name.trim().concat(' ', twoDigitText)
+                                    } else {
+                                        filename = name.trim().concat(' ', twoDigitText, ' ', attach.name)
+                                    }
                                 }
                             }
 

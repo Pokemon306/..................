@@ -827,7 +827,10 @@ const source_name_match = /(\w*)_source/;
                                     let originName = getFilePrefix(attach.name)
                                     // 如果匹配格式的话，就不带原始文件名
                                     if(originName.match(source_name_match)) {
-                                        filename = name.trim().concat(' ', twoDigitText)
+                                        filename = name.trim().concat(' ', twoDigitText, attach.extension)
+                                        if (mode != 'NoFolder') {
+                                            filename = twoDigitText + attach.extension
+                                        }
                                     } else {
                                         filename = name.trim().concat(' ', twoDigitText, ' ', attach.name)
                                     }

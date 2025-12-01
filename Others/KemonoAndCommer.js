@@ -737,6 +737,11 @@ const source_name_match = /(\w*)_source/;
             let title = postData.post.title;
             let id = postData.post.id;
 
+            // 如果标题以.结尾
+            if(title.trim().endsWith('.')) {
+                title = title.trim().substring(0, title.trim().length - 1)
+            }
+
             // 判断是否已有作品id(兼容按左右方向键翻页的情况)
             const key = `kc_post_name_${id}`
             let postname = localStorage.getItem(key);
@@ -777,6 +782,11 @@ const source_name_match = /(\w*)_source/;
 
             let urls = `#R,${window.location.href}\n`
 
+            // 如果是非文件夹模式
+            if (mode != 'NoFolder') {
+                urls += `#O,F:\\Downloads\\Default\\Other\\Kemono\\${name.trim()}\n`
+            }
+
             // 处理附件 视频/ZIP
             if ((type == 'all' || type == 'attachment' || type == 'attachment_origin' || type == 'attachment_serial')
                 && ((postData.attachments && postData.attachments.length > 0) || (postData.post.attachments && postData.post.attachments.length > 0))) {
@@ -806,11 +816,6 @@ const source_name_match = /(\w*)_source/;
 
                     urls += `${filename},${url}\n`
                 } else {
-                    // 如果是非文件夹模式
-                    if (mode != 'NoFolder') {
-                        urls += `#O,F:\\Downloads\\Default\\Other\\Kemono\\${name.trim()}\n`
-                    }
-
                     for (let attach of attachments) {
                         let filename = ''
                         let url = postAttachs ? `${window.location.origin}/data${attach.path}` : `${attach.server}/data${attach.path}`
@@ -866,10 +871,6 @@ const source_name_match = /(\w*)_source/;
 
                     urls += `${filename},${url}\n`
                 } else {
-                    if (mode != 'NoFolder') {
-                        urls += `#O,F:\\Downloads\\Default\\Other\\Kemono\\${name.trim()}\n`
-                    }
-
                     // 先循环一遍，看看有没有和第一个重复的文件，如果有，就删除第一条
                     let _index = 0
                     let _pic = postData.previews[0]

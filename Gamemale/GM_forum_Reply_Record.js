@@ -31,6 +31,7 @@ const buttonGroup = {
     "查看往期奖励": {"name": "ReplyAward_history", "func": "ReplyAward_history", color: "orange"},
     "查看回复板块": {"name": "ReplyPlate", "func": "ReplyPlate"},
     "看看系统奖励": {"name": "SystemAward", "func": "SystemAward", "color": "blue"},
+    "跳到附件位置": {"name": "LocateAttach", "func": "LocateAttach", "color": "blue"},
     // "测试": {"name": "test", "func": "test", "color": "gray"},
     // "测试2": {"name": "test2", "func": "test2", "color": "gray"},
     // "清除": {"name": "clean", "func": "clean", "color": "gray"},
@@ -147,6 +148,9 @@ const ReplyPlate_limit = {
         },
         SystemAward() {
             myWindow = window.open('/home.php?mod=spacecp&ac=credit&op=log&suboperation=creditrulelog');
+        },
+        LocateAttach() {
+            locateAttach();
         },
         test() {
             test()
@@ -1180,6 +1184,59 @@ const ReplyPlate_limit = {
 
     }
 
+    // 定位到附件位置
+    let attachs = []
+    let currentAttach = 0
+    let hasLocated = false;
+    function locateAttach() {
+        if(!hasLocated) {
+            // 检查页面上所有的附件元素
+            let es = document.body.querySelectorAll('ignore_js_op');
+            for (const e of es) {
+                // 找到附件名
+                let attnm = e.querySelector('.attnm');
+                if(attnm) {
+                    attachs.push(e);
+                }
+            }
+        }
+
+        if(attachs.length == 0) {
+            Toast("没有找到任何附件内容！", 2000)
+        } else {
+            // 定位到指定位置
+            let attach = attachs[currentAttach]
+            attach.scrollIntoView({
+                behavior: 'smooth', // 平滑滚动
+                block: 'center'     // 垂直居中对齐视口
+            });
+
+            // 指定附件闪烁
+            flashElement(attach.querySelector('dl'));
+            console.log("当前附件是：", attach.querySelector('.attnm').innerText)
+
+            // 计数器加1
+            currentAttach += 1;
+            if(currentAttach >= attachs.length) {
+                currentAttach = 0
+            }
+        }
+    }
+
+    // 3. JS 控制：给目标元素添加动画类，动画结束后移除（避免重复触发）
+    function flashElement(target) {
+        // 添加动画类（触发闪烁）
+        target.classList.add('flash-three-times');
+
+        // 动画结束后移除类（确保下次点击仍能触发）
+        target.addEventListener('animationend', function onAnimationEnd() {
+            target.classList.remove('flash-three-times');
+            // 移除事件监听（避免内存泄漏）
+            target.removeEventListener('animationend', onAnimationEnd);
+        }, { once: true }); // { once: true } 表示事件只执行一次，无需手动移除
+    }
+
+    // 添加CSS样式
     const buttonCSS = GM_getResourceText("buttonCSS");
     GM_addStyle(buttonCSS);
     const popupCSS = GM_getResourceText("popupCSS");
@@ -1198,7 +1255,20 @@ const ReplyPlate_limit = {
     color: #888888;
     background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(70, 70, 70, 0.2), rgba(135, 135, 135, 0.2));
 }
-`);
 
+/* 1. 定义闪烁动画：切换背景色 */
+@keyframes flashYellow {
+  0% { background-color: inherit; } /* 初始颜色（继承元素原有背景） */
+  50% { background-color: #ffeb3b; } /* 黄色（可调整深浅，#ffeb3b 更亮） */
+  100% { background-color: inherit; } /* 恢复初始颜色 */
+}
+
+/* 2. 动画类：绑定动画，执行 3 次，每次 0.5 秒（总时长 1.5 秒） */
+.flash-three-times {
+  animation: flashYellow 0.5s ease-in-out 3; /* 动画名 + 单次时长 + 速度曲线 + 重复次数 */
+  /* 可选：添加 !important 确保动画优先级（避免被元素原有背景色覆盖） */
+  /* background-color: inherit !important; */
+}
+`);
 })();
 

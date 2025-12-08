@@ -95,3 +95,16 @@ function getFileSuffix(filename) {
 
     return ""
 }
+
+// 3. JS 控制：给目标元素添加动画类，动画结束后移除（避免重复触发）
+function flashElement(target) {
+    // 添加动画类（触发闪烁）
+    target.classList.add('flash-three-times');
+
+    // 动画结束后移除类（确保下次点击仍能触发）
+    target.addEventListener('animationend', function onAnimationEnd() {
+        target.classList.remove('flash-three-times');
+        // 移除事件监听（避免内存泄漏）
+        target.removeEventListener('animationend', onAnimationEnd);
+    }, { once: true }); // { once: true } 表示事件只执行一次，无需手动移除
+}

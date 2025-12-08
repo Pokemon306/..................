@@ -1,0 +1,14 @@
+
+/* 1. 定义闪烁动画：切换背景色 */
+@keyframes flashYellow {
+    0% { background-color: inherit; } /* 初始颜色（继承元素原有背景） */
+    50% { background-color: #ffeb3b; } /* 黄色（可调整深浅，#ffeb3b 更亮） */
+    100% { background-color: inherit; } /* 恢复初始颜色 */
+}
+
+/* 2. 动画类：绑定动画，执行 3 次，每次 0.5 秒（总时长 1.5 秒） */
+.flash-three-times {
+    animation: flashYellow 0.5s ease-in-out 3; /* 动画名 + 单次时长 + 速度曲线 + 重复次数 */
+    /* 可选：添加 !important 确保动画优先级（避免被元素原有背景色覆盖） */
+    /* background-color: inherit !important; */
+}

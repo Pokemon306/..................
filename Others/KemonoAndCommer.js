@@ -130,6 +130,8 @@ const source_name_match = /(\w*)_source/;
 
                                 // likeButton
                                 likeButton.onclick = function () {
+                                    console.log("likeButton 触发单击事件")
+
                                     // 修改数值
                                     like["liked"] = !like["liked"]
                                     setUserPostLike(userId, postId, like["liked"]);
@@ -140,6 +142,19 @@ const source_name_match = /(\w*)_source/;
                                     // 修改文字
                                     likeButton.innerText = like["liked"] ? "LIKE" : "DISLIKE";
                                 }
+
+                                // 双击事件，取消
+                                likeButton.dbclick = function () {
+                                    console.log("likeButton 触发双击事件")
+                                    // 修改数值
+                                    like["liked"] = undefined
+                                    setUserPostLike(userId, postId, like["liked"]);
+
+                                    // 修改颜色
+                                    likeButton.style.color = DEFAULT_COLOR;
+                                    likeButton.innerText = "LIKE"
+                                }
+
                                 // likeButton
                                 viewButton.onclick = function () {
                                     if (!like["viewed"]) {
@@ -150,6 +165,9 @@ const source_name_match = /(\w*)_source/;
                                     }
                                     // 看过时，点击不处理
                                 }
+
+                                // 直接触发已经看过
+                                viewButton.click();
 
                             }
 
@@ -779,6 +797,7 @@ const source_name_match = /(\w*)_source/;
 
         if (profileData && postData && postData.post) {
             let name = getPostname();
+            console.log("this name is : ", name)
 
             let urls = `#R,${window.location.href}\n`
 
@@ -820,7 +839,7 @@ const source_name_match = /(\w*)_source/;
                         let filename = ''
                         let url = postAttachs ? `${window.location.origin}/data${attach.path}` : `${attach.server}/data${attach.path}`
 
-                        if (attach.extension === ".mp4" || attach.extension === ".m4v" || attach.extension === ".mov") {
+                        if (attach.extension === ".mp4" || attach.extension === ".m4v" || attach.extension === ".mov" || attach.extension === ".webm") {
 
                             let twoDigitText = num.toString().padStart(2, '0');
                             filename = name.trim().concat(' ', twoDigitText, attach.extension)

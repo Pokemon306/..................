@@ -32,6 +32,7 @@ const buttonGroup = {
     "查看回复板块": {"name": "ReplyPlate", "func": "ReplyPlate"},
     "看看系统奖励": {"name": "SystemAward", "func": "SystemAward", "color": "blue"},
     "跳到附件位置": {"name": "LocateAttach", "func": "LocateAttach", "color": "blue"},
+    "跳到评分位置": {"name": "LocateRate", "func": "LocateRate", "color": "blue"},
     // "测试": {"name": "test", "func": "test", "color": "gray"},
     // "测试2": {"name": "test2", "func": "test2", "color": "gray"},
     // "清除": {"name": "clean", "func": "clean", "color": "gray"},
@@ -151,6 +152,9 @@ const ReplyPlate_limit = {
         },
         LocateAttach() {
             locateAttach();
+        },
+        LocateRate() {
+            locateRate();
         },
         test() {
             test()
@@ -1198,6 +1202,11 @@ const ReplyPlate_limit = {
                 if(attnm) {
                     attachs.push(e);
                 }
+
+                attnm = e.querySelector('[id^="attach_"]');
+                if(attnm) {
+                    attachs.push(e);
+                }
             }
         }
 
@@ -1212,7 +1221,13 @@ const ReplyPlate_limit = {
             });
 
             // 指定附件闪烁
-            flashElement(attach.querySelector('dl'));
+
+            let dl = attach.querySelector('dl');
+            if(dl) {
+                flashElement(dl);
+            } else {
+                flashElement(attach);
+            }
             console.log("当前附件是：", attach.querySelector('.attnm').innerText)
 
             // 计数器加1
@@ -1221,6 +1236,15 @@ const ReplyPlate_limit = {
                 currentAttach = 0
             }
         }
+    }
+
+    // 跳转到评分位置
+    function locateRate() {
+        let rate = document.body.querySelector("#ak_rate")
+        rate.scrollIntoView({
+            behavior: 'smooth', // 平滑滚动
+            block: 'center'     // 垂直居中对齐视口
+        });
     }
 
     // 3. JS 控制：给目标元素添加动画类，动画结束后移除（避免重复触发）

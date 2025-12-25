@@ -857,6 +857,9 @@ const source_name_match = /(\w*)_source/;
                                         }
                                     } else {
                                         filename = name.trim().concat(' ', twoDigitText, ' ', attach.name)
+                                        if(type == 'attachment') {
+                                            filename = name.trim().concat(' ', attach.name)
+                                        }
                                     }
                                 }
                             }

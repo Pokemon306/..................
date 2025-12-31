@@ -8,6 +8,7 @@
 // @version        3.0.2
 // @date           2023-12-31
 // @author         sssss2
+// @include        *://hentaiverse.org/*
 // @match          *://*.hentaiverse.org/*
 // @match          *://e-hentai.org/*
 // @connect        hentaiverse.org

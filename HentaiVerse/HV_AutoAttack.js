@@ -1837,6 +1837,10 @@ try {
         }
         if (g('option').alert && g('option').audioEnable && g('option').audioEnable[e]) {
             setAudioAlarm(e);
+            // 如果是答题
+            if(e === 'Riddle') {
+                setAudioAlarmNew(e);
+            }
         }
     }
 
@@ -1860,6 +1864,32 @@ try {
         }
         document.addEventListener('mousemove', pauseAudio, true);
     }
+
+    function setAudioAlarmNew(e) { // 发出音频警报
+        // 吉他扫弦
+        audioUrl = 'https://cdn.freesound.org/previews/830/830500_4759831-lq.ogg';
+
+        // 1. 创建音频对象
+        const audio = new Audio(audioUrl);
+        // 2. 播放音频的核心方法（可任意触发）
+        function playNotifySound() {
+            audio.currentTime = 0; // 重置播放进度（重复播放不卡顿）
+            audio.play().catch(err => console.log("播放失败：", err));
+        }
+
+        // ✅ 触发方式：页面加载完成自动播放
+        window.onload = () => {
+            setTimeout(() => playNotifySound(), 1000); // 延迟1秒播放
+        };
+
+        // 2. 核心：点击页面 切换「播放/停止」状态（一键启停）
+        document.addEventListener('click', () => {
+            // 状态2：正在播放 → 点击立即停止播放
+            audio.pause();
+            console.log("❌ 已停止 → OGG音频播放");
+        });
+    }
+
 
     function setNotification(e) { // 发出桌面通知
         const notification = [

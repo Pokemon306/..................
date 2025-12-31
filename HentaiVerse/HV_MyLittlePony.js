@@ -184,4 +184,32 @@
         }" style="max-width: 96px; max-height: 96px">`;
         el.appendChild(div);
     });
+
+    // ========== 核心配置：替换成你的OGG音频在线链接 ==========
+    // 鸟叫声
+    const audioUrl = "https://cdn.freesound.org/previews/714/714572_6142149-lq.ogg"; // 示例OGG提示音（可直接用）
+    // ========================================================
+
+    // 1. 创建音频对象
+    const audio = new Audio(audioUrl);
+    audio.loop = true
+    audio.volume = 1
+
+    // 2. 播放音频的核心方法（可任意触发）
+    function playNotifySound() {
+        audio.currentTime = 0; // 重置播放进度（重复播放不卡顿）
+        audio.play().catch(err => console.log("播放失败：", err));
+    }
+
+    // ✅ 触发方式：页面加载完成自动播放
+    window.onload = () => {
+        setTimeout(() => playNotifySound(), 1000); // 延迟1秒播放
+    };
+
+    // 2. 核心：点击页面 切换「播放/停止」状态（一键启停）
+    document.addEventListener('click', () => {
+        // 状态2：正在播放 → 点击立即停止播放
+        audio.pause();
+        console.log("❌ 已停止 → OGG音频播放");
+    });
 })();

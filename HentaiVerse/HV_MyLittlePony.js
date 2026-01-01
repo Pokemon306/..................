@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         HV 彩虹小马 (My Little Pony)
+// @name         HV - 彩虹小马 (My Little Pony)
 // @namespace    http://tampermonkey.net/
 // @version      0.6
 // @description  验证码助手 (Hentaiverse verification helper)
@@ -187,7 +187,10 @@
 
     // ========== 核心配置：替换成你的OGG音频在线链接 ==========
     // 鸟叫声
-    const audioUrl = "https://cdn.freesound.org/previews/714/714572_6142149-lq.ogg"; // 示例OGG提示音（可直接用）
+    // const audioUrl = "https://cdn.freesound.org/previews/714/714572_6142149-lq.ogg"; // 示例OGG提示音（可直接用）
+    // 吉他扫弦
+    const audioUrl = "https://cdn.freesound.org/previews/830/830500_4759831-lq.ogg"; // 示例OGG提示音（可直接用）
+
     // ========================================================
 
     // 1. 创建音频对象

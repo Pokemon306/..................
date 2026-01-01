@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           HV Utils 汉化
+// @name           HV - Utils 汉化
 // @namespace      HVUT
 // @description    A comprehensive out-of-battle script for Hentaiverse
 // @homepageURL    https://forums.e-hentai.org/index.php?showtopic=211883

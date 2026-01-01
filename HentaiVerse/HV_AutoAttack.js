@@ -1,8 +1,8 @@
 /* eslint-env browser */
 // ==UserScript==
-// @name         [HV]AutoAttack
-// @name:zh-TW   [HV]AutoAttack
-// @name:zh-CN   [HV]AutoAttack
+// @name         HV - AutoAttack 自动战斗
+// @name:zh-TW   HV - AutoAttack 自动战斗
+// @name:zh-CN   HV - AutoAttack 自动战斗
 // @description  HV auto attack script, for the first user, should configure before use it.
 // @description:zh-CN HV自动打怪脚本，初次使用，请先设置好选项，请确认字体设置正常
 // @description:zh-TW HV自動打怪腳本，初次使用，請先設置好選項，請確認字體設置正常
@@ -1838,9 +1838,9 @@ try {
         if (g('option').alert && g('option').audioEnable && g('option').audioEnable[e]) {
             setAudioAlarm(e);
             // 如果是答题
-            if(e === 'Riddle') {
-                setAudioAlarmNew(e);
-            }
+            // if(e === 'Riddle') {
+            //     setAudioAlarmNew(e);
+            // }
         }
     }
 

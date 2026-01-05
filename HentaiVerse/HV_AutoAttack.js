@@ -1,8 +1,8 @@
 /* eslint-env browser */
 // ==UserScript==
-// @name         [HV]AutoAttack
-// @name:zh-TW   [HV]AutoAttack
-// @name:zh-CN   [HV]AutoAttack
+// @name         HV - AutoAttack 自动战斗
+// @name:zh-TW   HV - AutoAttack 自动战斗
+// @name:zh-CN   HV - AutoAttack 自动战斗
 // @description  HV auto attack script, for the first user, should configure before use it.
 // @description:zh-CN HV自动打怪脚本，初次使用，请先设置好选项，请确认字体设置正常
 // @description:zh-TW HV自動打怪腳本，初次使用，請先設置好選項，請確認字體設置正常
@@ -330,10 +330,12 @@ try {
         if (g('option').showQuickSite && g('option').quickSite) {
             quickSite();
         }
+        // 倒计时
+        asyncOnIdle();
+
         const hvAAPauseUI = document.body.appendChild(cE('div'));
         hvAAPauseUI.classList.add('hvAAPauseUI');
         setPauseUI(hvAAPauseUI);
-        asyncOnIdle();
 
     }());
 
@@ -435,10 +437,12 @@ try {
             return;
         }
         const button = parent.appendChild(cE('button'));
-        button.innerHTML = '<l0>暂停</l0><l1>暫停</l1><l2>Pause</l2>';
+        // button.innerHTML = '<l0>暂停</l0><l1>暫停</l1><l2>Pause</l2>';
+        button.innerHTML = '<l0>🟢</l0><l1>暫停</l1><l2>Pause</l2>';
         if (getValue('disabled')) { // 如果禁用
             document.title = _alert(-1, 'hvAutoAttack暂停中', 'hvAutoAttack暫停中', 'hvAutoAttack Paused');
-            button.innerHTML = '<l0>继续</l0><l1>繼續</l1><l2>Continue</l2>';
+            // button.innerHTML = '<l0>继续</l0><l1>繼續</l1><l2>Continue</l2>';
+            button.innerHTML = '<l0>⏸️</l0><l1>繼續</l1><l2>Continue</l2>';
         }
         button.className = 'pauseChange';
         button.onclick = pauseChange;
@@ -673,8 +677,8 @@ try {
             'l0,l1,l01,l2{display:none;}', // l0: 简体 l1: 繁体 l01:简繁体共用 l2: 英文
             '#hvAABox2{position:absolute;left:1075px;padding-top: 6px;}',
             '.hvAALog{font-size:20px;}',
-            '.hvAAPauseUI{top:30px;left:1246px;position:absolute;z-index:9999}',
-            '.hvAAButton{top:5px;left:1255px;position:absolute;z-index:9999;cursor:pointer;width:24px;height:24px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADi0lEQVRIiZVWPYgUZxj+dvGEk7vsNdPYCMul2J15n+d991PIMkWmOEyMyRW2FoJIUojYp5ADFbZJkyISY3EqKGpgz+Ma4bqrUojICaIsKGIXSSJcsZuD3RT3zWZucquXDwYG5n2f9/d5vnFuHwfAZySfAXgN4DXJzTiOj+3H90OnkmXZAe/9FMm3JJ8AuBGepyRfle2yLDvgnKt8EDVJkq8B3DGzjve+1m63p0n2AVzJbUh2SG455yre+5qZ/aCq983sxMfATwHYJvlCVYckHwFYVdURgO8LAS6RHJJcM7N1VR0CeE5yAGBxT3AR+QrA3wA20tQOq+pFkgOS90Tk85J51Xs9qaorqjoAcC6KohmSGyQHcRx/kbdv7AHgDskXaWqH0zSddc5Voyia2SOXapqmswsLvpam6ez8/Pwn+YcoimYAvARw04XZ5N8qZtZR1aGqXnTOVSd0cRd42U5EzqvqSFWX2u32tPd+yjnnXNiCGslHJAf7ybwM7r2vAdgWkYdZls157w+NK/DeT7Xb7WkAqyTvlZHjOD5oxgtmtqrKLsmze1VJsquqKwsLO9vnnKvkJHpLsq+qo/JAd8BtneTvqvqTiPwoIu9EZKUUpGpmi2Y2UtU+yTdJkhx1JJ8FEl0pruK/TrwA4F2r1WrkgI1G4wjJP0XkdLF9WaZzZnZZVa8GMj5xgf43JvXczFZbLb1ebgnJn0nenjQbEVkG0JsUYOykyi6Aa+XoQTJuTRr8OADJzVBOh+SlckYkz5L8Q0TquXOj0fhURN6r6pkSeAXAUsDaJPnYxXF8jOQrklskh97ryZJTVURWAPwF4DqAX0TkvRl/zTKdK2aeJMnxICFbAHrNZtOKVVdIrrVa2t1jz6sicprkbQC3VPVMGTzMpQvgQY63i8lBFddVdVCk/6TZlMFzopFci+P44H+YHCR3CODc/wUvDPY7ksMg9buZrKr3ATwvyoT3vrafzPP3er1eA9Azs7tjJhcqOBHkeSOKohkROR9K7prZYqnnlSRJjofhb4vIt/V6vUbyN1Xtt1qtb1zpZqs45xyAxXAnvCQ5FJGHqrpiZiMzu5xnHlZxCOABybXw3gvgp/Zq3/gA+BLATVVdyrJsbods2lfVq7lN4crMtapjZndD5pPBixWFLTgU7uQ3AJ6KyLKILAdy9sp25bZMBC//JSRJcjQIYg9Aj+TjZrNp+/mb+Ad711sdZZ1k/QAAAABJRU5ErkJggg==) center no-repeat transparent;}',
+            '.hvAAPauseUI{margin-top: 10px; top:30px;left:1246px;position:absolute;z-index:9999}',
+            '.hvAAButton{top:5px;left:1252px;position:absolute;z-index:9999;cursor:pointer;width:24px;height:24px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADi0lEQVRIiZVWPYgUZxj+dvGEk7vsNdPYCMul2J15n+d991PIMkWmOEyMyRW2FoJIUojYp5ADFbZJkyISY3EqKGpgz+Ma4bqrUojICaIsKGIXSSJcsZuD3RT3zWZucquXDwYG5n2f9/d5vnFuHwfAZySfAXgN4DXJzTiOj+3H90OnkmXZAe/9FMm3JJ8AuBGepyRfle2yLDvgnKt8EDVJkq8B3DGzjve+1m63p0n2AVzJbUh2SG455yre+5qZ/aCq983sxMfATwHYJvlCVYckHwFYVdURgO8LAS6RHJJcM7N1VR0CeE5yAGBxT3AR+QrA3wA20tQOq+pFkgOS90Tk85J51Xs9qaorqjoAcC6KohmSGyQHcRx/kbdv7AHgDskXaWqH0zSddc5Voyia2SOXapqmswsLvpam6ez8/Pwn+YcoimYAvARw04XZ5N8qZtZR1aGqXnTOVSd0cRd42U5EzqvqSFWX2u32tPd+yjnnXNiCGslHJAf7ybwM7r2vAdgWkYdZls157w+NK/DeT7Xb7WkAqyTvlZHjOD5oxgtmtqrKLsmze1VJsquqKwsLO9vnnKvkJHpLsq+qo/JAd8BtneTvqvqTiPwoIu9EZKUUpGpmi2Y2UtU+yTdJkhx1JJ8FEl0pruK/TrwA4F2r1WrkgI1G4wjJP0XkdLF9WaZzZnZZVa8GMj5xgf43JvXczFZbLb1ebgnJn0nenjQbEVkG0JsUYOykyi6Aa+XoQTJuTRr8OADJzVBOh+SlckYkz5L8Q0TquXOj0fhURN6r6pkSeAXAUsDaJPnYxXF8jOQrklskh97ryZJTVURWAPwF4DqAX0TkvRl/zTKdK2aeJMnxICFbAHrNZtOKVVdIrrVa2t1jz6sicprkbQC3VPVMGTzMpQvgQY63i8lBFddVdVCk/6TZlMFzopFci+P44H+YHCR3CODc/wUvDPY7ksMg9buZrKr3ATwvyoT3vrafzPP3er1eA9Azs7tjJhcqOBHkeSOKohkROR9K7prZYqnnlSRJjofhb4vIt/V6vUbyN1Xtt1qtb1zpZqs45xyAxXAnvCQ5FJGHqrpiZiMzu5xnHlZxCOABybXw3gvgp/Zq3/gA+BLATVVdyrJsbods2lfVq7lN4crMtapjZndD5pPBixWFLTgU7uQ3AJ6KyLKILAdy9sp25bZMBC//JSRJcjQIYg9Aj+TjZrNp+/mb+Ad711sdZZ1k/QAAAABJRU5ErkJggg==) center no-repeat transparent;}',
             '#hvAABox{left:calc(50% - 350px);top:50px;font-size:16px!important;z-index:4;width:700px;height:538px;position:absolute;text-align:left;background-color:#E3E0D1;border:1px solid #000;border-radius:10px;font-family:"Microsoft Yahei";}',
             '.hvAATablist{position:relative;left:14px;}',
             '.hvAATabmenu{position:absolute;left:-9px;}',
@@ -709,7 +713,7 @@ try {
             '.hvAAcheckItems>input.hvAANumber{width:32px}',
             '.hvAAConfig{width:100%;height:16px;}',
             '.hvAAButtonBox{position:relative;top:468px;}',
-            '.encounterUI{font-weight:bold;font-size:10pt;position:absolute;top:58px;left:1240px;text-decoration:none;}',
+            '.encounterUI{margin-top: 20px; font-weight:bold;font-size:10pt;position:absolute;top:58px;left:1242px;text-decoration:none;}',
             '.quickSiteBar{position:absolute;top:0px;left:1290px;font-size:18px;text-align:left;width:165px;height:calc(100% - 10px);display:flex;flex-direction:column;flex-wrap:wrap;}',
             '.quickSiteBar>span{display:block;max-height:24px;overflow:hidden;text-overflow:ellipsis;}',
             '.quickSiteBar>span>a{text-decoration:none;}',
@@ -1837,6 +1841,10 @@ try {
         }
         if (g('option').alert && g('option').audioEnable && g('option').audioEnable[e]) {
             setAudioAlarm(e);
+            // 如果是答题
+            // if(e === 'Riddle') {
+            //     setAudioAlarmNew(e);
+            // }
         }
     }
 
@@ -1860,6 +1868,32 @@ try {
         }
         document.addEventListener('mousemove', pauseAudio, true);
     }
+
+    function setAudioAlarmNew(e) { // 发出音频警报
+        // 吉他扫弦
+        audioUrl = 'https://cdn.freesound.org/previews/830/830500_4759831-lq.ogg';
+
+        // 1. 创建音频对象
+        const audio = new Audio(audioUrl);
+        // 2. 播放音频的核心方法（可任意触发）
+        function playNotifySound() {
+            audio.currentTime = 0; // 重置播放进度（重复播放不卡顿）
+            audio.play().catch(err => console.log("播放失败：", err));
+        }
+
+        // ✅ 触发方式：页面加载完成自动播放
+        window.onload = () => {
+            setTimeout(() => playNotifySound(), 1000); // 延迟1秒播放
+        };
+
+        // 2. 核心：点击页面 切换「播放/停止」状态（一键启停）
+        document.addEventListener('click', () => {
+            // 状态2：正在播放 → 点击立即停止播放
+            audio.pause();
+            console.log("❌ 已停止 → OGG音频播放");
+        });
+    }
+
 
     function setNotification(e) { // 发出桌面通知
         const notification = [
@@ -2822,7 +2856,8 @@ try {
 
         if (getValue('disabled')) { // 如果禁用
             document.title = _alert(-1, 'hvAutoAttack暂停中', 'hvAutoAttack暫停中', 'hvAutoAttack Paused');
-            gE('#hvAABox2>button').innerHTML = '<l0>继续</l0><l1>繼續</l1><l2>Continue</l2>';
+            //gE('#hvAABox2>button').innerHTML = '<l0>继续</l0><l1>繼續</l1><l2>Continue</l2>';
+            gE('#hvAABox2>button').innerHTML = '<l0>⏸️</l0><l1>繼續</l1><l2>Continue</l2>';
             return;
         }
         battle = getValue('battle', true);
@@ -2933,7 +2968,8 @@ try {
     function pauseChange() { // 暂停状态更改
         if (getValue('disabled')) {
             if (gE('.pauseChange')) {
-                gE('.pauseChange').innerHTML = '<l0>暂停</l0><l1>暫停</l1><l2>Pause</l2>';
+                // gE('.pauseChange').innerHTML = '<l0>暂停</l0><l1>暫停</l1><l2>Pause</l2>';
+                gE('.pauseChange').innerHTML = '<l0>🟢</l0><l1>暫停</l1><l2>Pause</l2>';
             }
             document.title = getValue('disabled');
             delValue(0);
@@ -2942,7 +2978,8 @@ try {
             }
         } else {
             if (gE('.pauseChange')) {
-                gE('.pauseChange').innerHTML = '<l0>继续</l0><l1>繼續</l1><l2>Continue</l2>';
+                // gE('.pauseChange').innerHTML = '<l0>继续</l0><l1>繼續</l1><l2>Continue</l2>';
+                gE('.pauseChange').innerHTML = '<l0>⏸️</l0><l1>繼續</l1><l2>Continue</l2>';
             }
             setValue('disabled', document.title);
             document.title = _alert(-1, 'hvAutoAttack暂停中', 'hvAutoAttack暫停中', 'hvAutoAttack Paused');

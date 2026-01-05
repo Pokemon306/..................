@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>油猴脚本下载</title>
+    <style>
+        /* 全局样式重置+基础配置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 50px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        /* 下载容器卡片样式（核心美观样式，保留原版质感） */
+        .download-container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 1200px; /* 加宽适配多栏 */
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f2f5;
+        }
+        /* 总标题样式 */
+        .container-title {
+            text-align: center;
+            color: #1f2937;
+            font-size: 26px;
+            margin-bottom: 40px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        /* ✅ 核心：多目录分栏布局容器 */
+        .catalogs-wrap {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px; /* 栏与栏之间的间距 */
+            margin-bottom: 30px;
+        }
+        /* ✅ 单个目录分组样式 */
+        .catalog-item {
+            padding: 25px 20px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 1px solid #f0f2f5;
+        }
+        /* 目录分组标题样式 */
+        .catalog-title {
+            color: #1f2937;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-left: 8px;
+            border-left: 4px solid #165dff; /* 蓝色侧边线，醒目 */
+        }
+        /* 文件列表样式 */
+        .file-list {
+            list-style: none;
+        }
+        /* 单个下载链接样式（完全保留原版，动效不变） */
+        .file-item {
+            margin-bottom: 15px;
+        }
+        .download-link {
+            display: block;
+            width: 100%;
+            padding: 14px 18px;
+            background: #ffffff;
+            color: #165dff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        /* 悬停动效（原版升级：更细腻） */
+        .download-link:hover {
+            background: #165dff;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(22, 93, 255, 0.25);
+        }
+        /* 下载小图标 */
+        .download-link::before {
+            content: "⬇️";
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        /* 底部说明文字 */
+        .tips {
+            margin-top: 10px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="download-container">
+        <h2 class="container-title">📁 油猴脚本下载</h2>
+        
+        <!-- ✅ 多目录分栏核心区域：复制/catalog-item/即可新增目录 -->
+        <div class="catalogs-wrap">
+            <!-- 目录1：项目文档（可修改名称+文件） -->
+            <div class="catalog-item">
+                <h3 class="catalog-title">📋 HentaiVerse</h3>
+                <ul class="file-list">
+                    <li class="file-item"><a href="HentaiVerse\HentaiVerse汉化.js" class="download-link" download>HentaiVerse汉化</a></li>
+                    <li class="file-item"><a href=".\HentaiVerse\HV_Utils 汉化.js" class="download-link" download>工具界面汉化</a></li>
+                    <li class="file-item"><a href=".\HentaiVerse\HV_AutoAttack.js" class="download-link" download>自动战斗脚本</a></li>
+                    <li class="file-item"><a href=".\HentaiVerse\HV_MyLittlePony.js" class="download-link" download>彩虹小马优化</a></li>
+                    <li class="file-item"><a href=".\HentaiVerse\HV_战斗日志汉化.js" class="download-link" download>战斗日志汉化</a></li>
+                </ul>
+            </div>
+            <div class="catalog-item">
+                <h3 class="catalog-title">📋 自动战斗配置</h3>
+                <ul class="file-list">
+                    <li class="file-item"><a href=".\HentaiVerse\AutoAttack\多轮战斗.json" class="download-link" download>多轮战斗</a></li>
+                    <li class="file-item"><a href=".\HentaiVerse\AutoAttack\遭遇战.json" class="download-link" download>遭遇战</a></li>
+                </ul>
+            </div>
+
+            <!-- 目录2：软件安装包（可修改名称+文件） -->
+            <div class="catalog-item">
+                <h3 class="catalog-title">💻 gamemale</h3>
+                <ul class="file-list">
+                </ul>
+            </div>
+
+            <!-- 目录3：图片素材（可修改名称+文件） -->
+            <div class="catalog-item">
+                <h3 class="catalog-title">🖼️ 资源下载</h3>
+                <ul class="file-list">
+                </ul>
+            </div>
+
+            <!-- ✅ 新增目录：复制上面的/catalog-item/区块，粘贴到这里即可 -->
+        </div>
+
+        <p class="tips">💡 点击链接一键下载 | 文件与本页面在同一目录下</p>
+    </div>
+</body>
+</html>

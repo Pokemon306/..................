@@ -342,9 +342,12 @@ const ReplyPlate_limit = {
         let today_str = formatDate(now, 'YYYYMMdd');
 
         let text = node.innerText.trim();
-/*        if (text.indexOf('发表回复') === -1) {
+        // 过滤部分消息条件
+        if (text.indexOf('抱歉') > -1 ||
+            text.indexOf('已发送') > -1
+        ) {
             return
-        }*/
+        }
         let key = `${key_prefix}${today_str}`
         let sum_key = `${key}_sum`
         let keys_key = `${key_prefix}keys`
@@ -384,7 +387,11 @@ const ReplyPlate_limit = {
         // 保存到浏览器缓存中
         localStorage.setItem(key, JSON.stringify(ra));
         localStorage.setItem(sum_key, JSON.stringify(ra_sum));
-        localStorage.setItem('replyAward_lastTime', JSON.stringify(map)); // 保存上次的时间
+
+        // 只有回复成功才重置上次回复时间
+        if (text.indexOf('发表回复') > -1) {
+            localStorage.setItem('replyAward_lastTime', JSON.stringify(map)); // 保存上次的时间
+        }
 
         // 如果没有当天的记录，就新增一条，方便后面遍历删除
         if (!ra_keys[today_str]) {
@@ -640,6 +647,9 @@ const ReplyPlate_limit = {
         if (ras[0]) {
             lastReplyTime = new Date(ras[0].date);
         }
+        ras = ras.filter(item => {
+            return item.text.indexOf('发表回复') >= 0
+        })
 
         let html = []
         html.push('<html>')
@@ -762,7 +772,7 @@ const ReplyPlate_limit = {
         return html.join('');
     }
 
-    // ReplyAward_history to HTML
+    // ReplyAward_history to HTML 往期奖励弹窗内容
     function rapToHtml(_rap) {
         let now = new Date();
         let today = formatDate(now, 'YYYYMMdd');
@@ -781,26 +791,29 @@ const ReplyPlate_limit = {
         html.push('<tr><th>回复时间</th><th>查看</th><th>操作</th></tr>')
 
         let index = 0
+        let lastDate
         Object.keys(_rap).forEach(key => {
             const datetime = _rap[key];
             const date = new Date(datetime)
             let _date = formatDate(date, 'YYYYMMdd');
-            if(index == 0 || date.getDate() == 1) {
+            // 第一个日期，或者每月第一天，或者前一天和本日不是一个月
+            if(index == 0 || date.getDate() == 1 ||
+                (lastDate != undefined && lastDate.getMonth() != date.getMonth())) {
                 html.push(`<tr class="tr month"><td colspan="2" style="text-align: center;font-weight: 1000;">${formatDate(date, 'YYYY年MM月')}</td><td class=""><button id="delete" class="toggle-btn t_button ra_history_delete_button" onclick="" date="${key.substring(0, 6)}">删除</button></td></tr>`)
             }
             html.push(`<tr class="tr day" date="${_date}" month="${formatDate(date, 'YYYYMM')}">`)
-            html.push(`<td class="" ${today == _date ? 'colspan="3" style="text-align: center;"' : ''}>${formatDate(date, 'YYYY-MM-dd')}</td>`)
+            html.push(`<td class="" ${today == _date ? 'colspan="3" style="text-align: center;"' : ''}>${formatDate(date, 'YYYY-MM-dd')}${today == _date ? ' （今日）' : ''}</td>`)
 
             if(today != _date) {
                 html.push(`<td class=""><button id="look" class="toggle-btn t_button ra_history_show_button" onclick="" date="${key}">查看</button></td>`)
                 html.push(`<td class=""><button id="delete" class="toggle-btn t_button ra_history_delete_button" onclick="" date="${key}">删除</button></td>`)
             } else {
-
             }
 
             html.push(`</tr>`)
 
             index += 1
+            lastDate = date
         })
 
         html.push('</tbody></table></body></html>')

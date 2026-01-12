@@ -1183,24 +1183,27 @@ try {
                         drop.__name = getValue('battleCode');
                         dropOld.push(drop);
                     }
-                    dropOld.reverse();
+
+                    console.log(dropOld)
+                    // 先处理数据
+                    const dropNew = dealDrop(dropOld)
+
+                    dropNew.reverse();
                     _html = `${_html}<tr class="hvAATh"><td class="selectTable"></td>`;
-                    dropOld.forEach((_dropOld) => {
-                        _html = `${_html}<td>${_dropOld.__name}</td>`;
+                    dropNew.forEach((dropNew) => {
+                        _html = `${_html}<td ${dropNew.__name.endsWith("：SUM")?'style="color:red;"':''}>${dropNew.__name}</td>`;
                     });
                     _html = `${_html}</tr>`;
-                    getKeys(dropOld).forEach((key) => {
+                    getKeys(dropNew).forEach((key) => {
                         if (key === '__name') {
                             return;
                         }
                         _html = `${_html}<tr><td>${key}</td>`;
-                        dropOld.forEach((_dropOld) => {
-                            if (key in _dropOld) {
-                                let style = ''
-                                if(key === "_startTime" || key === "_endTime" || key === "#startTime" || key === "#endTime") {
-                                    style = 'font-size:10px'
-                                }
-                                _html = `${_html}<td style="${style}">${_dropOld[key]}</td>`;
+                        dropNew.forEach((dropNew) => {
+                            if (key in dropNew) {
+                                // 不同物品展示不同样式
+                                let style = keyToStyle(key)
+                                _html = `${_html}<td style="${style}">${dropNew[key]}</td>`;
                             } else {
                                 _html = `${_html}<td></td>`;
                             }
@@ -1224,6 +1227,7 @@ try {
                 };
                 _html = '<tbody>';
                 if (statsOld.length === 0 || (statsOld.length === 1 && !getValue('stats', true))) {
+                    // 如果只有一条数据
                     if (statsOld.length === 1) {
                         stats = statsOld[0];
                     }
@@ -1235,31 +1239,37 @@ try {
                         }
                     }
                 } else {
+                    // 如果有多条
                     if (getValue('stats')) {
                         stats.__name = getValue('battleCode');
                         statsOld.push(stats);
                     }
-                    statsOld.reverse();
                     console.log(statsOld)
+
+                    // 先处理数据
+                    const statsNew = dealStats(statsOld)
+
+                    statsNew.reverse();
+                    console.log(statsNew)
                     _html = `${_html}<tr class="hvAATh"><td class="selectTable"></td>`;
-                    statsOld.forEach((_dropOld) => {
-                        _html = `${_html}<td>${_dropOld.__name}</td>`;
+                    statsNew.forEach((_dropOld) => {
+                        _html = `${_html}<td ${_dropOld.__name.endsWith("：SUM")?'style="color:red;"':''}>${_dropOld.__name}</td>`;
                     });
                     _html = `${_html}</tr>`;
+
                     Object.keys(translation).forEach((i) => {
                         if (i === '__name') {
                             return;
                         }
-                        _html = `${_html}<tr class="hvAATh"><td colspan="${statsOld.length + 1}">${translation[i]}</td></tr>`;
-                        getKeys(statsOld, i).forEach((key) => {
+                        _html = `${_html}<tr class="hvAATh"><td colspan="${statsNew.length + 1}">${translation[i]}</td></tr>`;
+                        getKeys(statsNew, i).forEach((key) => {
+                            // 生成表头
                             _html = `${_html}<tr><td>${key}</td>`;
-                            statsOld.forEach((_statsOld) => {
-                                if (key in _statsOld[i]) {
-                                    let style = ''
-                                    if(key === "_startTime" || key === "_endTime" || key === "#startTime" || key === "#endTime") {
-                                        style = 'font-size:10px'
-                                    }
-                                    _html = `${_html}<td style="${style}">${_statsOld[i][key]}</td>`;
+                            statsNew.forEach((statsNew) => {
+                                if (key in statsNew[i]) {
+                                    // 不同物品展示不同样式
+                                    let style = keyToStyle(key)
+                                    _html = `${_html}<td style="${style}">${statsNew[i][key]}</td>`;
                                 } else {
                                     _html = `${_html}<td></td>`;
                                 }
@@ -4414,6 +4424,123 @@ try {
         } else {
             setValue('stats', stats);
         }
+    }
+
+    // dealDrop
+    function dealDrop(DropsOld) {
+        let DropsNew = []
+        let newDrop
+        let lastStatDay = -1
+        for (const oldDrop of DropsOld) {
+            let date = new Date(oldDrop['#startTime'])
+            let thisDay = date.getUTCDate()
+
+            // 两天不同，写入数据
+            if(lastStatDay !== thisDay) {
+                console.log("StatDay is : ", lastStatDay);
+                if(newDrop) {
+                    DropsNew.push(newDrop)
+                }
+                newDrop = {'__name': thisDay+ "：SUM"}
+            }
+
+            // 处理数据
+            for (let key in oldDrop) {
+                let value = newDrop[key] ? newDrop[key] : 0
+                if(key === '__name') {
+                } else if (key === '#endTime') {
+                    value = ''
+                } else if (key === '#startTime') {
+                    value = ''
+                } else {
+                    // value = (((value * 1000) + (oldCg[key] * 1000)) / 1000)
+                    value += oldDrop[key]
+                }
+                newDrop[key] = value
+            }
+
+            DropsNew.push(oldDrop)
+            lastStatDay = thisDay
+        }
+
+        // 最后再写入一次
+        if(newDrop) {
+            DropsNew.push(newDrop)
+        }
+        return DropsNew;
+    }
+
+    // dealStats
+    function dealStats(statsOld) {
+        let statsNew = []
+        let newStat
+        let lastStatDay = -1
+        for (const stat of statsOld) {
+            let self = stat['self'];
+            let date = new Date(self['_startTime'])
+            let thisDay = date.getUTCDate()
+
+            // 两天不同，写入数据
+            if(lastStatDay !== thisDay) {
+                console.log("StatDay is : ", lastStatDay);
+                console.log(newStat);
+                if(newStat) {
+                    statsNew.push(newStat)
+                }
+                newStat = {'__name': thisDay+ "：SUM"}
+            }
+
+            // 处理数据
+            for(let cg in stat) {
+                // 处理大分类
+                let newCg = newStat[cg]? newStat[cg] : {}
+                let oldCg = stat[cg]
+                for (let key in oldCg) {
+                    let value = newCg[key] ? newCg[key] : 0
+                    if(key === '__name') {
+                        value = thisDay
+                    } else if(key === '_endTime') {
+                        value = ''
+                    } else if (key === '_startTime') {
+                        value = ''
+                    } else {
+                        value = (((value * 1000) + (oldCg[key] * 1000)) / 1000)
+                    }
+                    newCg[key] = value
+                }
+                newStat[cg] = newCg;
+            }
+
+            statsNew.push(stat)
+            lastStatDay = thisDay
+        }
+
+        // 最后再写入一次
+        if(newStat) {
+            statsNew.push(newStat)
+        }
+        return statsNew;
+    }
+
+    // 不同key展示不同的样式
+    function keyToStyle(key) {
+        let style = ''
+        if(key === "_startTime" || key === "_endTime" || key === "#startTime" || key === "#endTime") {
+            style = 'font-size:10px;'
+        }
+        if(key === "_round") {
+            style = 'font-weight:bold;color:#2F4F4F;'
+        }
+        if(key.startsWith("Health ")) {
+            style = 'color:#3CB371;'
+        }
+        if(key.startsWith("Mana ")) {
+            style = 'color:#1E90FF;'
+        }
+        if(key.startsWith("Spirit ")) {
+            style = 'color:#DC143C;'
+        }
+        return style;
     }
 } catch (e) {
     console.log(e);

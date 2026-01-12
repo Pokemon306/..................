@@ -309,10 +309,19 @@ try {
             g('runSpeed', 1);
             Debug.log('______________newRound', false);
             newRound(false);
-            if (g('option').recordEach && !getValue('battleCode')) {
-                setValue('battleCode', `${time(1)}: ${g('battle')?.roundType?.toUpperCase()}-${g('battle')?.roundAll}`);
-            }
             onBattle();
+            if (g('option').recordEach && !getValue('battleCode')) {
+                console.log('battleCode')
+                console.log(g('battle'))
+                if(g('battle')) {
+                    let battleCode = `${time(1)}: ${g('battle')?.roundType?.toUpperCase()}-${g('battle')?.roundAll}`
+                    console.log("battleCode is ", battleCode)
+                    setValue('battleCode', battleCode);
+                } else {
+                    console.log("g battle is undefined")
+                }
+
+            }
             updateEncounter(false, true);
             return;
         }
@@ -626,6 +635,10 @@ try {
     }
     function g(key, value) { // 全局变量
         const hvAA = window.hvAA || {};
+        // if(key === 'battle') {
+        //     console.log('battle');
+        //     console.log(hvAA)
+        // }
         if (key === undefined && value === undefined) {
             return hvAA;
         } if (value === undefined) {
@@ -679,13 +692,15 @@ try {
             '.hvAALog{font-size:20px;}',
             '.hvAAPauseUI{margin-top: 10px; top:30px;left:1246px;position:absolute;z-index:9999}',
             '.hvAAButton{top:5px;left:1252px;position:absolute;z-index:9999;cursor:pointer;width:24px;height:24px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADi0lEQVRIiZVWPYgUZxj+dvGEk7vsNdPYCMul2J15n+d991PIMkWmOEyMyRW2FoJIUojYp5ADFbZJkyISY3EqKGpgz+Ma4bqrUojICaIsKGIXSSJcsZuD3RT3zWZucquXDwYG5n2f9/d5vnFuHwfAZySfAXgN4DXJzTiOj+3H90OnkmXZAe/9FMm3JJ8AuBGepyRfle2yLDvgnKt8EDVJkq8B3DGzjve+1m63p0n2AVzJbUh2SG455yre+5qZ/aCq983sxMfATwHYJvlCVYckHwFYVdURgO8LAS6RHJJcM7N1VR0CeE5yAGBxT3AR+QrA3wA20tQOq+pFkgOS90Tk85J51Xs9qaorqjoAcC6KohmSGyQHcRx/kbdv7AHgDskXaWqH0zSddc5Voyia2SOXapqmswsLvpam6ez8/Pwn+YcoimYAvARw04XZ5N8qZtZR1aGqXnTOVSd0cRd42U5EzqvqSFWX2u32tPd+yjnnXNiCGslHJAf7ybwM7r2vAdgWkYdZls157w+NK/DeT7Xb7WkAqyTvlZHjOD5oxgtmtqrKLsmze1VJsquqKwsLO9vnnKvkJHpLsq+qo/JAd8BtneTvqvqTiPwoIu9EZKUUpGpmi2Y2UtU+yTdJkhx1JJ8FEl0pruK/TrwA4F2r1WrkgI1G4wjJP0XkdLF9WaZzZnZZVa8GMj5xgf43JvXczFZbLb1ebgnJn0nenjQbEVkG0JsUYOykyi6Aa+XoQTJuTRr8OADJzVBOh+SlckYkz5L8Q0TquXOj0fhURN6r6pkSeAXAUsDaJPnYxXF8jOQrklskh97ryZJTVURWAPwF4DqAX0TkvRl/zTKdK2aeJMnxICFbAHrNZtOKVVdIrrVa2t1jz6sicprkbQC3VPVMGTzMpQvgQY63i8lBFddVdVCk/6TZlMFzopFci+P44H+YHCR3CODc/wUvDPY7ksMg9buZrKr3ATwvyoT3vrafzPP3er1eA9Azs7tjJhcqOBHkeSOKohkROR9K7prZYqnnlSRJjofhb4vIt/V6vUbyN1Xtt1qtb1zpZqs45xyAxXAnvCQ5FJGHqrpiZiMzu5xnHlZxCOABybXw3gvgp/Zq3/gA+BLATVVdyrJsbods2lfVq7lN4crMtapjZndD5pPBixWFLTgU7uQ3AJ6KyLKILAdy9sp25bZMBC//JSRJcjQIYg9Aj+TjZrNp+/mb+Ad711sdZZ1k/QAAAABJRU5ErkJggg==) center no-repeat transparent;}',
-            '#hvAABox{left:calc(50% - 350px);top:50px;font-size:16px!important;z-index:4;width:700px;height:538px;position:absolute;text-align:left;background-color:#E3E0D1;border:1px solid #000;border-radius:10px;font-family:"Microsoft Yahei";}',
+            // '#hvAABox{left:calc(50% - 350px);top:50px;font-size:16px!important;z-index:4;width:700px;height:538px;position:absolute;text-align:left;background-color:#E3E0D1;border:1px solid #000;border-radius:10px;font-family:"Microsoft Yahei";}',
+            '#hvAABox{left:calc(10%);top:50px;font-size:16px!important;z-index:4;width:calc(80%);height:calc(80%);position:absolute;text-align:left;background-color:#E3E0D1;border:1px solid #000;border-radius:10px;font-family:"Microsoft Yahei";}',
             '.hvAATablist{position:relative;left:14px;}',
             '.hvAATabmenu{position:absolute;left:-9px;}',
             '.hvAATabmenu>span{display:block;padding:5px 10px;margin:0 10px 0 0;border:1px solid #91a7b4;border-radius:5px;background-color:#E3F1F8;color:#000;text-decoration:none;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;cursor:pointer;}',
             '.hvAATabmenu>span:hover{left:-5px;position:relative;color:#0000FF;z-index:2!important;}',
             '.hvAATabmenu>span>input{margin:0 0 0 -8px;}',
-            '.hvAATab{position:absolute;width:605px;height:430px;left:36px;padding:15px;border:1px solid #91A7B4;border-radius:3px;box-shadow:0 2px 3px rgba(0,0,0,0.1);color:#666;background-color:#EDEBDF;overflow:auto;}',
+            // '.hvAATab{position:absolute;width:605px;height:430px;left:36px;padding:15px;border:1px solid #91A7B4;border-radius:3px;box-shadow:0 2px 3px rgba(0,0,0,0.1);color:#666;background-color:#EDEBDF;overflow:auto;}',
+            '.hvAATab{position:absolute;width:calc(100% - 108px);height:calc(80vh - 92px - 50px);left:36px;padding:15px;border:1px solid #91A7B4;border-radius:3px;box-shadow:0 2px 3px rgba(0,0,0,0.1);color:#666;background-color:#EDEBDF;overflow:auto;}',
             '.hvAATab>div:nth-child(2n){border:1px solid #EAEAEA;background-color:#FAFAFA;}',
             '.hvAATab>div:nth-child(2n+1){border:1px solid #808080;background-color:#DADADA;}',
             '.hvAATab a{margin:0 2px;}',
@@ -712,7 +727,9 @@ try {
             '.hvAAcheckItems{display:grid; grid-template-columns:repeat(3, 0.1fr 0.3fr 1fr)}',
             '.hvAAcheckItems>input.hvAANumber{width:32px}',
             '.hvAAConfig{width:100%;height:16px;}',
-            '.hvAAButtonBox{position:relative;top:468px;}',
+            // '.hvAAButtonBox{position:relative;top:468px;}',
+            '.hvAAButtonBox{position:relative;top:calc(100% - 85px);}',
+            '.hvAAButtonBox>button{margin:0 5px;}',
             '.encounterUI{margin-top: 20px; font-weight:bold;font-size:10pt;position:absolute;top:58px;left:1242px;text-decoration:none;}',
             '.quickSiteBar{position:absolute;top:0px;left:1290px;font-size:18px;text-align:left;width:165px;height:calc(100% - 10px);display:flex;flex-direction:column;flex-wrap:wrap;}',
             '.quickSiteBar>span{display:block;max-height:24px;overflow:hidden;text-overflow:ellipsis;}',
@@ -1179,7 +1196,11 @@ try {
                         _html = `${_html}<tr><td>${key}</td>`;
                         dropOld.forEach((_dropOld) => {
                             if (key in _dropOld) {
-                                _html = `${_html}<td>${_dropOld[key]}</td>`;
+                                let style = ''
+                                if(key === "_startTime" || key === "_endTime" || key === "#startTime" || key === "#endTime") {
+                                    style = 'font-size:10px'
+                                }
+                                _html = `${_html}<td style="${style}">${_dropOld[key]}</td>`;
                             } else {
                                 _html = `${_html}<td></td>`;
                             }
@@ -1219,6 +1240,7 @@ try {
                         statsOld.push(stats);
                     }
                     statsOld.reverse();
+                    console.log(statsOld)
                     _html = `${_html}<tr class="hvAATh"><td class="selectTable"></td>`;
                     statsOld.forEach((_dropOld) => {
                         _html = `${_html}<td>${_dropOld.__name}</td>`;
@@ -1233,7 +1255,11 @@ try {
                             _html = `${_html}<tr><td>${key}</td>`;
                             statsOld.forEach((_statsOld) => {
                                 if (key in _statsOld[i]) {
-                                    _html = `${_html}<td>${_statsOld[i][key]}</td>`;
+                                    let style = ''
+                                    if(key === "_startTime" || key === "_endTime" || key === "#startTime" || key === "#endTime") {
+                                        style = 'font-size:10px'
+                                    }
+                                    _html = `${_html}<td style="${style}">${_statsOld[i][key]}</td>`;
                                 } else {
                                     _html = `${_html}<td></td>`;
                                 }
@@ -4231,7 +4257,10 @@ try {
         }
     }
 
+    // 战斗记录 | 数据记录
     function recordUsage(parm) {
+        // console.log('recordUsage 战斗记录:', getValue('battleCode'));
+        // console.log(g('battle'))
         const stats = getValue('stats', true) || {
             self: {
                 _startTime: time(3),
@@ -4368,7 +4397,9 @@ try {
         setValue('stats', stats);
     }
 
+    //
     function recordUsage2() {
+        // console.log('recordUsage2');
         const stats = getValue('stats', true);
         stats.self._monster += g('monsterAll');
         stats.self._boss += g('bossAll');

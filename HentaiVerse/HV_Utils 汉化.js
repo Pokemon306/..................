@@ -10509,7 +10509,7 @@ if (_query.s === 'Battle' && $id('initform')) {
                     // 这里可以继续添加其他修理材料的映射关系
                 };
                 // 遍历修理材料列表，将英文名称转换为中文名称并显示
-                Object.entries($battle.repair.repairall).forEach(([n, c]) => {
+                Object.entries($battle.repair.repairall??{}).forEach(([n, c]) => {
                     const cnName = repairItemsMapping[n] || n; // 如果找不到中文名称，则保持英文名称
                     const s = $item.count(n);
                     $element('li', $battle.node.repairall, [`${cnName} x ${c} (${s})`, s < c ? '.hvut-bt-warn' : '']);

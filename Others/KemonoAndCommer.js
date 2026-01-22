@@ -835,11 +835,21 @@ const source_name_match = /(\w*)_source/;
 
                     urls += `${filename},${url}\n`
                 } else {
+                    // 用来保存下载地址，遍历是否有重复数据
+                    const set = new Set()
+
                     for (let attach of attachments) {
+                        if(set.has(attach.path)) {
+                            console.log("下载地址重复了，不做任何处理")
+                            continue
+                        }
+
                         let filename = ''
                         let url = postAttachs ? `${window.location.origin}/data${attach.path}` : `${attach.server}/data${attach.path}`
 
-                        if (attach.extension === ".mp4" || attach.extension === ".m4v" || attach.extension === ".mov" || attach.extension === ".webm") {
+                        if (attach.extension === ".mp4" || attach.extension === ".m4v" || attach.extension === ".mov" || attach.extension === ".webm"
+                            || attach.extension === ".rar" || attach.extension === ".zip" || attach.extension === ".bin" || attach.extension === ".pdf"
+                        ) {
 
                             let twoDigitText = num.toString().padStart(2, '0');
                             filename = name.trim().concat(' ', twoDigitText, attach.extension)
@@ -871,7 +881,9 @@ const source_name_match = /(\w*)_source/;
                                 filename = `${attach.name}`
                             }
                         }
+
                         urls += `${filename},${url}\n`
+                        set.add(pic.path)
                     }
                 }
             } else {
@@ -893,28 +905,17 @@ const source_name_match = /(\w*)_source/;
 
                     urls += `${filename},${url}\n`
                 } else {
-                    // 先循环一遍，看看有没有和第一个重复的文件，如果有，就删除第一条
-                    let _index = 0
-                    let _pic = postData.previews[0]
-                    // _pic.path
-                    let repeated = false;
-
-                    while (postData.previews.length - 1 > _index) {
-                        _index += 1
-                        if (postData.previews[_index].path == _pic.path) {
-                            repeated = true;
-                            break
-                        }
-                    }
-                    // console.log(repeated)
+                    // 用来保存下载地址，遍历是否有重复数据
+                    const set = new Set()
 
                     for (let pic of postData.previews) {
+                        if(set.has(pic.path)) {
+                            console.log("下载地址重复了，不做任何处理")
+                            continue
+                        }
+
                         let twoDigitText = num.toString().padStart(2, '0');
                         num += 1;
-                        if (repeated && num == 1) {
-                            console.log("repeated")
-                            continue;
-                        }
 
                         let url = `${pic.server}/data${pic.path}`
 
@@ -933,7 +934,9 @@ const source_name_match = /(\w*)_source/;
                         }
 
                         urls += `${filename},${url}\n`
+                        set.add(pic.path)
                     }
+                    console.log(set)
                 }
             }
 

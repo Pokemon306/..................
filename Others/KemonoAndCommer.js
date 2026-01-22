@@ -883,7 +883,7 @@ const source_name_match = /(\w*)_source/;
                         }
 
                         urls += `${filename},${url}\n`
-                        set.add(pic.path)
+                        set.add(attach.path)
                     }
                 }
             } else {

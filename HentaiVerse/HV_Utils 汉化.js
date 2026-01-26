@@ -2488,6 +2488,18 @@ _top.create = function () {
         $input('submit', _top.node.stamina_form, { value: '使用精力恢复剂', disabled: _player.stamina > settings.disableStaminaRestorative, style: 'width: 200px;' });
         _top.node.stamina.addEventListener('mouseenter', _top.stamina_create);
     }
+
+    console.log(" 当前精力值： ", _player.stamina)
+    // 计算一下大概什么时候能回满
+    if(_player.stamina < 99) {
+        nextHour = 99 - _player.stamina + (new Date().getHours())
+        console.log(nextHour, nextHour / 24, nextHour % 24)
+        // text = `将会在 ${(nextHour / 24 > 1)?'明天':'今天'} ${nextHour % 24} 点左右回满`
+        text = `/将会在 ` +
+            `<span style="color: red;">${(nextHour / 24 > 1)?'明天':'今天'} ${nextHour % 24}</span>`
+            +` 点左右回满`
+        $element('p', sub, [text]);
+    }
     $element('p', sub, _player.condition);
     if (_player.accuracy) {
         $element('p', sub, [_player.accuracy, '!color: #e00;']);

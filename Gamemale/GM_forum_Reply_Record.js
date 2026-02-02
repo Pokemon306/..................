@@ -48,6 +48,13 @@ const configButGroup = {
 }
 const configBtnGroupId = 'my_configBtnGroup'
 
+const nextSizeMap = {
+    "large": "medium",
+    "medium": "small",
+    "small": "xsmall",
+    "xsmall": "large",
+}
+
 // 按钮组到底部的距离
 const btnTBPx = 100;
 const btnLRPx = 20;
@@ -513,7 +520,7 @@ const ReplyPlate_limit = {
         let body = document.body;
         let div = document.createElement('div');
         div.id = "my_buttonGroup"
-        div.style.cssText = `z-index:999;position:fixed;margin:10px;` +
+        div.style.cssText = `z-index:999;position:fixed;margin:10px;pointer-events: none;` +
             `${lr == "l" ? "left" : "right"}:${btnLRPx}px;${ud == "d" ? "bottom" : "top"}:${btnTBPx}px;` +
             `text-align:${lr == "l" ? "left" : "right"}`
 
@@ -523,7 +530,7 @@ const ReplyPlate_limit = {
             div.style.display = "none";
         }
 
-        let btnStyle = `z-index:999;position:sticky;margin:5px;`
+        let btnStyle = `z-index:999;position:sticky;margin:5px;pointer-events: auto;`
 
         let i = 1
         let key = `${key_prefix}${formatDate(new Date(), 'YYYYMMdd')}`

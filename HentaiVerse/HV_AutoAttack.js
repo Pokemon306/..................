@@ -441,6 +441,7 @@ try {
         setPauseButton(parent);
         setPauseHotkey();
         setPauseEncounterButton(parent);
+        // setTestButton(parent)
     }
 
     // 战斗内按钮
@@ -487,6 +488,20 @@ try {
         }
         button.className = 'pauseEncounter';
         button.onclick = pauseEncounter;
+    }
+
+    // 测试按钮
+    function setTestButton(parent) {
+        const button = parent.appendChild(cE('button'));
+        button.innerHTML = '<l0>🛠️ 测试</l0><l1>暫停</l1><l2>Pause</l2>';
+        button.className = 'testButton';
+        button.onclick = forTest;
+    }
+    function forTest() {
+        console.log(g('option').encounter)
+        console.log(getValue('encounter'))
+        console.log(getValue('option'))
+        console.log(getValue('option').encounter)
     }
 
     function formatTime(t, size = 2) {
@@ -2282,18 +2297,27 @@ try {
     // 暂停、开启 自动遭遇战
     function pauseEncounter() {
         console.log(g('option').encounter) // 当前状态
+        console.log(gE('.hvAAApply'))
+
         if (!g('option').encounter) {
             if (gE('.pauseEncounter')) {
                 gE('.pauseEncounter').innerHTML = '<l0>⚔️ 进行中</l0><l1>暫停</l1><l2>Pause</l2>';
-                g('option').encounter = !g('option').encounter
-                goto()
+                reverseEncounter()
             }
         } else {
             if (gE('.pauseEncounter')) {
                 gE('.pauseEncounter').innerHTML = '<l0>🛡️ 已暂停</l0><l1>繼續</l1><l2>Continue</l2>';
-                g('option').encounter = !g('option').encounter
+                reverseEncounter()
             }
         }
+    }
+    function reverseEncounter() {
+        let _option = getValue('option')
+        _option.encounter = !_option.encounter
+        setValue('option', _option)
+        g('option').encounter = !g('option').encounter
+
+        goto()
     }
 
     // 设置 自动遭遇战

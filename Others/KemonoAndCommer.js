@@ -25,14 +25,16 @@ const btnSizeName = "btnSize"
 
 const buttonGroup = {
     "复制名称": {"name": "copyName", "func": "copyName", "color": "purple"},
-    "复制图片": {"name": "copyPics", "func": "copyPics", "color": "green"},
-    "复制图片（文件夹）": {"name": "copyPics_folder", "func": "copyPics_folder", "color": "green"},
-    "复制附件": {"name": "copyAttachments", "func": "copyAttachments", "color": "blue"},
+    "复制名称（带ID）": {"name": "copyName_withId", "func": "copyName_withId", "color": "purple"},
+    "复制图片": {"name": "copyPics", "func": "copyPics", "color": "green", "hotkey": "Q"},
+    "复制图片（去首张）": {"name": "copyPics_withoutFirst", "func": "copyPics_withoutFirst", "color": "green", "hotkey": "Q"},
+    "复制图片（文件夹）": {"name": "copyPics_folder", "func": "copyPics_folder", "color": "green", "hotkey": "W"},
+    "复制附件": {"name": "copyAttachments", "func": "copyAttachments", "color": "blue", "hotkey": "E"},
     // "复制附件（原名）": {"name": "copyAttachments_origin", "func": "copyAttachments_origin", "color": "blue"},
-    "复制附件（序号）": {"name": "copyAttachments_serial", "func": "copyAttachments_serial", "color": "blue"},
-    "复制附件（文件夹）": {"name": "copyAttachments_folder", "func": "copyAttachments_folder", "color": "blue"},
-    "复制所有": {"name": "copyAll", "func": "copyAll"},
-    "复制所有（文件夹）": {"name": "copyAll_folder", "func": "copyAll_folder"},
+    "复制附件（序号）": {"name": "copyAttachments_serial", "func": "copyAttachments_serial", "color": "blue", "hotkey": "R"},
+    "复制附件（文件夹）": {"name": "copyAttachments_folder", "func": "copyAttachments_folder", "color": "blue", "hotkey": "T"},
+    "复制所有": {"name": "copyAll", "func": "copyAll", "hotkey": "A"},
+    "复制所有（文件夹）": {"name": "copyAll_folder", "func": "copyAll_folder", "hotkey": "S"},
     "下载文本内容": {"name": "downloadContent", "func": "downloadContent", "color": "yellow"},
     "设置": {"name": "config", "func": "config", "color": "black"},
 };
@@ -45,7 +47,7 @@ const configButGroup = {
 const configBtnGroupId = 'my_configBtnGroup'
 
 // 按钮组到底部的距离
-const btnTBPx = 100;
+const btnTBPx = 50;
 const btnLRPx = 10;
 
 // 表位置
@@ -284,11 +286,17 @@ const source_name_match = /(\w*)_source/;
         copyName() {
             copyName();
         },
+        copyName_withId() {
+            copyName(true);
+        },
         copyPics() {
             copyAll('NoFolder', 'pic');
         },
         copyPics_folder() {
             copyAll('', 'pic');
+        },
+        copyPics_withoutFirst() {
+            copyAll('NoFolder', 'pic_withoutFirst');
         },
         copyAttachments() {
             copyAll('NoFolder', 'attachment');
@@ -378,24 +386,7 @@ const source_name_match = /(\w*)_source/;
 
         },
         changeSize() {
-            document.querySelectorAll('.my_button').forEach(el => {
-                if (el.classList.contains('small')) {
-                    el.classList.remove('small')
-                    el.classList.add('large')
-                    GM_setValue(btnSizeName, 'large')
-                    localStorage.setItem(btnSizeName, 'large')
-                } else if (el.classList.contains('medium')) {
-                    el.classList.remove('medium')
-                    el.classList.add('small')
-                    GM_setValue(btnSizeName, 'small')
-                    localStorage.setItem(btnSizeName, 'small')
-                } else {
-                    el.classList.remove('large')
-                    el.classList.add('medium')
-                    GM_setValue(btnSizeName, 'medium')
-                    localStorage.setItem(btnSizeName, 'medium')
-                }
-            })
+            changeSize();
         }
     }
 
@@ -407,22 +398,22 @@ const source_name_match = /(\w*)_source/;
         // up or down
         const ud = GM_getValue("ud") || "u"
         // large or small
-        const size = GM_getValue(btnSizeName) || "large"
+        const size = GM_getValue(btnSizeName, "large")
 
         let body = document.body;
         let div = document.createElement('div');
         div.id = "my_buttonGroup"
-        div.style.cssText = `z-index:999;position:fixed;margin:10px;` +
+        div.style.cssText = `z-index:999;position:fixed;margin:10px;pointer-events: none;` +
             `${lr == "l" ? "left" : "right"}:${btnLRPx}px;${ud == "d" ? "bottom" : "top"}:${btnTBPx}px;` +
             `text-align:${lr == "l" ? "left" : "right"}`
 
-        let btnStyle = `z-index:999;position:sticky;margin:5px;`
+        let btnStyle = `z-index:999;position:sticky;margin:5px;pointer-events: auto;`
 
         let i = 1
         for (let buttonName in buttonGroup) {
             let btn = document.createElement('button');
             btn.id = "btn_" + buttonGroup[buttonName].func;
-            btn.className = `my_button ${(buttonGroup[buttonName].color || 'red')} ${(size == "small" ? "small" : (size == "medium" ? "medium" : "large"))}`
+            btn.className = `my_button ${(buttonGroup[buttonName].color || 'red')} ${nextSizeMap.hasOwnProperty(size) ? size : "large"}`
 
             btn.style.cssText = btnStyle;
 
@@ -479,6 +470,7 @@ const source_name_match = /(\w*)_source/;
     }
 
     init();
+    initHotkey()
 
     // 检查
     function check() {
@@ -492,9 +484,51 @@ const source_name_match = /(\w*)_source/;
             } else {
                 // 初始化
                 init()
+                initHotkey()
             }
             check()
         })
+    }
+
+    // todo 初始化热键
+    function initHotkey() {
+
+        let hotkeyGroup = {}
+        for (let buttonName in buttonGroup) {
+            let hotkey = buttonGroup[buttonName]["hotkey"]
+            if(hotkey) {
+                hotkeyGroup[hotkey] = {
+                    "hotkey": hotkey,
+                    "desc": buttonName,
+                    "func": buttonGroup[buttonName]["func"]
+                }
+            }
+        }
+        console.log(hotkeyGroup)
+
+        // 监听全局键盘按下事件
+        document.addEventListener('keydown', function(e) {
+            // 核心判断条件（全部满足才触发）
+            const isKey = hotkeyGroup.hasOwnProperty(e.key.toUpperCase()) ;
+            const isPageFocused = document.hasFocus(); // 当前页面是否获得焦点 ✅
+
+            // ✅ 新增：判断当前是否在输入框内（输入框按键不触发）
+            const isInputing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+            const isEditable = document.activeElement.isContentEditable; // 富文本编辑器
+            // ✅ 关键修复：检测是否按下了Ctrl/Shift/Alt修饰键
+            const isModifierKeyPressed = e.ctrlKey || e.shiftKey || e.altKey || e.metaKey; // metaKey是Mac的Command键
+
+            // 满足条件：按键 + 页面聚焦
+            if (isKey && isPageFocused && !isInputing && !isEditable && !isModifierKeyPressed) {
+                // 1. 阻止按键的原生行为（不会在输入框打字、不会触发其他快捷键）
+                e.preventDefault();
+                e.stopPropagation();
+
+                // 2. 触发指定方法
+                funcs[hotkeyGroup[e.key.toUpperCase()].func](event);
+                Toast(`${hotkeyGroup[e.key.toUpperCase()].desc}`)
+            }
+        }, true);
     }
 
     // 显示DIV
@@ -744,7 +778,7 @@ const source_name_match = /(\w*)_source/;
     const popupCSS = GM_getResourceText("popupCSS");
     GM_addStyle(popupCSS);
 
-    function getPostname() {
+    function getPostname(withId) {
         let profileData = profileApi()
         let postData = postApi();
 
@@ -761,7 +795,7 @@ const source_name_match = /(\w*)_source/;
             }
 
             // 判断是否已有作品id(兼容按左右方向键翻页的情况)
-            const key = `kc_post_name_${id}`
+            const key = `kc_post_name_${id}${withId?"_withId":""}`
             let postname = localStorage.getItem(key);
             if (postname) {
                 return postname;
@@ -773,15 +807,16 @@ const source_name_match = /(\w*)_source/;
             let date = formatDate(_date, 'YYYY年MM月DD日');
 
             let name =
-                "@".concat(username, " ", "[", platform, "]", " - ", "(", date, ")", " ", "(", id, ")", " ", transfer(title));
+                "@".concat(username, " ", "[", platform, "]", " - ", "(", date, ")",
+                    withId == true ? ` (${id})` : '', " ", transfer(title));
             localStorage.setItem(key, name);
 
             return name;
         }
     }
 
-    function copyName() {
-        let name = getPostname();
+    function copyName(withId) {
+        let name = getPostname(withId);
 
         const clipboardObj = navigator.clipboard;
         clipboardObj.writeText(name)
@@ -891,11 +926,13 @@ const source_name_match = /(\w*)_source/;
             }
 
             // 处理图片
-            if ((type == 'all' || type == 'pic') && postData.previews && postData.previews.length > 0) {
+            if ((type == 'all' || type == 'pic' || type == 'pic_withoutFirst') && postData.previews && postData.previews.length > 0) {
                 urls += ""
                 let num = 0
 
-                if (postData.previews.length == 1) {
+                if (postData.previews.length == 1 ||
+                    (postData.previews.length == 2 && type == 'pic_withoutFirst')
+                ) {
                     // 如果只有一张图片
                     let pic = postData.previews[0]
                     let url = `${pic.server}/data${pic.path}`
@@ -915,6 +952,11 @@ const source_name_match = /(\w*)_source/;
                         }
 
                         let twoDigitText = num.toString().padStart(2, '0');
+                        if(num == 0 && type == 'pic_withoutFirst') {
+                            console.log('跳过首张')
+                            num += 1;
+                            continue
+                        }
                         num += 1;
 
                         let url = `${pic.server}/data${pic.path}`

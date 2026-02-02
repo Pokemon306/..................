@@ -132,3 +132,21 @@ function createButtonTag(text, buttonName, color, margin) {
 
     return button;
 }
+
+const nextSizeMap = {
+    "large": "medium",
+    "medium": "small",
+    "small": "xsmall",
+    "xsmall": "large",
+}
+function changeSize() {
+    let btnSize = GM_getValue(btnSizeName, 'large')
+    const nextSize = nextSizeMap[btnSize]
+
+    document.querySelectorAll('.my_button').forEach(el => {
+        el.classList.remove(btnSize)
+        el.classList.add(nextSize)
+        GM_setValue(btnSizeName, nextSize)
+        localStorage.setItem(btnSizeName, nextSize)
+    })
+}
